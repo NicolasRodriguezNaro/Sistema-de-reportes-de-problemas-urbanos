@@ -1,0 +1,382 @@
+import { Ionicons } from "@expo/vector-icons";
+import { useRouter } from "expo-router";
+import { useCallback, useEffect, useState } from "react";
+import {
+  Image,
+  Pressable,
+  ScrollView,
+  StyleSheet,
+  Text,
+  View,
+} from "react-native";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
+
+import { apiFetch } from "../api";
+import {
+  ErrorView,
+  LoadingView,
+  PriorityBadge,
+  StatusBadge,
+} from "../components/ui";
+import { colors, fonts, radius, spacing } from "../theme";
+import type { ReporteDetalle } from "../types";
+import {
+  ETIQUETAS_CATEGORIA,
+  ETIQUETAS_SEVERIDAD,
+} from "../types";
+
+export function ReportDetailScreen({ id }: { id: number }) {
+  const router = useRouter();
+  const insets = useSafeAreaInsets();
+  const [reporte, setReporte] = useState<ReporteDetalle | null>(null);
+  const [cargando, setCargando] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+  const [imageError, setImageError] = useState(false);
+
+  const cargar = useCallback(async () => {
+    setCargando(true);
+    setError(null);
+    try {
+      const data = await apiFetch<ReporteDetalle>(`/api/reportes/${id}`);
+      setReporte(data);
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "No se pudo cargar el reporte.");
+    } finally {
+      setCargando(false);
+    }
+  }, [id]);
+
+  useEffect(() => {
+    let activo = true;
+
+    apiFetch<ReporteDetalle>(`/api/reportes/${id}`)
+      .then((data) => {
+        if (activo) setReporte(data);
+      })
+      .catch((err: unknown) => {
+        if (activo) setError(err instanceof Error ? err.message : "No se pudo cargar el reporte.");
+      })
+      .finally(() => {
+        if (activo) setCargando(false);
+      });
+
+    return () => {
+      activo = false;
+    };
+  }, [id]);
+
+  if (cargando) {
+    return (
+      <View style={[styles.screen, { paddingTop: insets.top + 12 }]}>
+        <BackButton onPress={() => router.back()} />
+        <LoadingView label="Cargando tu reporte..." />
+      </View>
+    );
+  }
+
+  if (error || !reporte) {
+    return (
+      <View style={[styles.screen, { paddingTop: insets.top + 12 }]}>
+        <BackButton onPress={() => router.back()} />
+        <ErrorView message={error ?? "Reporte no encontrado"} onRetry={() => void cargar()} />
+      </View>
+    );
+  }
+
+  const imagen = reporte.urlImagenHd || reporte.urlImagenThumb;
+
+  return (
+    <View style={styles.screen}>
+      <ScrollView
+        contentContainerStyle={{ paddingBottom: insets.bottom + spacing.xxxl }}
+        showsVerticalScrollIndicator={false}
+      >
+        <View style={[styles.imageWrap, { paddingTop: insets.top + 10 }]}>
+          {imagen && !imageError ? (
+            <Image source={{ uri: imagen }} style={styles.image} onError={() => setImageError(true)} />
+          ) : (
+            <View style={[styles.image, styles.imageEmpty]}>
+              <Ionicons name="image-outline" size={36} color={colors.soft} />
+              <Text style={styles.imageEmptyText}>Imagen no disponible</Text>
+            </View>
+          )}
+          <Pressable
+            accessibilityRole="button"
+            accessibilityLabel="Volver"
+            onPress={() => router.back()}
+            style={[styles.backButton, { top: insets.top + 12 }]}
+          >
+            <Ionicons name="arrow-back" size={21} color={colors.white} />
+          </Pressable>
+        </View>
+
+        <View style={styles.content}>
+          <View style={styles.titleRow}>
+            <View style={styles.titleCopy}>
+              <Text style={styles.kicker}>REPORTE #{reporte.id}</Text>
+              <Text style={styles.title}>
+                {reporte.categoriaIa ? ETIQUETAS_CATEGORIA[reporte.categoriaIa] : "Incidencia urbana"}
+              </Text>
+            </View>
+            <View style={styles.badges}>
+              <StatusBadge estado={reporte.estado} />
+              <PriorityBadge prioridad={reporte.prioridadCalculada} />
+            </View>
+          </View>
+
+          <View style={styles.dateRow}>
+            <Ionicons name="calendar-outline" size={14} color={colors.soft} />
+            <Text style={styles.dateText}>
+              Reportado el{" "}
+              {new Date(reporte.fechaCreacion).toLocaleDateString("es-CO", {
+                day: "2-digit",
+                month: "long",
+                year: "numeric",
+              })}
+            </Text>
+          </View>
+
+          <View style={styles.card}>
+            <Text style={styles.cardKicker}>DESCRIPCIÓN</Text>
+            <Text style={styles.description}>
+              {reporte.descripcion || "El reporte no incluye una descripción adicional."}
+            </Text>
+          </View>
+
+          <View style={styles.card}>
+            <Text style={styles.cardKicker}>UBICACIÓN</Text>
+            <View style={styles.locationRow}>
+              <View style={styles.locationIcon}>
+                <Ionicons name="location-outline" size={21} color={colors.brand} />
+              </View>
+              <View>
+                <Text style={styles.locationTitle}>
+                  {reporte.barrioNombre ??
+                    (reporte.barrioId ? `Barrio ${reporte.barrioId}` : "Punto del reporte")}
+                </Text>
+                <Text style={styles.locationCoords}>
+                  {reporte.latitud.toFixed(5)}, {reporte.longitud.toFixed(5)}
+                </Text>
+              </View>
+            </View>
+          </View>
+
+          <View style={styles.card}>
+            <Text style={styles.cardKicker}>FICHA DEL REPORTE</Text>
+            <MetaRow label="Severidad" value={reporte.severidadIa ? ETIQUETAS_SEVERIDAD[reporte.severidadIa] : "Sin calcular"} />
+            <MetaRow
+              label="Confianza IA"
+              value={reporte.confianzaIa ? `${Math.round(reporte.confianzaIa * 100)}%` : "No disponible"}
+            />
+            <MetaRow
+              label="Entidad responsable"
+              value={
+                reporte.entidadNombre ??
+                (reporte.entidadAsignadaId ? `Entidad ${reporte.entidadAsignadaId}` : "Por asignar")
+              }
+            />
+            <MetaRow label="Reporte padre" value={reporte.reportePadreId ? `#${reporte.reportePadreId}` : "Ninguno"} />
+          </View>
+
+          <View style={styles.notice}>
+            <Ionicons name="information-circle-outline" size={19} color={colors.brand} />
+            <Text style={styles.noticeText}>
+              El ciudadano puede consultar el estado del caso. Los cambios de estado los realiza el equipo municipal.
+            </Text>
+          </View>
+        </View>
+      </ScrollView>
+    </View>
+  );
+}
+
+function BackButton({ onPress }: { onPress: () => void }) {
+  return (
+    <Pressable accessibilityRole="button" accessibilityLabel="Volver" onPress={onPress} style={styles.backButtonDark}>
+      <Ionicons name="arrow-back" size={21} color={colors.brand} />
+    </Pressable>
+  );
+}
+
+function MetaRow({ label, value }: { label: string; value: string }) {
+  return (
+    <View style={styles.metaRow}>
+      <Text style={styles.metaLabel}>{label}</Text>
+      <Text style={styles.metaValue}>{value}</Text>
+    </View>
+  );
+}
+
+const styles = StyleSheet.create({
+  screen: {
+    flex: 1,
+    backgroundColor: colors.bg,
+    paddingHorizontal: spacing.lg,
+  },
+  imageWrap: {
+    marginHorizontal: -spacing.lg,
+    position: "relative",
+  },
+  image: {
+    width: "100%",
+    height: 290,
+    backgroundColor: colors.surfaceMuted,
+  },
+  imageEmpty: {
+    alignItems: "center",
+    justifyContent: "center",
+    gap: spacing.sm,
+  },
+  imageEmptyText: {
+    color: colors.soft,
+    fontFamily: fonts.medium,
+    fontSize: 11,
+  },
+  backButton: {
+    position: "absolute",
+    left: spacing.lg,
+    width: 39,
+    height: 39,
+    borderRadius: 20,
+    alignItems: "center",
+    justifyContent: "center",
+    backgroundColor: "rgba(8,46,56,0.58)",
+  },
+  backButtonDark: {
+    width: 42,
+    height: 42,
+    borderRadius: 13,
+    alignItems: "center",
+    justifyContent: "center",
+    backgroundColor: colors.surface,
+    borderWidth: 1,
+    borderColor: colors.border,
+    marginBottom: spacing.lg,
+  },
+  content: {
+    marginTop: -spacing.xl,
+    padding: spacing.lg,
+    borderTopLeftRadius: radius.xl,
+    borderTopRightRadius: radius.xl,
+    backgroundColor: colors.bg,
+    gap: spacing.md,
+  },
+  titleRow: {
+    flexDirection: "row",
+    alignItems: "flex-start",
+    justifyContent: "space-between",
+    gap: spacing.sm,
+    marginTop: spacing.sm,
+  },
+  titleCopy: {
+    flex: 1,
+  },
+  kicker: {
+    color: colors.soft,
+    fontFamily: fonts.bold,
+    fontSize: 8,
+    letterSpacing: 1.1,
+  },
+  title: {
+    color: colors.text,
+    fontFamily: fonts.extraBold,
+    fontSize: 25,
+    lineHeight: 31,
+    letterSpacing: -0.7,
+    marginTop: 4,
+  },
+  badges: {
+    alignItems: "flex-end",
+    gap: 4,
+  },
+  dateRow: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 4,
+  },
+  dateText: {
+    color: colors.soft,
+    fontFamily: fonts.medium,
+    fontSize: 10,
+  },
+  card: {
+    padding: spacing.lg,
+    borderRadius: radius.lg,
+    backgroundColor: colors.surface,
+    borderWidth: 1,
+    borderColor: colors.border,
+    gap: spacing.sm,
+  },
+  cardKicker: {
+    color: colors.soft,
+    fontFamily: fonts.bold,
+    fontSize: 8,
+    letterSpacing: 1,
+  },
+  description: {
+    color: colors.muted,
+    fontFamily: fonts.regular,
+    fontSize: 13,
+    lineHeight: 21,
+  },
+  locationRow: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: spacing.md,
+  },
+  locationIcon: {
+    width: 42,
+    height: 42,
+    borderRadius: radius.md,
+    alignItems: "center",
+    justifyContent: "center",
+    backgroundColor: colors.mintSoft,
+  },
+  locationTitle: {
+    color: colors.text,
+    fontFamily: fonts.bold,
+    fontSize: 12,
+  },
+  locationCoords: {
+    color: colors.muted,
+    fontFamily: fonts.medium,
+    fontSize: 10,
+    marginTop: 3,
+  },
+  metaRow: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
+    gap: spacing.md,
+    paddingTop: spacing.sm,
+    borderTopWidth: 1,
+    borderTopColor: colors.border,
+  },
+  metaLabel: {
+    color: colors.muted,
+    fontFamily: fonts.regular,
+    fontSize: 10,
+  },
+  metaValue: {
+    maxWidth: "58%",
+    color: colors.text,
+    fontFamily: fonts.semibold,
+    fontSize: 10,
+    textAlign: "right",
+  },
+  notice: {
+    flexDirection: "row",
+    alignItems: "flex-start",
+    gap: spacing.sm,
+    padding: spacing.md,
+    borderRadius: radius.md,
+    backgroundColor: colors.mintSoft,
+  },
+  noticeText: {
+    flex: 1,
+    color: colors.brand,
+    fontFamily: fonts.medium,
+    fontSize: 10,
+    lineHeight: 16,
+  },
+});

@@ -1,0 +1,144 @@
+@prefix ex:    <http://infraestructura.org/ontologia#> .
+@prefix owl:   <http://www.w3.org/2002/07/owl#> .
+@prefix rdf:   <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix xml:   <http://www.w3.org/2001/XMLSchema#> .
+@prefix rdfs:  <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix xsd:   <http://www.w3.org/2001/XMLSchema#> .
+
+<http://infraestructura.org/ontologia> rdf:type owl:Ontology ;
+    rdfs:comment "Ontología para la gestión, razonamiento de prioridad y asignación de reportes urbanos." .
+
+#################################################################
+#    Classes (Clases)
+#################################################################
+
+# --- Jerarquía de Incidencias Urbanas ---
+ex:IncidenciaUrbana rdf:type owl:Class .
+
+ex:HuecoVia rdf:type owl:Class ;
+    rdfs:subClassOf ex:IncidenciaUrbana .
+
+ex:FugaAgua rdf:type owl:Class ;
+    rdfs:subClassOf ex:IncidenciaUrbana .
+
+ex:FallaAlumbrado rdf:type owl:Class ;
+    rdfs:subClassOf ex:IncidenciaUrbana .
+
+ex:AcumulacionBasura rdf:type owl:Class ;
+    rdfs:subClassOf ex:IncidenciaUrbana .
+
+# --- Jerarquía de Equipamiento Urbano (Sitios de Interés) ---
+ex:EquipamientoUrbano rdf:type owl:Class .
+
+ex:Hospital rdf:type owl:Class ;
+    rdfs:subClassOf ex:EquipamientoUrbano .
+
+ex:Colegio rdf:type owl:Class ;
+    rdfs:subClassOf ex:EquipamientoUrbano .
+
+ex:ViaArteria rdf:type owl:Class ;
+    rdfs:subClassOf ex:EquipamientoUrbano .
+
+# --- Jerarquía de Entidades Responsables ---
+ex:EntidadResponsable rdf:type owl:Class .
+
+ex:SecretariaObrasPublicas rdf:type owl:Class ;
+    rdfs:subClassOf ex:EntidadResponsable .
+
+ex:EmpresaServiciosPublicos rdf:type owl:Class ;
+    rdfs:subClassOf ex:EntidadResponsable .
+
+ex:EmpresaAseo rdf:type owl:Class ;
+    rdfs:subClassOf ex:EntidadResponsable .
+
+# --- Clasificación Inferida de Prioridad ---
+ex:AtencionCritica rdf:type owl:Class ;
+    rdfs:subClassOf ex:IncidenciaUrbana .
+
+
+#################################################################
+#    Object Properties (Relaciones)
+#################################################################
+
+ex:cercanoA rdf:type owl:ObjectProperty ;
+    rdfs:domain ex:IncidenciaUrbana ;
+    rdfs:range  ex:EquipamientoUrbano .
+
+ex:esCompetentePara rdf:type owl:ObjectProperty ;
+    rdfs:domain ex:EntidadResponsable ;
+    rdfs:range  ex:IncidenciaUrbana .
+
+ex:asignadoA rdf:type owl:ObjectProperty ;
+    rdfs:domain ex:IncidenciaUrbana ;
+    rdfs:range  ex:EntidadResponsable .
+
+
+#################################################################
+#    Data Properties (Atributos)
+#################################################################
+
+ex:reporteId rdf:type owl:DatatypeProperty ;
+    rdfs:domain ex:IncidenciaUrbana ;
+    rdfs:range  xsd:integer .
+
+ex:severidadIA rdf:type owl:DatatypeProperty ;
+    rdfs:domain ex:IncidenciaUrbana ;
+    rdfs:range  xsd:string .
+
+ex:confianzaIA rdf:type owl:DatatypeProperty ;
+    rdfs:domain ex:IncidenciaUrbana ;
+    rdfs:range  xsd:float .
+
+ex:prioridadCalculada rdf:type owl:DatatypeProperty ;
+    rdfs:domain ex:IncidenciaUrbana ;
+    rdfs:range  xsd:string .
+
+ex:distanciaMetros rdf:type owl:DatatypeProperty ;
+    rdfs:domain ex:IncidenciaUrbana ;
+    rdfs:range  xsd:double .
+
+# --- Atributos de Entidades (NUEVO: Mapeo a PostgreSQL) ---
+ex:entidadId rdf:type owl:DatatypeProperty ;
+    rdfs:domain ex:EntidadResponsable ;
+    rdfs:range  xsd:integer .
+
+
+#################################################################
+#    Individuals (Individuos / Instancias de Conocimiento)
+#################################################################
+
+# --- Entidades Institucionales con su ID relacional ---
+ex:Entidad_ObrasPublicas rdf:type ex:SecretariaObrasPublicas ;
+    rdfs:label "Secretaría de Obras Públicas" ;
+    ex:entidadId 1 . # <-- ID en la tabla entidades de PostgreSQL
+
+ex:Entidad_Acueducto rdf:type ex:EmpresaServiciosPublicos ;
+    rdfs:label "Empresa de Acueducto y Alcantarillado" ;
+    ex:entidadId 2 . # <-- ID en la tabla entidades de PostgreSQL[cite: 1]
+
+ex:Entidad_EmpresaAseo rdf:type ex:EmpresaAseo ;
+    rdfs:label "Empresa de Aseo Urbano" ;
+    ex:entidadId 3 . # <-- ID en la tabla entidades de PostgreSQL[cite: 1]
+
+# --- Equipamientos Urbanos Reales ---
+ex:Hospital_Central rdf:type ex:Hospital ;
+    rdfs:label "Hospital Departamental Central" .
+
+ex:Colegio_SanJose rdf:type ex:Colegio ;
+    rdfs:label "Institución Educativa San José" .
+
+# --- Reglas de Competencia Predefinidas ---
+ex:Entidad_ObrasPublicas ex:esCompetentePara ex:HuecoVia .
+ex:Entidad_Acueducto ex:esCompetentePara ex:FugaAgua .
+ex:Entidad_EmpresaAseo ex:esCompetentePara ex:AcumulacionBasura .
+
+#################################################################
+#    Ejemplo de Instancia de Reporte (Generado desde Backend)
+#################################################################
+
+ex:Reporte_1001 rdf:type ex:FugaAgua ;
+    ex:reporteId 1001 ;
+    ex:severidadIA "ALTA" ;
+    ex:confianzaIA 0.94 ;
+    ex:cercanoA ex:Hospital_Central ;
+    ex:distanciaMetros 35.0 .

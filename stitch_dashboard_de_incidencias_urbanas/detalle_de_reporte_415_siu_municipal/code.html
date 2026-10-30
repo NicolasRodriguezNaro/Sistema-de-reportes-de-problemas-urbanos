@@ -1,0 +1,286 @@
+<!DOCTYPE html>
+
+<html lang="es"><head><meta charset="utf-8"/><meta content="width=device-width, initial-scale=1.0" name="viewport"/><meta content="web_dashboard" name="shell-type"/><link href="https://fonts.googleapis.com" rel="preconnect"/><link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/><link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;display=swap" rel="stylesheet"/><link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/><style>@layer base{html,body{margin:0;padding:0;}body{overscroll-behavior:none;}main>:first-child{margin-top:0!important;}main>:last-child{margin-bottom:0!important;}}::-webkit-scrollbar{display:none;}</style><script src="https://cdn.tailwindcss.com"></script><script id="tailwind-config">tailwind.config = { darkMode: "class", theme: { extend: { "colors": { "outline": "#71787c", "on-primary": "#ffffff", "background": "#f8f9ff", "inverse-on-surface": "#eaf1ff", "error": "#ba1a1a", "on-primary-fixed": "#001f29", "on-primary-container": "#81a9bb", "on-surface-variant": "#41484b", "on-primary-fixed-variant": "#234c5b", "secondary-fixed": "#bde9fc", "on-tertiary-fixed": "#00174b", "on-secondary-fixed-variant": "#1f4c5b", "on-secondary-container": "#3d6878", "surface-variant": "#d3e4fe", "secondary": "#396474", "surface-container-high": "#dce9ff", "surface-tint": "#3c6474", "surface-container-low": "#eff4ff", "secondary-container": "#bae6f9", "tertiary-container": "#00328b", "on-background": "#0b1c30", "on-error": "#ffffff", "primary-fixed": "#c0e9fc", "tertiary-fixed-dim": "#b4c5ff", "primary-fixed-dim": "#a4ccdf", "outline-variant": "#c1c7cb", "error-container": "#ffdad6", "on-tertiary-container": "#7f9fff", "surface-dim": "#cbdbf5", "on-tertiary": "#ffffff", "inverse-primary": "#a4ccdf", "primary-container": "#133e4d", "surface-bright": "#f8f9ff", "on-surface": "#0b1c30", "surface-container-lowest": "#ffffff", "on-error-container": "#93000a", "on-tertiary-fixed-variant": "#003ea8", "surface-container-highest": "#d3e4fe", "secondary-fixed-dim": "#a1cddf", "surface-container": "#e5eeff", "inverse-surface": "#213145", "tertiary-fixed": "#dbe1ff", "on-secondary": "#ffffff", "surface": "#f8f9ff", "on-secondary-fixed": "#001f28", "primary": "#002834", "tertiary": "#001f5d" }, "borderRadius": { "DEFAULT": "0.125rem", "lg": "0.25rem", "xl": "0.5rem", "full": "0.75rem" }, "spacing": { "space-sm": "0.5rem", "margin-desktop": "1.5rem", "space-xl": "1.5rem", "margin": "1rem", "space-lg": "1rem", "gutter": "1rem", "space-xs": "0.25rem", "space-md": "0.75rem", "gutter-desktop": "1.25rem" }, "fontFamily": { "label-sm": [ "Inter" ], "body-xs": [ "Inter" ], "headline-lg-mobile": [ "Inter" ], "headline-sm": [ "Inter" ], "headline-xl-mobile": [ "Inter" ], "headline-lg": [ "Inter" ], "headline-md": [ "Inter" ], "body-sm": [ "Inter" ], "tabular-data": [ "Inter" ], "body-md": [ "Inter" ], "label-lg": [ "Inter" ], "body-lg": [ "Inter" ], "headline-xl": [ "Inter" ], "label-md": [ "Inter" ] }, "fontSize": { "label-sm": [ "11px", { "lineHeight": "14px", "letterSpacing": "0.04em", "fontWeight": "700" } ], "body-xs": [ "12px", { "lineHeight": "16px", "fontWeight": "400" } ], "headline-lg-mobile": [ "20px", { "lineHeight": "28px", "letterSpacing": "-0.01em", "fontWeight": "600" } ], "headline-sm": [ "16px", { "lineHeight": "22px", "fontWeight": "600" } ], "headline-xl-mobile": [ "24px", { "lineHeight": "32px", "letterSpacing": "-0.01em", "fontWeight": "700" } ], "headline-lg": [ "24px", { "lineHeight": "32px", "letterSpacing": "-0.015em", "fontWeight": "600" } ], "headline-md": [ "18px", { "lineHeight": "24px", "letterSpacing": "-0.01em", "fontWeight": "600" } ], "body-sm": [ "13px", { "lineHeight": "18px", "fontWeight": "400" } ], "tabular-data": [ "13px", { "lineHeight": "18px", "fontWeight": "500" } ], "body-md": [ "14px", { "lineHeight": "20px", "fontWeight": "400" } ], "label-lg": [ "13px", { "lineHeight": "16px", "letterSpacing": "0.01em", "fontWeight": "600" } ], "body-lg": [ "15px", { "lineHeight": "22px", "fontWeight": "400" } ], "headline-xl": [ "32px", { "lineHeight": "40px", "letterSpacing": "-0.02em", "fontWeight": "700" } ], "label-md": [ "12px", { "lineHeight": "16px", "letterSpacing": "0.02em", "fontWeight": "600" } ] } } } };</script></head><body class="bg-surface font-body-md text-on-surface antialiased"><aside class="fixed left-0 top-0 h-full w-64 bg-surface-container-lowest shadow-[0_1px_8px_rgba(0,0,0,0.04)] z-50 flex flex-col justify-between"><div class="flex flex-col"><div class="h-16 flex items-center gap-space-sm px-space-xl bg-primary-container text-on-primary"><span class="material-symbols-outlined text-[24px]">account_balance</span><div class="flex flex-col"><span class="font-headline-sm text-headline-sm font-bold tracking-tight text-on-primary">SIU Municipal</span><span class="font-label-sm text-label-sm uppercase tracking-wider text-on-primary-container">Incidencias Urbanas</span></div></div><div class="px-space-md py-space-sm"><div class="px-space-sm py-space-xs mb-space-xs"><span class="font-label-sm text-label-sm uppercase tracking-wider text-outline">Navegación Operativa</span></div><nav class="flex flex-col gap-space-xs" data-active-classes="bg-primary-container text-on-primary font-semibold"><a class="flex items-center gap-space-md px-space-md py-space-sm rounded-lg text-on-surface-variant hover:bg-surface-container-high hover:text-on-surface transition-all" data-path="dashboard" href="#"><span class="material-symbols-outlined text-[20px]">grid_view</span><span class="font-label-lg text-label-lg">Dashboard</span></a><a class="flex items-center gap-space-md px-space-md py-space-sm rounded-lg text-on-surface-variant hover:bg-surface-container-high hover:text-on-surface transition-all" data-path="reportes" href="#"><span class="material-symbols-outlined text-[20px]">description</span><span class="font-label-lg text-label-lg">Reportes</span></a><a class="flex items-center gap-space-md px-space-md py-space-sm rounded-lg text-on-surface-variant hover:bg-surface-container-high hover:text-on-surface transition-all" data-path="mapa" href="#"><span class="material-symbols-outlined text-[20px]">map</span><span class="font-label-lg text-label-lg">Mapa</span></a><a class="flex items-center justify-between px-space-md py-space-sm rounded-lg text-on-surface-variant hover:bg-surface-container-high hover:text-on-surface transition-all" data-path="entidades" href="#"><div class="flex items-center gap-space-md"><span class="material-symbols-outlined text-[20px]">domain</span><span class="font-label-lg text-label-lg">Entidades</span></div><span class="px-space-xs py-0.5 rounded bg-secondary-container text-on-secondary-container font-label-sm text-[10px] tracking-wide">SOLO ADMINISTRADOR</span></a><a class="flex items-center gap-space-md px-space-md py-space-sm rounded-lg text-on-surface-variant hover:bg-surface-container-high hover:text-on-surface transition-all" data-path="perfil" href="#"><span class="material-symbols-outlined text-[20px]">badge</span><span class="font-label-lg text-label-lg">Perfil</span></a></nav></div></div><div class="p-space-md"><div class="p-space-md rounded-lg bg-surface-container flex flex-col gap-space-xs"><div class="flex items-center justify-between"><span class="font-label-sm text-label-sm text-on-surface-variant">SISTEMA TERRITORIAL</span><span class="font-tabular-data text-tabular-data text-on-surface-variant">v2.4.0</span></div><div class="flex items-center gap-space-xs text-on-surface"><span class="w-2 h-2 rounded-full bg-secondary"></span><span class="font-body-xs text-body-xs text-on-surface-variant">Operacional en Línea</span></div></div></div></aside><div class="pl-64 flex flex-col min-h-screen"><header class="fixed top-0 left-64 right-0 h-16 bg-surface-container-lowest border-b border-surface-container shadow-sm z-40 flex items-center justify-between px-gutter-desktop" style="-webkit-font-smoothing: antialiased; text-rendering: optimizelegibility;"><div class="flex items-center gap-space-md"><div class="flex items-center gap-space-sm text-on-surface-variant"><span class="font-label-md text-label-md uppercase tracking-wider text-outline font-semibold">División Municipal</span><span class="text-outline-variant font-medium">/</span><span class="font-label-lg text-label-lg font-bold text-on-surface">Centro de Operaciones y Despacho</span></div></div><div class="flex items-center gap-space-lg"><div class="flex items-center gap-space-md pl-space-md"><div class="flex flex-col text-right"><span class="font-label-lg text-label-lg font-bold text-on-surface">Ing. Carlos Mendoza</span><span class="font-body-xs text-body-xs text-on-surface-variant font-medium">Administrador Territorial</span></div><div class="flex items-center gap-space-xs px-space-sm py-1 rounded-full bg-surface-container text-on-surface border border-surface-container-high"><span class="w-2 h-2 rounded-full bg-secondary"></span><span class="font-label-sm text-label-sm text-secondary font-bold uppercase tracking-wider">Activo</span></div><div class="w-8 h-8 rounded-full bg-primary flex items-center justify-center"><span class="material-symbols-outlined text-on-primary text-[18px]">person</span></div></div><div class="h-6 w-px bg-outline-variant"></div><button class="flex items-center gap-space-xs px-space-md py-space-xs rounded-lg text-error hover:bg-error-container hover:text-on-error-container transition-colors font-medium border border-transparent" type="button"><span class="material-symbols-outlined text-[18px]">logout</span><span class="font-label-md text-label-md font-semibold">Cerrar sesión</span></button></div></header><main class="relative pt-16 flex-1 w-full px-gutter-desktop py-space-xl bg-surface"><div class="flex flex-col w-full">
+<script>
+    (function syncShellHeader() {
+      const navLinks = document.querySelectorAll('aside nav a');
+      navLinks.forEach(link => {
+        if (link.getAttribute('data-path') === 'reportes') {
+          link.className = 'flex items-center gap-space-md px-space-md py-space-sm rounded-lg bg-primary-container text-on-primary font-semibold shadow-sm transition-all';
+        } else if (link.getAttribute('data-path') === 'dashboard') {
+          link.className = 'flex items-center gap-space-md px-space-md py-space-sm rounded-lg text-on-surface-variant hover:bg-surface-container-high hover:text-on-surface transition-all';
+        }
+      });
+      const headerBreadcrumb = document.querySelector('header .text-on-surface-variant');
+      if (headerBreadcrumb) {
+        headerBreadcrumb.innerHTML = `
+          <span class="font-label-md text-label-md uppercase tracking-wider text-outline font-semibold">División Municipal</span>
+          <span class="text-outline-variant font-medium">/</span>
+          <span class="font-label-lg text-label-lg font-bold text-on-surface">Detalle de Reporte #415</span>
+        `;
+      }
+    })();
+  </script>
+<!-- Top Action & Navigation Bar -->
+<div class="flex flex-col md:flex-row md:items-center justify-between gap-space-md mb-space-lg pb-space-md">
+<div class="flex flex-wrap items-center gap-space-md">
+<a class="inline-flex items-center gap-space-xs px-space-md py-space-xs rounded bg-surface-container-lowest text-primary shadow-sm hover:bg-surface-container transition-colors" href="#">
+<span class="material-symbols-outlined text-[18px]">arrow_back</span>
+<span class="font-label-lg text-label-lg">Volver al listado</span>
+</a>
+<div class="h-4 w-px bg-outline-variant hidden sm:block"></div>
+<div class="flex items-center gap-space-xs font-body-sm text-body-sm text-on-surface-variant">
+<span class="text-outline hover:text-primary cursor-pointer">Reportes</span>
+<span class="text-outline-variant">/</span>
+<span class="font-tabular-data text-tabular-data text-on-surface font-semibold">#415</span>
+<span class="text-outline-variant">-</span>
+<span class="text-on-surface truncate max-w-xs sm:max-w-md">Fuga frente al hospital</span>
+</div>
+</div>
+<!-- Contextual Control CTAs -->
+<div class="flex items-center gap-space-sm self-start md:self-auto">
+<button class="inline-flex items-center gap-space-xs px-space-md py-space-xs rounded bg-surface-container-lowest text-primary shadow-sm hover:bg-surface-container-high transition-colors" type="button">
+<span class="material-symbols-outlined text-[18px]">domain_verification</span>
+<span class="font-label-lg text-label-lg">Asignar entidad</span>
+</button>
+<button class="inline-flex items-center gap-space-xs px-space-md py-space-xs rounded bg-primary-container text-on-primary shadow-sm hover:bg-primary transition-colors" type="button">
+<span class="material-symbols-outlined text-[18px]">published_with_changes</span>
+<span class="font-label-lg text-label-lg">Cambiar estado</span>
+</button>
+</div>
+</div>
+<!-- Main Split Architecture: 7/12 (Operational File) + 5/12 (Geo & Entity Inspection) -->
+<div class="grid grid-cols-1 lg:grid-cols-12 gap-gutter-desktop items-start">
+<!-- Left Column (Principal: Ficha Operativa del Reporte) -->
+<div class="lg:col-span-7 flex flex-col gap-space-lg min-w-0">
+<!-- Photographic Evidence Card -->
+<div class="bg-surface-container-lowest rounded-xl shadow-sm overflow-hidden">
+<div class="relative w-full aspect-[16/9] bg-surface-container flex items-center justify-center overflow-hidden">
+<img alt="Evidencia fotográfica del reporte #415" class="w-full h-full object-cover" data-alt="Fotografía técnica institucional de una severa fuga de agua potable brotando a presión de la calzada de asfalto frente al edificio de urgencias de un hospital metropolitano, con pavimento mojado, reflejos de luz diurna nítida, señalética vial y entorno urbano sobrio en tonos azules fríos y grises." src="https://lh3.googleusercontent.com/aida-public/AB6AXuA84QJ0Hp9QrYd1s_Hhkmlb-ExOYT1taryjOnpe_V3JeDOayAC9eCOkbdZ8McmRE4pUM6MEvhYwxkekMqWlnebluIvHuKrn2lHsp7OkLYGNqv_x3XMzwoceULuQQWHQcgN0U6vXMF3jTKIZMcDGNYL4ECi9GNau9B-mgH0PE-M25qywKLxv7PcYsyy2b6ttU8W8_q72nq9j3XImaKI_6cArPA0xK75tz1AfoW3np8s"/>
+<div class="absolute top-space-md left-space-md flex items-center gap-space-xs px-space-sm py-space-xs rounded bg-inverse-surface/90 text-inverse-on-surface shadow-sm backdrop-blur-sm">
+<span class="material-symbols-outlined text-[16px] text-secondary-fixed">photo_camera</span>
+<span class="font-label-sm text-label-sm tracking-wider uppercase">Evidencia Ciudadana #01</span>
+</div>
+<div class="absolute bottom-space-md left-space-md right-space-md flex items-center justify-between px-space-md py-space-xs rounded bg-primary-container/95 text-on-primary shadow-sm">
+<div class="flex items-center gap-space-xs">
+<span class="material-symbols-outlined text-[16px] text-primary-fixed">schedule</span>
+<span class="font-label-sm text-label-sm">Capturado: 29 oct 2026 · 14:12 hrs</span>
+</div>
+<div class="flex items-center gap-space-xs">
+<span class="material-symbols-outlined text-[16px] text-primary-fixed">verified</span>
+<span class="font-label-sm text-label-sm uppercase tracking-wider">Verificado por GPS</span>
+</div>
+</div>
+</div>
+</div>
+<!-- Information & Descriptive Analysis Card -->
+<div class="bg-surface-container-lowest rounded-xl shadow-sm p-space-xl flex flex-col gap-space-lg">
+<!-- Header Info -->
+<div class="flex flex-col gap-space-xs pb-space-md bg-surface-container-low/40 p-space-md rounded-lg">
+<div class="flex items-center justify-between gap-space-sm flex-wrap">
+<div class="flex items-center gap-space-xs">
+<span class="font-label-sm text-label-sm text-outline uppercase tracking-wider">Expediente Oficial</span>
+<span class="text-outline-variant font-bold">·</span>
+<span class="font-tabular-data text-tabular-data font-bold text-primary">#415</span>
+</div>
+<span class="font-label-sm text-label-sm text-on-secondary-fixed-variant bg-secondary-fixed/50 px-space-sm py-0.5 rounded">
+              Sector Operativo Norte-Centro
+            </span>
+</div>
+<h1 class="font-headline-lg text-headline-lg text-primary font-bold tracking-tight">
+            Fuga de agua frente al hospital
+          </h1>
+</div>
+<!-- Detailed Description -->
+<div class="flex flex-col gap-space-xs">
+<span class="font-label-sm text-label-sm uppercase tracking-wider text-outline font-semibold">
+            Descripción Técnica del Suceso
+          </span>
+<p class="font-body-md text-body-md text-on-surface leading-relaxed bg-surface-container-low/20 p-space-md rounded-lg">
+            Fuga de agua potable de alto caudal en calzada principal frente al acceso de urgencias del hospital. Afectación de tránsito vehicular y riesgo de socavón superficial en vereda norte. Reportado con georreferenciación directa.
+          </p>
+</div>
+<!-- Structured Operational Metadata Grid -->
+<div class="flex flex-col gap-space-sm">
+<span class="font-label-sm text-label-sm uppercase tracking-wider text-outline font-semibold">
+            Metadatos y Parámetros Operacionales
+          </span>
+<div class="grid grid-cols-2 sm:grid-cols-3 gap-space-sm">
+<!-- Estado -->
+<div class="p-space-md rounded-lg bg-surface-container-low flex flex-col gap-1">
+<span class="font-label-sm text-label-sm uppercase text-outline">Estado</span>
+<div class="flex items-center gap-space-xs mt-0.5">
+<span class="w-2.5 h-2.5 rounded-full bg-secondary"></span>
+<span class="font-label-md text-label-md text-primary font-bold">EN_REVISION</span>
+</div>
+</div>
+<!-- Categoría -->
+<div class="p-space-md rounded-lg bg-surface-container-low flex flex-col gap-1">
+<span class="font-label-sm text-label-sm uppercase text-outline">Categoría</span>
+<div class="flex items-center gap-space-xs mt-0.5">
+<span class="material-symbols-outlined text-[18px] text-secondary">water_drop</span>
+<span class="font-label-md text-label-md text-primary font-bold">FUGA_AGUA</span>
+</div>
+</div>
+<!-- Severidad -->
+<div class="p-space-md rounded-lg bg-surface-container-low flex flex-col gap-1">
+<span class="font-label-sm text-label-sm uppercase text-outline">Severidad</span>
+<div class="flex items-center gap-space-xs mt-0.5">
+<span class="px-space-xs py-0.5 rounded bg-surface-container-high text-primary font-label-md text-label-md font-bold">
+                  ALTA
+                </span>
+</div>
+</div>
+<!-- Prioridad -->
+<div class="p-space-md rounded-lg bg-error-container/30 flex flex-col gap-1">
+<span class="font-label-sm text-label-sm uppercase text-error font-semibold">Prioridad</span>
+<div class="flex items-center gap-space-xs mt-0.5">
+<span class="w-2 h-2 rounded-full bg-error animate-pulse"></span>
+<span class="font-label-md text-label-md text-error font-bold tracking-wide">CRÍTICA</span>
+</div>
+</div>
+<!-- Confianza Algorítmica IA -->
+<div class="p-space-md rounded-lg bg-surface-container-low flex flex-col gap-1">
+<span class="font-label-sm text-label-sm uppercase text-outline">Confianza IA</span>
+<div class="flex items-center gap-space-xs mt-0.5">
+<span class="material-symbols-outlined text-[18px] text-secondary">psychology</span>
+<span class="font-tabular-data text-tabular-data font-bold text-on-surface">Alta precisión (96.4%)</span>
+</div>
+</div>
+<!-- Reporte Padre Relacionado -->
+<div class="p-space-md rounded-lg bg-surface-container-low flex flex-col gap-1">
+<span class="font-label-sm text-label-sm uppercase text-outline">Incidencia Matriz</span>
+<div class="flex items-center gap-space-xs mt-0.5">
+<span class="material-symbols-outlined text-[18px] text-outline">account_tree</span>
+<span class="font-label-md text-label-md text-primary font-bold truncate" title="#398 (Incidencia Matriz Sector Hospital)">
+                  #398 Sector Hospital
+                </span>
+</div>
+</div>
+</div>
+</div>
+<!-- Audit Dates & Timing Footprint -->
+<div class="pt-space-md bg-surface-container-lowest flex flex-col sm:flex-row sm:items-center justify-between gap-space-md text-on-surface-variant">
+<div class="flex items-center gap-space-xs">
+<span class="material-symbols-outlined text-[18px] text-outline">calendar_today</span>
+<div class="flex flex-col">
+<span class="font-label-sm text-label-sm uppercase text-outline">Creación del reporte</span>
+<span class="font-tabular-data text-tabular-data text-on-surface font-medium">29 oct 2026 · 14:15 hrs</span>
+</div>
+</div>
+<div class="h-6 w-px bg-surface-container hidden sm:block"></div>
+<div class="flex items-center gap-space-xs">
+<span class="material-symbols-outlined text-[18px] text-outline">update</span>
+<div class="flex flex-col">
+<span class="font-label-sm text-label-sm uppercase text-outline">Última actualización de estado</span>
+<span class="font-tabular-data text-tabular-data text-on-surface font-medium">29 oct 2026 · 14:32 hrs <span class="text-outline font-normal">(hace 18 min)</span></span>
+</div>
+</div>
+</div>
+</div>
+</div>
+<!-- Right Column (Panel Operativo: Geo & Asignación Institucional) -->
+<div class="lg:col-span-5 flex flex-col gap-space-lg min-w-0">
+<!-- Territorial Georeference Card -->
+<div class="bg-surface-container-lowest rounded-xl shadow-sm p-space-xl flex flex-col gap-space-md">
+<div class="flex items-center justify-between pb-space-xs">
+<div class="flex items-center gap-space-xs">
+<span class="material-symbols-outlined text-[20px] text-secondary">pin_drop</span>
+<h2 class="font-headline-sm text-headline-sm text-primary font-bold">Ubicación territorial</h2>
+</div>
+<span class="font-label-sm text-label-sm uppercase px-space-xs py-0.5 rounded bg-surface-container-high text-primary font-bold">
+            Zona A-1
+          </span>
+</div>
+<!-- Context Address Elements -->
+<div class="flex flex-col gap-space-xs bg-surface-container-low p-space-md rounded-lg">
+<div class="flex items-center justify-between text-on-surface-variant">
+<span class="font-label-sm text-label-sm uppercase text-outline">Barrio / Comuna</span>
+<span class="font-label-md text-label-md text-on-surface font-bold">Centro</span>
+</div>
+<div class="flex items-center justify-between text-on-surface-variant">
+<span class="font-label-sm text-label-sm uppercase text-outline">Dirección Exacta</span>
+<span class="font-body-sm text-body-sm text-primary font-semibold text-right">Av. San Martín 1240</span>
+</div>
+<div class="flex items-center justify-between text-on-surface-variant">
+<span class="font-label-sm text-label-sm uppercase text-outline">Referencia</span>
+<span class="font-body-xs text-body-xs text-on-surface text-right">Frente a Urgencias Hospital Regional</span>
+</div>
+<div class="flex items-center justify-between text-on-surface-variant pt-space-xs">
+<span class="font-label-sm text-label-sm uppercase text-outline">Coordenadas GPS</span>
+<span class="font-tabular-data text-tabular-data font-bold text-secondary tracking-tight">-33.4489, -70.6693</span>
+</div>
+</div>
+<!-- Tactical Mini-Map Rendering -->
+<div class="relative w-full h-56 rounded-lg overflow-hidden bg-surface-container shadow-sm flex items-center justify-center">
+<div class="w-full h-full bg-cover bg-center" data-location="Av. San Martin 1240, Santiago, Chile" style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuDKViUieyXn8gwVUUAZYZeA8VegPNtdRXoWUH9KLjeWc2TuRY-abIYshXFPn1aYq60yHMz0olJWVON6lffhz9E86Jd-j7dlZokzAj6zseIIB30JjHNbdngI8M1PpisLLPt4Zio89It0SFQ7_LPSWbGw2jXVXh64j-hXHz_TGwGbrMXRTRthUTYPzdgmyqjvEX6TiawYDkngP4CR4nzMrC_RsxMRGHsSzRJMaWmeh5M')"></div>
+<!-- Tactical Overlay Markers -->
+<div class="absolute inset-0 pointer-events-none flex items-center justify-center">
+<!-- Simulated Radius Range -->
+<div class="w-32 h-32 rounded-full bg-error/15 flex items-center justify-center">
+<div class="w-20 h-20 rounded-full bg-error/20 flex items-center justify-center">
+<!-- Pin Center -->
+<div class="relative flex items-center justify-center">
+<span class="w-6 h-6 rounded-full bg-error flex items-center justify-center shadow-md">
+<span class="material-symbols-outlined text-[14px] text-on-error">water_drop</span>
+</span>
+<span class="absolute -top-6 px-1.5 py-0.5 rounded bg-primary text-on-primary font-label-sm text-[10px] tracking-wider font-bold whitespace-nowrap shadow-sm">
+                    INC-415
+                  </span>
+</div>
+</div>
+</div>
+</div>
+<!-- Tactical Map Badge -->
+<div class="absolute bottom-2 left-2 px-space-xs py-0.5 rounded bg-surface-container-lowest/90 text-on-surface font-label-sm text-[10px] uppercase font-bold shadow-sm">
+            Radio de Afectación Estimado: 45m
+          </div>
+</div>
+</div>
+<!-- Institutional Assignment Card -->
+<div class="bg-surface-container-lowest rounded-xl shadow-sm p-space-xl flex flex-col gap-space-md">
+<div class="flex items-center justify-between pb-space-xs">
+<div class="flex items-center gap-space-xs">
+<span class="material-symbols-outlined text-[20px] text-secondary">corporate_fare</span>
+<h2 class="font-headline-sm text-headline-sm text-primary font-bold">Entidad Responsable Asignada</h2>
+</div>
+<span class="w-2 h-2 rounded-full bg-secondary"></span>
+</div>
+<div class="flex flex-col gap-space-md bg-surface-container-low p-space-md rounded-lg">
+<!-- Assigned Entity -->
+<div class="flex flex-col gap-0.5">
+<span class="font-label-sm text-label-sm uppercase text-outline font-semibold">Organismo / Empresa</span>
+<span class="font-label-lg text-label-lg font-bold text-primary">Empresa de Acueducto y Alcantarillado</span>
+</div>
+<!-- Entity Type -->
+<div class="flex flex-col gap-0.5">
+<span class="font-label-sm text-label-sm uppercase text-outline font-semibold">Tipología Administrativa</span>
+<span class="font-body-md text-body-md text-on-surface font-medium">Concesionaria de Servicios Sanitarios</span>
+</div>
+<!-- SLA & Dispatch Alert Status -->
+<div class="p-space-sm rounded bg-surface-container-lowest flex items-start gap-space-sm shadow-sm">
+<span class="material-symbols-outlined text-[20px] text-secondary shrink-0 mt-0.5">emergency</span>
+<div class="flex flex-col">
+<span class="font-label-sm text-label-sm uppercase text-primary font-bold">Nivel de Servicio / Protocolo SLA</span>
+<p class="font-body-xs text-body-xs text-on-surface-variant font-medium">
+                Cuadrilla técnica de emergencia notificada para contención de matriz.
+              </p>
+</div>
+</div>
+</div>
+<!-- Institutional Dispatch Confirmation Banner -->
+<div class="flex items-center justify-between px-space-md py-space-sm rounded-lg bg-surface-container-high/40 text-on-surface">
+<div class="flex items-center gap-space-xs">
+<span class="material-symbols-outlined text-[18px] text-secondary">mark_chat_read</span>
+<span class="font-label-sm text-label-sm font-semibold">Notificación emitida vía despacho digital</span>
+</div>
+<span class="font-tabular-data text-tabular-data text-outline font-medium">14:18 hrs</span>
+</div>
+</div>
+</div>
+</div>
+</div></main></div>
+</body></html>

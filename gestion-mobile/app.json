@@ -1,0 +1,67 @@
+{
+  "expo": {
+    "name": "Reporte Urbano",
+    "slug": "reporte-urbano",
+    "version": "1.0.0",
+    "orientation": "portrait",
+    "icon": "./assets/icon.png",
+    "userInterfaceStyle": "light",
+    "scheme": "reporteurbano",
+    "ios": {
+      "supportsTablet": true,
+      "infoPlist": {
+        "NSCameraUsageDescription": "Reporte Urbano usa la cámara para adjuntar una foto de la incidencia.",
+        "NSPhotoLibraryUsageDescription": "Reporte Urbano usa tus fotos para adjuntar evidencia de la incidencia.",
+        "NSLocationWhenInUseUsageDescription": "Reporte Urbano usa tu ubicación para registrar el punto de la incidencia."
+      }
+    },
+    "android": {
+      "adaptiveIcon": {
+        "backgroundColor": "#0f4c5c",
+        "foregroundImage": "./assets/android-icon-foreground.png",
+        "backgroundImage": "./assets/android-icon-background.png",
+        "monochromeImage": "./assets/android-icon-monochrome.png"
+      },
+      "predictiveBackGestureEnabled": false,
+      "permissions": [
+        "CAMERA",
+        "READ_MEDIA_IMAGES",
+        "ACCESS_COARSE_LOCATION",
+        "ACCESS_FINE_LOCATION"
+      ]
+    },
+    "web": {
+      "favicon": "./assets/favicon.png",
+      "bundler": "metro"
+    },
+    "experiments": {
+      "typedRoutes": true
+    },
+    "plugins": [
+      "expo-secure-store",
+      "expo-font",
+      [
+        "expo-splash-screen",
+        {
+          "backgroundColor": "#0f4c5c",
+          "image": "./assets/splash-icon.png",
+          "resizeMode": "contain"
+        }
+      ],
+      [
+        "expo-image-picker",
+        {
+          "photosPermission": "Reporte Urbano usa tus fotos para adjuntar evidencia de la incidencia.",
+          "cameraPermission": "Reporte Urbano usa la cámara para adjuntar una foto de la incidencia."
+        }
+      ],
+      [
+        "expo-location",
+        {
+          "locationWhenInUsePermission": "Reporte Urbano usa tu ubicación para registrar el punto de la incidencia."
+        }
+      ],
+      "expo-router"
+    ]
+  }
+}

@@ -1,0 +1,471 @@
+<!DOCTYPE html>
+
+<html lang="es"><head><meta charset="utf-8"/><meta content="width=device-width, initial-scale=1.0" name="viewport"/><meta content="web_dashboard" name="shell-type"/><link href="https://fonts.googleapis.com" rel="preconnect"/><link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/><link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;display=swap" rel="stylesheet"/><link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/><style>@layer base{html,body{margin:0;padding:0;}body{overscroll-behavior:none;}main>:first-child{margin-top:0!important;}main>:last-child{margin-bottom:0!important;}}::-webkit-scrollbar{display:none;}</style><script src="https://cdn.tailwindcss.com"></script><script id="tailwind-config">tailwind.config = { darkMode: "class", theme: { extend: { "colors": { "outline": "#71787c", "on-primary": "#ffffff", "background": "#f8f9ff", "inverse-on-surface": "#eaf1ff", "error": "#ba1a1a", "on-primary-fixed": "#001f29", "on-primary-container": "#81a9bb", "on-surface-variant": "#41484b", "on-primary-fixed-variant": "#234c5b", "secondary-fixed": "#bde9fc", "on-tertiary-fixed": "#00174b", "on-secondary-fixed-variant": "#1f4c5b", "on-secondary-container": "#3d6878", "surface-variant": "#d3e4fe", "secondary": "#396474", "surface-container-high": "#dce9ff", "surface-tint": "#3c6474", "surface-container-low": "#eff4ff", "secondary-container": "#bae6f9", "tertiary-container": "#00328b", "on-background": "#0b1c30", "on-error": "#ffffff", "primary-fixed": "#c0e9fc", "tertiary-fixed-dim": "#b4c5ff", "primary-fixed-dim": "#a4ccdf", "outline-variant": "#c1c7cb", "error-container": "#ffdad6", "on-tertiary-container": "#7f9fff", "surface-dim": "#cbdbf5", "on-tertiary": "#ffffff", "inverse-primary": "#a4ccdf", "primary-container": "#133e4d", "surface-bright": "#f8f9ff", "on-surface": "#0b1c30", "surface-container-lowest": "#ffffff", "on-error-container": "#93000a", "on-tertiary-fixed-variant": "#003ea8", "surface-container-highest": "#d3e4fe", "secondary-fixed-dim": "#a1cddf", "surface-container": "#e5eeff", "inverse-surface": "#213145", "tertiary-fixed": "#dbe1ff", "on-secondary": "#ffffff", "surface": "#f8f9ff", "on-secondary-fixed": "#001f28", "primary": "#002834", "tertiary": "#001f5d" }, "borderRadius": { "DEFAULT": "0.125rem", "lg": "0.25rem", "xl": "0.5rem", "full": "0.75rem" }, "spacing": { "space-sm": "0.5rem", "margin-desktop": "1.5rem", "space-xl": "1.5rem", "margin": "1rem", "space-lg": "1rem", "gutter": "1rem", "space-xs": "0.25rem", "space-md": "0.75rem", "gutter-desktop": "1.25rem" }, "fontFamily": { "label-sm": [ "Inter" ], "body-xs": [ "Inter" ], "headline-lg-mobile": [ "Inter" ], "headline-sm": [ "Inter" ], "headline-xl-mobile": [ "Inter" ], "headline-lg": [ "Inter" ], "headline-md": [ "Inter" ], "body-sm": [ "Inter" ], "tabular-data": [ "Inter" ], "body-md": [ "Inter" ], "label-lg": [ "Inter" ], "body-lg": [ "Inter" ], "headline-xl": [ "Inter" ], "label-md": [ "Inter" ] }, "fontSize": { "label-sm": [ "11px", { "lineHeight": "14px", "letterSpacing": "0.04em", "fontWeight": "700" } ], "body-xs": [ "12px", { "lineHeight": "16px", "fontWeight": "400" } ], "headline-lg-mobile": [ "20px", { "lineHeight": "28px", "letterSpacing": "-0.01em", "fontWeight": "600" } ], "headline-sm": [ "16px", { "lineHeight": "22px", "fontWeight": "600" } ], "headline-xl-mobile": [ "24px", { "lineHeight": "32px", "letterSpacing": "-0.01em", "fontWeight": "700" } ], "headline-lg": [ "24px", { "lineHeight": "32px", "letterSpacing": "-0.015em", "fontWeight": "600" } ], "headline-md": [ "18px", { "lineHeight": "24px", "letterSpacing": "-0.01em", "fontWeight": "600" } ], "body-sm": [ "13px", { "lineHeight": "18px", "fontWeight": "400" } ], "tabular-data": [ "13px", { "lineHeight": "18px", "fontWeight": "500" } ], "body-md": [ "14px", { "lineHeight": "20px", "fontWeight": "400" } ], "label-lg": [ "13px", { "lineHeight": "16px", "letterSpacing": "0.01em", "fontWeight": "600" } ], "body-lg": [ "15px", { "lineHeight": "22px", "fontWeight": "400" } ], "headline-xl": [ "32px", { "lineHeight": "40px", "letterSpacing": "-0.02em", "fontWeight": "700" } ], "label-md": [ "12px", { "lineHeight": "16px", "letterSpacing": "0.02em", "fontWeight": "600" } ] } } } };</script></head><body class="bg-surface font-body-md text-on-surface antialiased"><aside class="fixed left-0 top-0 h-full w-64 bg-surface-container-lowest shadow-[0_1px_8px_rgba(0,0,0,0.04)] z-50 flex flex-col justify-between"><div class="flex flex-col"><div class="h-16 flex items-center gap-space-sm px-space-xl bg-primary-container text-on-primary"><span class="material-symbols-outlined text-[24px]">account_balance</span><div class="flex flex-col"><span class="font-headline-sm text-headline-sm font-bold tracking-tight text-on-primary">SIU Municipal</span><span class="font-label-sm text-label-sm uppercase tracking-wider text-on-primary-container">Incidencias Urbanas</span></div></div><div class="px-space-md py-space-sm"><div class="px-space-sm py-space-xs mb-space-xs"><span class="font-label-sm text-label-sm uppercase tracking-wider text-outline">Navegación Operativa</span></div><nav class="flex flex-col gap-space-xs" data-active-classes="bg-primary-container text-on-primary font-semibold"><a class="flex items-center gap-space-md px-space-md py-space-sm rounded-lg text-on-surface-variant hover:bg-surface-container-high hover:text-on-surface transition-all" data-path="dashboard" href="#"><span class="material-symbols-outlined text-[20px]">grid_view</span><span class="font-label-lg text-label-lg">Dashboard</span></a><a class="flex items-center gap-space-md px-space-md py-space-sm rounded-lg text-on-surface-variant hover:bg-surface-container-high hover:text-on-surface transition-all" data-path="reportes" href="#"><span class="material-symbols-outlined text-[20px]">description</span><span class="font-label-lg text-label-lg">Reportes</span></a><a class="flex items-center gap-space-md px-space-md py-space-sm rounded-lg text-on-surface-variant hover:bg-surface-container-high hover:text-on-surface transition-all" data-path="mapa" href="#"><span class="material-symbols-outlined text-[20px]">map</span><span class="font-label-lg text-label-lg">Mapa</span></a><a class="flex items-center justify-between px-space-md py-space-sm rounded-lg text-on-surface-variant hover:bg-surface-container-high hover:text-on-surface transition-all" data-path="entidades" href="#"><div class="flex items-center gap-space-md"><span class="material-symbols-outlined text-[20px]">domain</span><span class="font-label-lg text-label-lg">Entidades</span></div><span class="px-space-xs py-0.5 rounded bg-secondary-container text-on-secondary-container font-label-sm text-[10px] tracking-wide">SOLO ADMINISTRADOR</span></a><a class="flex items-center gap-space-md px-space-md py-space-sm rounded-lg text-on-surface-variant hover:bg-surface-container-high hover:text-on-surface transition-all" data-path="perfil" href="#"><span class="material-symbols-outlined text-[20px]">badge</span><span class="font-label-lg text-label-lg">Perfil</span></a></nav></div></div><div class="p-space-md"><div class="p-space-md rounded-lg bg-surface-container flex flex-col gap-space-xs"><div class="flex items-center justify-between"><span class="font-label-sm text-label-sm text-on-surface-variant">SISTEMA TERRITORIAL</span><span class="font-tabular-data text-tabular-data text-on-surface-variant">v2.4.0</span></div><div class="flex items-center gap-space-xs text-on-surface"><span class="w-2 h-2 rounded-full bg-secondary"></span><span class="font-body-xs text-body-xs text-on-surface-variant">Operacional en Línea</span></div></div></div></aside><div class="pl-64 flex flex-col min-h-screen"><header class="fixed top-0 left-64 right-0 h-16 bg-surface-container-lowest border-b border-surface-container shadow-sm z-40 flex items-center justify-between px-gutter-desktop" style="-webkit-font-smoothing: antialiased; text-rendering: optimizelegibility;"><div class="flex items-center gap-space-md"><div class="flex items-center gap-space-sm text-on-surface-variant"><span class="font-label-md text-label-md uppercase tracking-wider text-outline font-semibold">División Municipal</span><span class="text-outline-variant font-medium">/</span><span class="font-label-lg text-label-lg font-bold text-on-surface">Centro de Operaciones y Despacho</span></div></div><div class="flex items-center gap-space-lg"><div class="flex items-center gap-space-md pl-space-md"><div class="flex flex-col text-right"><span class="font-label-lg text-label-lg font-bold text-on-surface">Ing. Carlos Mendoza</span><span class="font-body-xs text-body-xs text-on-surface-variant font-medium">Administrador Territorial</span></div><div class="flex items-center gap-space-xs px-space-sm py-1 rounded-full bg-surface-container text-on-surface border border-surface-container-high"><span class="w-2 h-2 rounded-full bg-secondary"></span><span class="font-label-sm text-label-sm text-secondary font-bold uppercase tracking-wider">Activo</span></div><div class="w-8 h-8 rounded-full bg-primary flex items-center justify-center"><span class="material-symbols-outlined text-on-primary text-[18px]">person</span></div></div><div class="h-6 w-px bg-outline-variant"></div><button class="flex items-center gap-space-xs px-space-md py-space-xs rounded-lg text-error hover:bg-error-container hover:text-on-error-container transition-colors font-medium border border-transparent" type="button"><span class="material-symbols-outlined text-[18px]">logout</span><span class="font-label-md text-label-md font-semibold">Cerrar sesión</span></button></div></header><main class="relative pt-16 flex-1 w-full px-gutter-desktop py-space-xl bg-surface"><div class="flex flex-col w-full">
+<!-- SCRIPT INTERACTIVO CLIENTE -->
+<script>
+    function toggleAssignmentModal(show) {
+      const modal = document.getElementById('assignment-modal');
+      if (modal) {
+        if (show) {
+          modal.classList.remove('hidden');
+          modal.classList.add('flex');
+        } else {
+          modal.classList.add('hidden');
+          modal.classList.remove('flex');
+        }
+      }
+    }
+
+    function preselectAndOpenModal(entityName, entityMail) {
+      const modal = document.getElementById('assignment-modal');
+      const selectedNameEl = document.getElementById('modal-selected-entity-name');
+      const selectedMailEl = document.getElementById('modal-selected-entity-mail');
+      if (selectedNameEl && entityName) selectedNameEl.textContent = entityName;
+      if (selectedMailEl && entityMail) selectedMailEl.textContent = entityMail;
+      toggleAssignmentModal(true);
+    }
+  </script>
+<!-- MIGAS DE PAN Y CONTROL DE ROL INSTITUCIONAL -->
+<div class="flex flex-col md:flex-row md:items-center justify-between pb-space-lg mb-space-lg gap-space-md">
+<div class="flex flex-col gap-space-xs">
+<div class="flex items-center gap-space-xs text-on-surface-variant font-label-sm uppercase tracking-wider">
+<span class="font-bold text-outline">ADMINISTRACIÓN TERRITORIAL</span>
+<span class="text-outline-variant font-bold">/</span>
+<span class="text-primary font-bold">Gestión de Entidades y Asignación Operativa</span>
+</div>
+<div class="flex items-center gap-space-md mt-space-xs">
+<h1 class="font-headline-xl text-headline-xl text-on-surface tracking-tight font-bold">
+          Catálogo de Entidades Responsables
+        </h1>
+<span class="inline-flex items-center gap-space-xs px-space-sm py-0.5 rounded-lg bg-primary-container text-on-primary font-label-sm text-[11px] uppercase tracking-wider font-semibold">
+<span class="material-symbols-outlined text-[14px]">shield_person</span>
+          Acceso Restringido · Nivel Administrador Central
+        </span>
+</div>
+<p class="font-body-md text-body-md text-on-surface-variant">
+        Gestión y despacho institucional de organismos competentes para atención de incidencias urbanas.
+      </p>
+</div>
+<!-- ACCIÓN PRINCIPAL DE CABECERA -->
+<div class="flex items-center gap-space-md self-start md:self-auto">
+<button class="inline-flex items-center gap-space-sm px-space-xl py-space-sm rounded-lg bg-primary text-on-primary hover:bg-primary-container transition-colors shadow-sm font-label-lg text-label-lg font-semibold cursor-pointer" onclick="toggleAssignmentModal(true)" type="button">
+<span class="material-symbols-outlined text-[20px]">assignment_turned_in</span>
+<span>Asignar entidad a reporte</span>
+</button>
+</div>
+</div>
+<!-- PANEL DE FILTRADO Y BÚSQUEDA OPERATIVA -->
+<div class="bg-surface-container-lowest p-space-lg rounded-xl shadow-sm mb-space-xl flex flex-col lg:flex-row items-stretch lg:items-center justify-between gap-space-lg">
+<div class="flex-1 relative">
+<span class="material-symbols-outlined absolute left-space-md top-1/2 -translate-y-1/2 text-outline text-[20px]">search</span>
+<input class="w-full pl-10 pr-space-lg py-space-sm rounded-lg bg-surface text-on-surface placeholder:text-outline font-body-sm text-body-sm outline-none shadow-sm focus:bg-surface-container-lowest transition-colors" placeholder="Buscar por nombre, tipo de entidad o correo..." type="text"/>
+</div>
+<div class="flex flex-wrap items-center gap-space-md">
+<div class="flex items-center gap-space-xs bg-surface-container px-space-md py-space-xs rounded-lg text-on-surface">
+<span class="material-symbols-outlined text-outline text-[18px]">filter_list</span>
+<span class="font-label-sm text-label-sm uppercase tracking-wider text-outline font-bold">Tipo:</span>
+<select class="bg-transparent font-label-md text-label-md font-semibold text-on-surface outline-none cursor-pointer pr-space-sm">
+<option value="todos">Todos los organismos (3)</option>
+<option value="municipal">Organismo Municipal Central</option>
+<option value="concesionaria">Empresa Concesionaria Sanitaria</option>
+<option value="contratista">Empresa Contratista de Servicios</option>
+</select>
+</div>
+<div class="flex items-center gap-space-xs bg-surface-container px-space-md py-space-xs rounded-lg text-on-surface">
+<span class="material-symbols-outlined text-outline text-[18px]">speed</span>
+<span class="font-label-sm text-label-sm uppercase tracking-wider text-outline font-bold">Disponibilidad:</span>
+<span class="font-label-md text-label-md font-semibold text-secondary">3 Operativos Activos</span>
+</div>
+<button class="px-space-md py-space-xs rounded-lg bg-surface-container-high text-on-surface font-label-md text-label-md hover:bg-surface-container transition-colors" type="button">
+        Limpiar filtros
+      </button>
+</div>
+</div>
+<!-- TARJETAS INSTITUCIONALES DE ENTIDADES -->
+<div class="grid grid-cols-1 xl:grid-cols-3 gap-space-lg mb-space-xl">
+<!-- ENTIDAD 1: SECRETARÍA DE OBRAS PÚBLICAS -->
+<div class="bg-surface-container-lowest rounded-xl shadow-sm flex flex-col justify-between overflow-hidden">
+<!-- Franja de acento institucional superior -->
+<div class="h-1.5 w-full bg-primary-container"></div>
+<div class="p-space-xl flex flex-col flex-1">
+<div class="flex items-start justify-between gap-space-sm mb-space-md">
+<div class="w-12 h-12 rounded-lg bg-surface-container flex items-center justify-center text-primary-container flex-shrink-0">
+<span class="material-symbols-outlined text-[28px]">handyman</span>
+</div>
+<span class="inline-flex items-center gap-space-xs px-space-sm py-0.5 rounded-full bg-secondary-container text-on-secondary-container font-label-sm text-[11px] font-bold uppercase tracking-wider">
+<span class="w-2 h-2 rounded-full bg-secondary"></span>
+            Activo · Cuadrillas viales
+          </span>
+</div>
+<div class="mb-space-md">
+<h2 class="font-headline-md text-headline-md font-bold text-on-surface tracking-tight mb-0.5">
+            Secretaría de Obras Públicas
+          </h2>
+<span class="inline-block font-label-sm text-label-sm uppercase tracking-wider text-secondary font-bold">
+            Organismo Municipal Central
+          </span>
+</div>
+<!-- Cobertura y Competencias -->
+<div class="bg-surface p-space-md rounded-lg mb-space-lg">
+<div class="flex items-center gap-space-xs text-outline mb-1">
+<span class="material-symbols-outlined text-[16px]">domain_verification</span>
+<span class="font-label-sm text-label-sm uppercase tracking-wider font-bold">Área de Cobertura y Competencias</span>
+</div>
+<p class="font-body-sm text-body-sm text-on-surface-variant leading-snug">
+            Vías principales, baches, pavimentación y estructuras públicas municipales.
+          </p>
+</div>
+<!-- Canales de Despacho y Contacto -->
+<div class="flex flex-col gap-space-sm text-on-surface-variant font-body-sm text-body-sm mb-space-lg">
+<div class="flex items-center gap-space-sm">
+<span class="material-symbols-outlined text-outline text-[18px]">mail</span>
+<span class="font-medium text-on-surface select-all">despacho.obras@municipio.gob</span>
+</div>
+<div class="flex items-center gap-space-sm">
+<span class="material-symbols-outlined text-outline text-[18px]">call</span>
+<span class="font-tabular-data text-tabular-data text-on-surface">+56 2 2840 9100 · Anexo 402</span>
+</div>
+<div class="flex items-center gap-space-sm">
+<span class="material-symbols-outlined text-outline text-[18px]">schedule</span>
+<span class="text-on-surface-variant">Turnos de guardia: Lun a Sáb 07:00 - 21:00</span>
+</div>
+</div>
+</div>
+<!-- Acciones de Tarjeta -->
+<div class="px-space-xl py-space-md bg-surface-container-low flex items-center justify-between gap-space-md">
+<button class="px-space-md py-space-xs rounded-lg text-primary font-label-md text-label-md font-semibold hover:bg-surface-container transition-colors" type="button">
+          Ver ficha
+        </button>
+<button class="inline-flex items-center gap-space-xs px-space-lg py-space-xs rounded-lg bg-primary-container text-on-primary hover:bg-primary font-label-md text-label-md font-semibold transition-colors cursor-pointer" onclick="preselectAndOpenModal('Secretaría de Obras Públicas (Organismo Municipal Central)', 'despacho.obras@municipio.gob')" type="button">
+<span class="material-symbols-outlined text-[18px]">add_task</span>
+<span>Asignar a reporte</span>
+</button>
+</div>
+</div>
+<!-- ENTIDAD 2: EMPRESA DE ACUEDUCTO Y ALCANTARILLADO -->
+<div class="bg-surface-container-lowest rounded-xl shadow-sm flex flex-col justify-between overflow-hidden">
+<!-- Franja de acento institucional superior -->
+<div class="h-1.5 w-full bg-secondary"></div>
+<div class="p-space-xl flex flex-col flex-1">
+<div class="flex items-start justify-between gap-space-sm mb-space-md">
+<div class="w-12 h-12 rounded-lg bg-secondary-container flex items-center justify-center text-on-secondary-container flex-shrink-0">
+<span class="material-symbols-outlined text-[28px]">water_damage</span>
+</div>
+<span class="inline-flex items-center gap-space-xs px-space-sm py-0.5 rounded-full bg-secondary-container text-on-secondary-container font-label-sm text-[11px] font-bold uppercase tracking-wider">
+<span class="w-2 h-2 rounded-full bg-secondary"></span>
+            Activo · Turno Alta Presión
+          </span>
+</div>
+<div class="mb-space-md">
+<h2 class="font-headline-md text-headline-md font-bold text-on-surface tracking-tight mb-0.5">
+            Empresa de Acueducto y Alcantarillado
+          </h2>
+<span class="inline-block font-label-sm text-label-sm uppercase tracking-wider text-secondary font-bold">
+            Empresa Concesionaria de Servicios Sanitarios
+          </span>
+</div>
+<!-- Cobertura y Competencias -->
+<div class="bg-surface p-space-md rounded-lg mb-space-lg">
+<div class="flex items-center gap-space-xs text-outline mb-1">
+<span class="material-symbols-outlined text-[16px]">domain_verification</span>
+<span class="font-label-sm text-label-sm uppercase tracking-wider font-bold">Área de Cobertura y Competencias</span>
+</div>
+<p class="font-body-sm text-body-sm text-on-surface-variant leading-snug">
+            Fugas matrices, rotura de colectores, alcantarillado y tapas de cámara.
+          </p>
+</div>
+<!-- Canales de Despacho y Contacto -->
+<div class="flex flex-col gap-space-sm text-on-surface-variant font-body-sm text-body-sm mb-space-lg">
+<div class="flex items-center gap-space-sm">
+<span class="material-symbols-outlined text-outline text-[18px]">mail</span>
+<span class="font-medium text-on-surface select-all">emergencias.redes@acueducto.cl</span>
+</div>
+<div class="flex items-center gap-space-sm">
+<span class="material-symbols-outlined text-outline text-[18px]">call</span>
+<span class="font-tabular-data text-tabular-data text-on-surface">+56 2 2912 3300 · Central 24/7</span>
+</div>
+<div class="flex items-center gap-space-sm">
+<span class="material-symbols-outlined text-outline text-[18px]">notification_important</span>
+<span class="text-on-surface-variant">SLA Máximo Fuga Matriz: 2 horas</span>
+</div>
+</div>
+</div>
+<!-- Acciones de Tarjeta -->
+<div class="px-space-xl py-space-md bg-surface-container-low flex items-center justify-between gap-space-md">
+<button class="px-space-md py-space-xs rounded-lg text-primary font-label-md text-label-md font-semibold hover:bg-surface-container transition-colors" type="button">
+          Ver ficha
+        </button>
+<button class="inline-flex items-center gap-space-xs px-space-lg py-space-xs rounded-lg bg-primary text-on-primary hover:bg-primary-container font-label-md text-label-md font-semibold transition-colors cursor-pointer" onclick="preselectAndOpenModal('Empresa de Acueducto y Alcantarillado (Concesionaria Sanitaria)', 'emergencias.redes@acueducto.cl')" type="button">
+<span class="material-symbols-outlined text-[18px]">add_task</span>
+<span>Asignar a reporte</span>
+</button>
+</div>
+</div>
+<!-- ENTIDAD 3: EMPRESA DE ASEO URBANO -->
+<div class="bg-surface-container-lowest rounded-xl shadow-sm flex flex-col justify-between overflow-hidden">
+<!-- Franja de acento institucional superior -->
+<div class="h-1.5 w-full bg-outline"></div>
+<div class="p-space-xl flex flex-col flex-1">
+<div class="flex items-start justify-between gap-space-sm mb-space-md">
+<div class="w-12 h-12 rounded-lg bg-surface-container flex items-center justify-center text-on-surface flex-shrink-0">
+<span class="material-symbols-outlined text-[28px]">delete_sweep</span>
+</div>
+<span class="inline-flex items-center gap-space-xs px-space-sm py-0.5 rounded-full bg-surface-container-high text-on-surface font-label-sm text-[11px] font-bold uppercase tracking-wider">
+<span class="w-2 h-2 rounded-full bg-secondary"></span>
+            Activo · Logística Diurna/Nocturna
+          </span>
+</div>
+<div class="mb-space-md">
+<h2 class="font-headline-md text-headline-md font-bold text-on-surface tracking-tight mb-0.5">
+            Empresa de Aseo Urbano
+          </h2>
+<span class="inline-block font-label-sm text-label-sm uppercase tracking-wider text-secondary font-bold">
+            Empresa Contratista de Servicios Urbanos
+          </span>
+</div>
+<!-- Cobertura y Competencias -->
+<div class="bg-surface p-space-md rounded-lg mb-space-lg">
+<div class="flex items-center gap-space-xs text-outline mb-1">
+<span class="material-symbols-outlined text-[16px]">domain_verification</span>
+<span class="font-label-sm text-label-sm uppercase tracking-wider font-bold">Área de Cobertura y Competencias</span>
+</div>
+<p class="font-body-sm text-body-sm text-on-surface-variant leading-snug">
+            Microbasurales, escombros no autorizados, barrido y despeje municipal.
+          </p>
+</div>
+<!-- Canales de Despacho y Contacto -->
+<div class="flex flex-col gap-space-sm text-on-surface-variant font-body-sm text-body-sm mb-space-lg">
+<div class="flex items-center gap-space-sm">
+<span class="material-symbols-outlined text-outline text-[18px]">mail</span>
+<span class="font-medium text-on-surface select-all">operaciones@aseourbano.cl</span>
+</div>
+<div class="flex items-center gap-space-sm">
+<span class="material-symbols-outlined text-outline text-[18px]">call</span>
+<span class="font-tabular-data text-tabular-data text-on-surface">+56 2 2776 5544 · Base Logística</span>
+</div>
+<div class="flex items-center gap-space-sm">
+<span class="material-symbols-outlined text-outline text-[18px]">local_shipping</span>
+<span class="text-on-surface-variant">Flota pesada operativa: 14 camiones tolva</span>
+</div>
+</div>
+</div>
+<!-- Acciones de Tarjeta -->
+<div class="px-space-xl py-space-md bg-surface-container-low flex items-center justify-between gap-space-md">
+<button class="px-space-md py-space-xs rounded-lg text-primary font-label-md text-label-md font-semibold hover:bg-surface-container transition-colors" type="button">
+          Ver ficha
+        </button>
+<button class="inline-flex items-center gap-space-xs px-space-lg py-space-xs rounded-lg bg-primary-container text-on-primary hover:bg-primary font-label-md text-label-md font-semibold transition-colors cursor-pointer" onclick="preselectAndOpenModal('Empresa de Aseo Urbano (Contratista de Servicios)', 'operaciones@aseourbano.cl')" type="button">
+<span class="material-symbols-outlined text-[18px]">add_task</span>
+<span>Asignar a reporte</span>
+</button>
+</div>
+</div>
+</div>
+<!-- TABLA RESUMEN DE PROTOCOLOS DE ASIGNACIÓN INSTITUCIONAL -->
+<div class="bg-surface-container-lowest rounded-xl shadow-sm overflow-hidden mb-space-xl">
+<div class="px-space-xl py-space-lg bg-surface-container-low flex items-center justify-between">
+<div class="flex items-center gap-space-sm">
+<span class="material-symbols-outlined text-primary text-[22px]">policy</span>
+<h3 class="font-headline-sm text-headline-sm font-bold text-on-surface">
+          Protocolos de Despacho Inmediato y Tiempos de Respuesta (SLA)
+        </h3>
+</div>
+<span class="font-label-sm text-label-sm uppercase tracking-wider text-outline font-bold">
+        Normativa Territorial Vigente
+      </span>
+</div>
+<div class="overflow-x-auto">
+<table class="w-full text-left font-body-sm text-body-sm">
+<thead class="bg-surface font-label-md text-label-md text-outline uppercase tracking-wider">
+<tr>
+<th class="px-space-xl py-space-md font-bold">Organismo Responsable</th>
+<th class="px-space-xl py-space-md font-bold">Categoría de Incidencia</th>
+<th class="px-space-xl py-space-md font-bold">Tiempo Máximo SLA</th>
+<th class="px-space-xl py-space-md font-bold">Tipo de Notificación</th>
+<th class="px-space-xl py-space-md font-bold text-right">Acción Operativa</th>
+</tr>
+</thead>
+<tbody class="divide-y divide-surface-container text-on-surface">
+<tr class="hover:bg-surface transition-colors">
+<td class="px-space-xl py-space-md font-semibold">Empresa de Acueducto y Alcantarillado</td>
+<td class="px-space-xl py-space-md">
+<span class="inline-flex items-center gap-1 font-label-sm text-label-sm font-bold px-2 py-0.5 rounded bg-error-container text-on-error-container">
+<span class="w-1.5 h-1.5 rounded-full bg-error"></span>
+                FUGA_AGUA / CRÍTICA
+              </span>
+</td>
+<td class="px-space-xl py-space-md font-tabular-data font-bold text-error">120 minutos (2 horas)</td>
+<td class="px-space-xl py-space-md text-on-surface-variant">Despacho API Rest + Correo automático</td>
+<td class="px-space-xl py-space-md text-right">
+<button class="text-primary hover:text-primary-container font-label-md text-label-md font-bold underline cursor-pointer" onclick="preselectAndOpenModal('Empresa de Acueducto y Alcantarillado', 'emergencias.redes@acueducto.cl')" type="button">
+                Asignar
+              </button>
+</td>
+</tr>
+<tr class="hover:bg-surface transition-colors">
+<td class="px-space-xl py-space-md font-semibold">Secretaría de Obras Públicas</td>
+<td class="px-space-xl py-space-md">
+<span class="inline-flex items-center gap-1 font-label-sm text-label-sm font-bold px-2 py-0.5 rounded bg-secondary-container text-on-secondary-container">
+                BACHES_CALZADA / ALTA
+              </span>
+</td>
+<td class="px-space-xl py-space-md font-tabular-data font-bold text-on-surface">24 a 48 horas</td>
+<td class="px-space-xl py-space-md text-on-surface-variant">Orden de trabajo digital centralizada</td>
+<td class="px-space-xl py-space-md text-right">
+<button class="text-primary hover:text-primary-container font-label-md text-label-md font-bold underline cursor-pointer" onclick="preselectAndOpenModal('Secretaría de Obras Públicas', 'despacho.obras@municipio.gob')" type="button">
+                Asignar
+              </button>
+</td>
+</tr>
+<tr class="hover:bg-surface transition-colors">
+<td class="px-space-xl py-space-md font-semibold">Empresa de Aseo Urbano</td>
+<td class="px-space-xl py-space-md">
+<span class="inline-flex items-center gap-1 font-label-sm text-label-sm font-bold px-2 py-0.5 rounded bg-surface-container-high text-on-surface">
+                MICROBASURAL / MEDIA
+              </span>
+</td>
+<td class="px-space-xl py-space-md font-tabular-data font-bold text-on-surface">12 a 24 horas</td>
+<td class="px-space-xl py-space-md text-on-surface-variant">Ruta programada base logística</td>
+<td class="px-space-xl py-space-md text-right">
+<button class="text-primary hover:text-primary-container font-label-md text-label-md font-bold underline cursor-pointer" onclick="preselectAndOpenModal('Empresa de Aseo Urbano', 'operaciones@aseourbano.cl')" type="button">
+                Asignar
+              </button>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<!-- MODAL FLOTANTE INSTITUCIONAL DE ASIGNACIÓN (INTERACTIVO) -->
+<div class="fixed inset-0 z-50 flex items-center justify-center bg-inverse-surface/60 p-space-md" id="assignment-modal">
+<div class="bg-surface-container-lowest rounded-xl shadow-xl w-full max-w-2xl overflow-hidden flex flex-col max-h-[921px]">
+<!-- Cabecera del Modal -->
+<div class="px-space-xl py-space-lg bg-primary text-on-primary flex items-center justify-between">
+<div class="flex items-center gap-space-md">
+<div class="w-10 h-10 rounded-lg bg-primary-container flex items-center justify-center text-on-primary">
+<span class="material-symbols-outlined text-[24px]">assignment_turned_in</span>
+</div>
+<div class="flex flex-col">
+<span class="font-headline-sm text-headline-sm font-bold text-on-primary tracking-tight">
+              Asignar Entidad Responsable a Incidencia
+            </span>
+<span class="font-label-sm text-label-sm uppercase tracking-wider text-on-primary-container font-semibold">
+              Orden de Despacho Territorial · Exclusivo Administrador
+            </span>
+</div>
+</div>
+<button class="w-8 h-8 rounded-lg flex items-center justify-center text-on-primary hover:bg-primary-container transition-colors cursor-pointer" onclick="toggleAssignmentModal(false)" type="button">
+<span class="material-symbols-outlined text-[20px]">close</span>
+</button>
+</div>
+<!-- Cuerpo del Modal -->
+<div class="p-space-xl overflow-y-auto flex flex-col gap-space-lg">
+<!-- Contexto del Reporte Objetivo -->
+<div class="bg-surface-container p-space-md rounded-xl flex flex-col gap-space-sm">
+<div class="flex items-center justify-between">
+<div class="flex items-center gap-space-sm">
+<span class="font-label-sm text-label-sm uppercase tracking-wider text-outline font-bold">Incidencia Seleccionada</span>
+<span class="font-tabular-data text-tabular-data font-bold text-primary">Folio #415</span>
+</div>
+<div class="flex items-center gap-space-xs">
+<span class="px-space-sm py-0.5 rounded bg-error-container text-on-error-container font-label-sm text-label-sm font-bold flex items-center gap-1 uppercase tracking-wide">
+<span class="w-1.5 h-1.5 rounded-full bg-error animate-pulse"></span>
+                PRIORIDAD CRÍTICA
+              </span>
+<span class="px-space-sm py-0.5 rounded bg-secondary-container text-on-secondary-container font-label-sm text-label-sm font-bold uppercase tracking-wide">
+                FUGA_AGUA
+              </span>
+</div>
+</div>
+<div class="font-headline-sm text-headline-sm font-bold text-on-surface">
+            Fuga de agua frente al hospital
+          </div>
+<div class="flex items-center gap-space-sm text-on-surface-variant font-body-sm text-body-sm">
+<span class="material-symbols-outlined text-[18px] text-outline">location_on</span>
+<span class="font-medium text-on-surface">Av. San Martín 1240, Centro Histórico</span>
+</div>
+</div>
+<!-- Buscador dentro del Modal -->
+<div class="flex flex-col gap-space-xs">
+<label class="font-label-md text-label-md font-bold text-on-surface uppercase tracking-wider">
+            Buscar y Seleccionar Organismo o Empresa
+          </label>
+<div class="relative">
+<span class="material-symbols-outlined absolute left-space-md top-1/2 -translate-y-1/2 text-outline text-[20px]">search</span>
+<input class="w-full pl-10 pr-space-lg py-space-sm rounded-lg bg-surface text-on-surface font-body-sm text-body-sm outline-none shadow-sm focus:bg-surface-container-lowest transition-colors" placeholder="Buscar y seleccionar organismo o empresa..." type="text" value="Empresa de Acueducto"/>
+</div>
+</div>
+<!-- Tarjeta Seleccionada Destacada -->
+<div class="p-space-lg rounded-xl bg-surface-container-low shadow-sm flex flex-col gap-space-sm">
+<div class="flex items-start justify-between">
+<div class="flex items-center gap-space-md">
+<div class="w-10 h-10 rounded-lg bg-secondary-container text-on-secondary-container flex items-center justify-center flex-shrink-0">
+<span class="material-symbols-outlined text-[24px]">domain</span>
+</div>
+<div class="flex flex-col">
+<span class="font-headline-sm text-headline-sm font-bold text-on-surface" id="modal-selected-entity-name">
+                  Empresa de Acueducto y Alcantarillado
+                </span>
+<span class="font-label-sm text-label-sm text-secondary font-bold uppercase tracking-wider">
+                  Concesionaria de Servicios Sanitarios
+                </span>
+</div>
+</div>
+<div class="flex items-center gap-space-xs px-space-sm py-1 rounded-full bg-secondary-container text-on-secondary-container font-label-sm text-label-sm font-bold uppercase tracking-wider">
+<span class="material-symbols-outlined text-[18px]">verified</span>
+<span>Seleccionada</span>
+</div>
+</div>
+<div class="mt-space-xs pt-space-xs flex flex-col sm:flex-row sm:items-center justify-between text-body-sm text-on-surface-variant gap-space-xs">
+<div class="flex items-center gap-space-xs">
+<span class="material-symbols-outlined text-[16px] text-outline">mark_email_read</span>
+<span class="font-label-sm text-label-sm text-outline uppercase tracking-wider">Despacho Automático a:</span>
+<span class="font-semibold text-on-surface" id="modal-selected-entity-mail">emergencias.redes@acueducto.cl</span>
+</div>
+<span class="font-tabular-data text-tabular-data text-secondary font-bold">Línea 24/7 Activa</span>
+</div>
+</div>
+<!-- Selector de Nivel de Protocolo SLA -->
+<div class="flex flex-col gap-space-xs">
+<label class="font-label-md text-label-md font-bold text-on-surface uppercase tracking-wider">
+            Nivel de Protocolo de Atención (SLA)
+          </label>
+<div class="p-space-sm bg-surface rounded-lg">
+<select class="w-full bg-transparent font-body-sm text-body-sm font-semibold text-on-surface outline-none cursor-pointer">
+<option selected="">Protocolo de Emergencia Matriz (Plazo máximo: 2 horas)</option>
+<option>Protocolo Estándar de Fuga Menor (Plazo máximo: 12 horas)</option>
+<option>Protocolo de Revisión y Desobstrucción (Plazo máximo: 24 horas)</option>
+</select>
+</div>
+</div>
+<!-- Nota / Orden de Trabajo Administrativa -->
+<div class="flex flex-col gap-space-xs">
+<div class="flex items-center justify-between">
+<label class="font-label-md text-label-md font-bold text-on-surface uppercase tracking-wider">
+              Nota u Orden de Trabajo Administrativa
+            </label>
+<span class="font-label-sm text-label-sm text-outline">Obligatorio</span>
+</div>
+<textarea class="w-full p-space-md rounded-lg bg-surface text-on-surface font-body-sm text-body-sm outline-none shadow-sm focus:bg-surface-container-lowest transition-colors resize-none" rows="3">Prioridad máxima por afectación a acceso de ambulancias de urgencias del hospital.</textarea>
+<span class="font-body-xs text-body-xs text-on-surface-variant">
+            Esta nota será adjuntada en el comprobante formal de despacho y firmada con la credencial del Ing. Carlos Mendoza.
+          </span>
+</div>
+</div>
+<!-- Pie del Modal / Acciones -->
+<div class="px-space-xl py-space-md bg-surface-container-low flex items-center justify-end gap-space-md">
+<button class="px-space-lg py-space-sm rounded-lg bg-surface-container-high text-on-surface font-label-lg text-label-lg font-semibold hover:bg-surface-container transition-colors cursor-pointer" onclick="toggleAssignmentModal(false)" type="button">
+          Cancelar
+        </button>
+<button class="inline-flex items-center gap-space-sm px-space-xl py-space-sm rounded-lg bg-primary-container text-on-primary hover:bg-primary transition-colors shadow-sm font-label-lg text-label-lg font-bold cursor-pointer" onclick="alert('Asignación despachada exitosamente a Empresa de Acueducto y Alcantarillado.'); toggleAssignmentModal(false);" type="button">
+<span class="material-symbols-outlined text-[20px]">send_time_extension</span>
+<span>Confirmar y Despachar Asignación</span>
+</button>
+</div>
+</div>
+</div>
+</div></main></div>
+</body></html>

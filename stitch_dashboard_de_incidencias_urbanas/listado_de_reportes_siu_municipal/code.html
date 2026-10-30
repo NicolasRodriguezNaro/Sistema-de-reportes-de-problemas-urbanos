@@ -1,0 +1,617 @@
+<!DOCTYPE html>
+
+<html lang="es"><head><meta charset="utf-8"/><meta content="width=device-width, initial-scale=1.0" name="viewport"/><meta content="web_dashboard" name="shell-type"/><link href="https://fonts.googleapis.com" rel="preconnect"/><link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/><link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;display=swap" rel="stylesheet"/><link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/><style>@layer base{html,body{margin:0;padding:0;}body{overscroll-behavior:none;}main>:first-child{margin-top:0!important;}main>:last-child{margin-bottom:0!important;}}::-webkit-scrollbar{display:none;}</style><script src="https://cdn.tailwindcss.com"></script><script id="tailwind-config">tailwind.config = { darkMode: "class", theme: { extend: { "colors": { "outline": "#71787c", "on-primary": "#ffffff", "background": "#f8f9ff", "inverse-on-surface": "#eaf1ff", "error": "#ba1a1a", "on-primary-fixed": "#001f29", "on-primary-container": "#81a9bb", "on-surface-variant": "#41484b", "on-primary-fixed-variant": "#234c5b", "secondary-fixed": "#bde9fc", "on-tertiary-fixed": "#00174b", "on-secondary-fixed-variant": "#1f4c5b", "on-secondary-container": "#3d6878", "surface-variant": "#d3e4fe", "secondary": "#396474", "surface-container-high": "#dce9ff", "surface-tint": "#3c6474", "surface-container-low": "#eff4ff", "secondary-container": "#bae6f9", "tertiary-container": "#00328b", "on-background": "#0b1c30", "on-error": "#ffffff", "primary-fixed": "#c0e9fc", "tertiary-fixed-dim": "#b4c5ff", "primary-fixed-dim": "#a4ccdf", "outline-variant": "#c1c7cb", "error-container": "#ffdad6", "on-tertiary-container": "#7f9fff", "surface-dim": "#cbdbf5", "on-tertiary": "#ffffff", "inverse-primary": "#a4ccdf", "primary-container": "#133e4d", "surface-bright": "#f8f9ff", "on-surface": "#0b1c30", "surface-container-lowest": "#ffffff", "on-error-container": "#93000a", "on-tertiary-fixed-variant": "#003ea8", "surface-container-highest": "#d3e4fe", "secondary-fixed-dim": "#a1cddf", "surface-container": "#e5eeff", "inverse-surface": "#213145", "tertiary-fixed": "#dbe1ff", "on-secondary": "#ffffff", "surface": "#f8f9ff", "on-secondary-fixed": "#001f28", "primary": "#002834", "tertiary": "#001f5d" }, "borderRadius": { "DEFAULT": "0.125rem", "lg": "0.25rem", "xl": "0.5rem", "full": "0.75rem" }, "spacing": { "space-sm": "0.5rem", "margin-desktop": "1.5rem", "space-xl": "1.5rem", "margin": "1rem", "space-lg": "1rem", "gutter": "1rem", "space-xs": "0.25rem", "space-md": "0.75rem", "gutter-desktop": "1.25rem" }, "fontFamily": { "label-sm": [ "Inter" ], "body-xs": [ "Inter" ], "headline-lg-mobile": [ "Inter" ], "headline-sm": [ "Inter" ], "headline-xl-mobile": [ "Inter" ], "headline-lg": [ "Inter" ], "headline-md": [ "Inter" ], "body-sm": [ "Inter" ], "tabular-data": [ "Inter" ], "body-md": [ "Inter" ], "label-lg": [ "Inter" ], "body-lg": [ "Inter" ], "headline-xl": [ "Inter" ], "label-md": [ "Inter" ] }, "fontSize": { "label-sm": [ "11px", { "lineHeight": "14px", "letterSpacing": "0.04em", "fontWeight": "700" } ], "body-xs": [ "12px", { "lineHeight": "16px", "fontWeight": "400" } ], "headline-lg-mobile": [ "20px", { "lineHeight": "28px", "letterSpacing": "-0.01em", "fontWeight": "600" } ], "headline-sm": [ "16px", { "lineHeight": "22px", "fontWeight": "600" } ], "headline-xl-mobile": [ "24px", { "lineHeight": "32px", "letterSpacing": "-0.01em", "fontWeight": "700" } ], "headline-lg": [ "24px", { "lineHeight": "32px", "letterSpacing": "-0.015em", "fontWeight": "600" } ], "headline-md": [ "18px", { "lineHeight": "24px", "letterSpacing": "-0.01em", "fontWeight": "600" } ], "body-sm": [ "13px", { "lineHeight": "18px", "fontWeight": "400" } ], "tabular-data": [ "13px", { "lineHeight": "18px", "fontWeight": "500" } ], "body-md": [ "14px", { "lineHeight": "20px", "fontWeight": "400" } ], "label-lg": [ "13px", { "lineHeight": "16px", "letterSpacing": "0.01em", "fontWeight": "600" } ], "body-lg": [ "15px", { "lineHeight": "22px", "fontWeight": "400" } ], "headline-xl": [ "32px", { "lineHeight": "40px", "letterSpacing": "-0.02em", "fontWeight": "700" } ], "label-md": [ "12px", { "lineHeight": "16px", "letterSpacing": "0.02em", "fontWeight": "600" } ] } } } };</script></head><body class="bg-surface font-body-md text-on-surface antialiased"><aside class="fixed left-0 top-0 h-full w-64 bg-surface-container-lowest shadow-[0_1px_8px_rgba(0,0,0,0.04)] z-50 flex flex-col justify-between"><div class="flex flex-col"><div class="h-16 flex items-center gap-space-sm px-space-xl bg-primary-container text-on-primary"><span class="material-symbols-outlined text-[24px]">account_balance</span><div class="flex flex-col"><span class="font-headline-sm text-headline-sm font-bold tracking-tight text-on-primary">SIU Municipal</span><span class="font-label-sm text-label-sm uppercase tracking-wider text-on-primary-container">Incidencias Urbanas</span></div></div><div class="px-space-md py-space-sm"><div class="px-space-sm py-space-xs mb-space-xs"><span class="font-label-sm text-label-sm uppercase tracking-wider text-outline">Navegación Operativa</span></div><nav class="flex flex-col gap-space-xs" data-active-classes="bg-primary-container text-on-primary font-semibold"><a class="flex items-center gap-space-md px-space-md py-space-sm rounded-lg text-on-surface-variant hover:bg-surface-container-high hover:text-on-surface transition-all" data-path="dashboard" href="#"><span class="material-symbols-outlined text-[20px]">grid_view</span><span class="font-label-lg text-label-lg">Dashboard</span></a><a class="flex items-center gap-space-md px-space-md py-space-sm rounded-lg text-on-surface-variant hover:bg-surface-container-high hover:text-on-surface transition-all" data-path="reportes" href="#"><span class="material-symbols-outlined text-[20px]">description</span><span class="font-label-lg text-label-lg">Reportes</span></a><a class="flex items-center gap-space-md px-space-md py-space-sm rounded-lg text-on-surface-variant hover:bg-surface-container-high hover:text-on-surface transition-all" data-path="mapa" href="#"><span class="material-symbols-outlined text-[20px]">map</span><span class="font-label-lg text-label-lg">Mapa</span></a><a class="flex items-center justify-between px-space-md py-space-sm rounded-lg text-on-surface-variant hover:bg-surface-container-high hover:text-on-surface transition-all" data-path="entidades" href="#"><div class="flex items-center gap-space-md"><span class="material-symbols-outlined text-[20px]">domain</span><span class="font-label-lg text-label-lg">Entidades</span></div><span class="px-space-xs py-0.5 rounded bg-secondary-container text-on-secondary-container font-label-sm text-[10px] tracking-wide">SOLO ADMINISTRADOR</span></a><a class="flex items-center gap-space-md px-space-md py-space-sm rounded-lg text-on-surface-variant hover:bg-surface-container-high hover:text-on-surface transition-all" data-path="perfil" href="#"><span class="material-symbols-outlined text-[20px]">badge</span><span class="font-label-lg text-label-lg">Perfil</span></a></nav></div></div><div class="p-space-md"><div class="p-space-md rounded-lg bg-surface-container flex flex-col gap-space-xs"><div class="flex items-center justify-between"><span class="font-label-sm text-label-sm text-on-surface-variant">SISTEMA TERRITORIAL</span><span class="font-tabular-data text-tabular-data text-on-surface-variant">v2.4.0</span></div><div class="flex items-center gap-space-xs text-on-surface"><span class="w-2 h-2 rounded-full bg-secondary"></span><span class="font-body-xs text-body-xs text-on-surface-variant">Operacional en Línea</span></div></div></div></aside><div class="pl-64 flex flex-col min-h-screen"><header class="fixed top-0 left-64 right-0 h-16 bg-surface-container-lowest border-b border-surface-container shadow-sm z-40 flex items-center justify-between px-gutter-desktop" style="-webkit-font-smoothing: antialiased; text-rendering: optimizelegibility;"><div class="flex items-center gap-space-md"><div class="flex items-center gap-space-sm text-on-surface-variant"><span class="font-label-md text-label-md uppercase tracking-wider text-outline font-semibold">División Municipal</span><span class="text-outline-variant font-medium">/</span><span class="font-label-lg text-label-lg font-bold text-on-surface">Centro de Operaciones y Despacho</span></div></div><div class="flex items-center gap-space-lg"><div class="flex items-center gap-space-md pl-space-md"><div class="flex flex-col text-right"><span class="font-label-lg text-label-lg font-bold text-on-surface">Ing. Carlos Mendoza</span><span class="font-body-xs text-body-xs text-on-surface-variant font-medium">Administrador Territorial</span></div><div class="flex items-center gap-space-xs px-space-sm py-1 rounded-full bg-surface-container text-on-surface border border-surface-container-high"><span class="w-2 h-2 rounded-full bg-secondary"></span><span class="font-label-sm text-label-sm text-secondary font-bold uppercase tracking-wider">Activo</span></div><div class="w-8 h-8 rounded-full bg-primary flex items-center justify-center"><span class="material-symbols-outlined text-on-primary text-[18px]">person</span></div></div><div class="h-6 w-px bg-outline-variant"></div><button class="flex items-center gap-space-xs px-space-md py-space-xs rounded-lg text-error hover:bg-error-container hover:text-on-error-container transition-colors font-medium border border-transparent" type="button"><span class="material-symbols-outlined text-[18px]">logout</span><span class="font-label-md text-label-md font-semibold">Cerrar sesión</span></button></div></header><main class="relative pt-16 flex-1 w-full px-gutter-desktop py-space-xl bg-surface"><div class="flex flex-col w-full">
+<div class="flex flex-col gap-space-lg">
+<!-- Encabezado de Página Operativo -->
+<div class="flex flex-col md:flex-row md:items-center justify-between gap-space-md bg-surface-container-lowest p-space-lg rounded-lg shadow-sm">
+<div class="flex flex-col gap-space-xs">
+<div class="flex items-center gap-space-sm">
+<span class="px-space-xs py-0.5 rounded bg-primary-container text-on-primary font-label-sm text-[10px] tracking-wider uppercase">Módulo Operativo</span>
+<span class="font-tabular-data text-body-xs text-on-surface-variant font-medium">Actualizado: 29 oct 2026 · 14:32 hrs</span>
+</div>
+<h1 class="font-headline-lg text-headline-lg text-on-surface tracking-tight">Gestión de Reportes e Incidencias</h1>
+<p class="font-body-sm text-body-sm text-on-surface-variant">Registro general y fiscalización de incidencias reportadas en la vía pública metropolitana</p>
+</div>
+<div class="flex items-center gap-space-sm flex-wrap">
+<button class="flex items-center gap-space-xs px-space-md py-space-sm rounded-lg bg-surface-container-high text-on-surface hover:bg-surface-container transition-colors shadow-sm font-label-md text-label-md" type="button">
+<span class="material-symbols-outlined text-[18px] text-secondary">file_download</span>
+<span>Exportar CSV / Excel</span>
+</button>
+<button class="flex items-center gap-space-xs px-space-md py-space-sm rounded-lg bg-primary-container text-on-primary hover:bg-primary transition-colors shadow-sm font-label-md text-label-md" type="button">
+<span class="material-symbols-outlined text-[18px]">add_circle</span>
+<span>Nuevo reporte manual</span>
+</button>
+</div>
+</div>
+<!-- Barra de Búsqueda y Filtros Operativos -->
+<div class="flex flex-col gap-space-md bg-surface-container-lowest p-space-lg rounded-lg shadow-sm">
+<!-- Buscador Principal -->
+<div class="relative w-full">
+<span class="absolute inset-y-0 left-0 pl-space-md flex items-center pointer-events-none text-outline">
+<span class="material-symbols-outlined text-[20px]">search</span>
+</span>
+<input class="w-full pl-10 pr-space-xl py-space-sm rounded-lg bg-surface-container-low text-on-surface font-body-sm text-body-sm placeholder:text-outline focus:outline-none focus:bg-surface-container-lowest transition-colors shadow-inner" id="search-input" placeholder="Buscar por ID, dirección o descripción... (ej. #415 o 'fuga')" type="search" value=""/>
+<div class="absolute inset-y-0 right-0 pr-space-md flex items-center pointer-events-none">
+<span class="font-label-sm text-[10px] text-outline px-1.5 py-0.5 rounded bg-surface-container">CTRL + K</span>
+</div>
+</div>
+<!-- Filtros Desplegables en Línea -->
+<div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-space-sm items-end">
+<!-- Estado -->
+<div class="flex flex-col gap-1">
+<label class="font-label-sm text-label-sm uppercase tracking-wider text-on-surface-variant font-semibold" for="filter-estado">Estado</label>
+<div class="relative">
+<select class="w-full appearance-none bg-surface-container-low text-on-surface py-2 pl-space-md pr-8 rounded-lg font-body-sm text-body-sm focus:outline-none focus:bg-surface-container-lowest cursor-pointer" id="filter-estado">
+<option value="todos">Todos los estados</option>
+<option value="revision">En revisión</option>
+<option value="pendiente">Pendiente</option>
+<option value="proceso">En proceso</option>
+<option value="resuelto">Resuelto</option>
+</select>
+<span class="absolute inset-y-0 right-0 pr-2 flex items-center pointer-events-none text-outline">
+<span class="material-symbols-outlined text-[18px]">expand_more</span>
+</span>
+</div>
+</div>
+<!-- Categoría -->
+<div class="flex flex-col gap-1">
+<label class="font-label-sm text-label-sm uppercase tracking-wider text-on-surface-variant font-semibold" for="filter-categoria">Categoría</label>
+<div class="relative">
+<select class="w-full appearance-none bg-surface-container-low text-on-surface py-2 pl-space-md pr-8 rounded-lg font-body-sm text-body-sm focus:outline-none focus:bg-surface-container-lowest cursor-pointer" id="filter-categoria">
+<option value="todas">Todas las categorías</option>
+<option value="fuga">Fuga de agua</option>
+<option value="vialidad">Vialidad / Bacheo</option>
+<option value="alumbrado">Alumbrado público</option>
+<option value="residuos">Residuos sólidos</option>
+<option value="semaforo">Semáforos</option>
+</select>
+<span class="absolute inset-y-0 right-0 pr-2 flex items-center pointer-events-none text-outline">
+<span class="material-symbols-outlined text-[18px]">expand_more</span>
+</span>
+</div>
+</div>
+<!-- Prioridad -->
+<div class="flex flex-col gap-1">
+<label class="font-label-sm text-label-sm uppercase tracking-wider text-on-surface-variant font-semibold" for="filter-prioridad">Prioridad</label>
+<div class="relative">
+<select class="w-full appearance-none bg-surface-container-low text-on-surface py-2 pl-space-md pr-8 rounded-lg font-body-sm text-body-sm focus:outline-none focus:bg-surface-container-lowest cursor-pointer" id="filter-prioridad">
+<option value="todas">Todas las prioridades</option>
+<option value="critica">Crítica</option>
+<option value="alta">Alta</option>
+<option value="media">Media</option>
+<option value="baja">Baja</option>
+</select>
+<span class="absolute inset-y-0 right-0 pr-2 flex items-center pointer-events-none text-outline">
+<span class="material-symbols-outlined text-[18px]">expand_more</span>
+</span>
+</div>
+</div>
+<!-- Barrio -->
+<div class="flex flex-col gap-1">
+<label class="font-label-sm text-label-sm uppercase tracking-wider text-on-surface-variant font-semibold" for="filter-barrio">Barrio</label>
+<div class="relative">
+<select class="w-full appearance-none bg-surface-container-low text-on-surface py-2 pl-space-md pr-8 rounded-lg font-body-sm text-body-sm focus:outline-none focus:bg-surface-container-lowest cursor-pointer" id="filter-barrio">
+<option value="todos">Todos los barrios</option>
+<option value="centro">Centro</option>
+<option value="norte">Norte</option>
+<option value="poniente">Poniente</option>
+<option value="sur">Sur</option>
+<option value="oriente">Oriente</option>
+</select>
+<span class="absolute inset-y-0 right-0 pr-2 flex items-center pointer-events-none text-outline">
+<span class="material-symbols-outlined text-[18px]">expand_more</span>
+</span>
+</div>
+</div>
+<!-- Rango de Fechas -->
+<div class="flex flex-col gap-1">
+<label class="font-label-sm text-label-sm uppercase tracking-wider text-on-surface-variant font-semibold" for="filter-fecha">Rango de Fechas</label>
+<div class="relative">
+<input class="w-full appearance-none bg-surface-container-low text-on-surface py-2 pl-8 pr-2 rounded-lg font-body-sm text-body-sm focus:outline-none focus:bg-surface-container-lowest cursor-pointer" id="filter-fecha" readonly="" type="text" value="01 oct 2026 - 31 oct 2026"/>
+<span class="absolute inset-y-0 left-0 pl-2 flex items-center pointer-events-none text-outline">
+<span class="material-symbols-outlined text-[16px]">calendar_today</span>
+</span>
+</div>
+</div>
+<!-- Acciones de Filtrado -->
+<div class="flex items-center gap-space-xs">
+<button class="flex-1 flex items-center justify-center gap-1 py-2 px-space-sm rounded-lg bg-surface-container text-on-surface hover:bg-surface-container-high transition-colors font-label-md text-label-md" id="btn-reset-filters" title="Restablecer filtros" type="button">
+<span class="material-symbols-outlined text-[16px]">restart_alt</span>
+<span>Limpiar</span>
+</button>
+<button class="flex-1 flex items-center justify-center gap-1 py-2 px-space-sm rounded-lg bg-secondary text-on-secondary hover:bg-primary transition-colors font-label-md text-label-md" title="Aplicar filtros" type="button">
+<span class="material-symbols-outlined text-[16px]">tune</span>
+<span>Filtrar</span>
+</button>
+</div>
+</div>
+<!-- Resumen de Filtro Activo -->
+<div class="flex items-center justify-between pt-space-xs">
+<div class="flex items-center gap-space-xs">
+<span class="font-label-sm text-label-sm text-outline uppercase font-semibold">Filtros Activos:</span>
+<span class="px-space-xs py-0.5 rounded bg-surface-container-high text-on-surface-variant font-label-sm text-[11px] flex items-center gap-1">
+            Mes actual (Octubre)
+            <button class="hover:text-error" type="button"><span class="material-symbols-outlined text-[12px]">close</span></button>
+</span>
+</div>
+<div class="flex items-center gap-space-xs">
+<span class="w-2 h-2 rounded-full bg-secondary"></span>
+<span class="font-label-md text-label-md text-on-surface font-semibold">42 reportes encontrados</span>
+<span class="font-body-xs text-body-xs text-on-surface-variant">(Mostrando 8 en esta página)</span>
+</div>
+</div>
+</div>
+<!-- Tabla Paginada de Reportes de Alta Densidad -->
+<div class="bg-surface-container-lowest rounded-lg shadow-sm overflow-hidden flex flex-col">
+<div class="overflow-x-auto w-full">
+<table class="w-full text-left border-collapse" id="reports-table">
+<thead>
+<tr class="bg-surface-container-low text-on-surface-variant">
+<th class="py-space-sm px-space-md font-label-sm text-label-sm uppercase tracking-wider text-center w-14" scope="col">Evidencia</th>
+<th class="py-space-sm px-space-md font-label-sm text-label-sm uppercase tracking-wider w-20" scope="col">ID</th>
+<th class="py-space-sm px-space-md font-label-sm text-label-sm uppercase tracking-wider w-36" scope="col">Categoría</th>
+<th class="py-space-sm px-space-md font-label-sm text-label-sm uppercase tracking-wider min-w-[240px]" scope="col">Descripción</th>
+<th class="py-space-sm px-space-md font-label-sm text-label-sm uppercase tracking-wider w-28" scope="col">Barrio</th>
+<th class="py-space-sm px-space-md font-label-sm text-label-sm uppercase tracking-wider w-48" scope="col">Entidad Asignada</th>
+<th class="py-space-sm px-space-md font-label-sm text-label-sm uppercase tracking-wider w-32" scope="col">Estado</th>
+<th class="py-space-sm px-space-md font-label-sm text-label-sm uppercase tracking-wider w-28" scope="col">Prioridad</th>
+<th class="py-space-sm px-space-md font-label-sm text-label-sm uppercase tracking-wider w-28" scope="col">Fecha</th>
+<th class="py-space-sm px-space-md font-label-sm text-label-sm uppercase tracking-wider text-center w-28" scope="col">Acción</th>
+</tr>
+</thead>
+<tbody class="divide-y divide-surface-container">
+<!-- Fila 1 (ID 415 - Registro Requerido) -->
+<tr class="hover:bg-surface-container-low transition-colors group">
+<td class="py-space-sm px-space-md text-center">
+<div class="w-10 h-10 rounded overflow-hidden shadow-sm inline-block bg-surface-container">
+<img class="w-full h-full object-cover" data-alt="Photographic evidence of an urban street water pipe rupture showing water flooding the asphalt road in front of a municipal hospital building, daylight institutional documentary style with muted petroleum tones" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDVNupGBbwiC9kGrjpg5J8xB-7qPDofGYwKsnlEzcHJrYFomtiBTTNMjeSEhnGmXmVgKXPhPnI2KG8mi0RC6MDLDPsms-xJoT7VYmglb43WmmO9hOy43bV9M-3hZqj9nc7BKOpATrEFCPPjuiEVhxoSeRAL7B-VGd5v4bW6twpNgJSRm98-FEVsPrSeTCUjj2469ah01wYwM-wex4d14o9ncW9tPli3_C8Iu-Mq_uU"/>
+</div>
+</td>
+<td class="py-space-sm px-space-md font-tabular-data text-body-sm font-bold text-on-surface">#415</td>
+<td class="py-space-sm px-space-md">
+<span class="inline-flex items-center gap-1 px-space-xs py-0.5 rounded bg-secondary-container text-on-secondary-container font-label-sm text-[10px] tracking-wide font-bold">
+<span class="material-symbols-outlined text-[13px]">water_damage</span>
+                  FUGA_AGUA
+                </span>
+</td>
+<td class="py-space-sm px-space-md">
+<div class="flex flex-col">
+<span class="font-body-sm text-body-sm font-semibold text-on-surface line-clamp-1">Fuga frente al hospital</span>
+<span class="font-body-xs text-body-xs text-outline line-clamp-1">Av. San Martín 1240 · Afectación de dos carriles</span>
+</div>
+</td>
+<td class="py-space-sm px-space-md font-body-sm text-body-sm text-on-surface">Centro</td>
+<td class="py-space-sm px-space-md">
+<div class="flex items-center gap-1 font-body-sm text-body-sm text-on-surface">
+<span class="material-symbols-outlined text-[15px] text-secondary">domain</span>
+<span>Empresa de Acueducto</span>
+</div>
+</td>
+<td class="py-space-sm px-space-md">
+<span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-surface-container-high text-primary font-label-sm text-[10px] uppercase font-bold tracking-wider">
+<span class="w-1.5 h-1.5 rounded-full bg-primary"></span>
+                  EN_REVISION
+                </span>
+</td>
+<td class="py-space-sm px-space-md">
+<span class="inline-flex items-center gap-1 px-2 py-0.5 rounded bg-error-container text-on-error-container font-label-sm text-[10px] uppercase font-bold tracking-wider">
+<span class="w-1.5 h-1.5 rounded-full bg-error animate-pulse"></span>
+                  CRITICA
+                </span>
+</td>
+<td class="py-space-sm px-space-md font-tabular-data text-body-sm text-on-surface-variant">29 oct 2026</td>
+<td class="py-space-sm px-space-md text-center">
+<button class="inline-flex items-center gap-1 px-space-sm py-1 rounded bg-surface-container text-primary font-label-sm text-label-sm font-semibold hover:bg-primary-container hover:text-on-primary transition-colors" type="button">
+<span class="material-symbols-outlined text-[15px]">visibility</span>
+<span>Ver detalle</span>
+</button>
+</td>
+</tr>
+<!-- Fila 2 (ID 414) -->
+<tr class="hover:bg-surface-container-low transition-colors group">
+<td class="py-space-sm px-space-md text-center">
+<div class="w-10 h-10 rounded overflow-hidden shadow-sm inline-block bg-surface-container">
+<img class="w-full h-full object-cover" data-alt="Public municipal streetlight pole unlit and defective at night over a concrete paved town square plaza with historical colonial facades in background" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBAhYt6eegdHnwE9P-2NjNQiIu148U9LCJduEoZELVlgk0bVK2Nk1_v3GrpJorkNL8x_YkdwjUOBw1RHJJ3w0mn15cVZWI_BzqC92ccfiJy4hQQYcw8CUUs6ZoSGuUAydiA0jNRA8NPlemoZWsmFjlzIAGWeuiqFNn0X2UbzC0ZdBX6u5Edzh9YTbg_pldO8D5sev35TDlfep1u49XzC7vPo6RGX16_GPPbWaRp1UM"/>
+</div>
+</td>
+<td class="py-space-sm px-space-md font-tabular-data text-body-sm font-bold text-on-surface">#414</td>
+<td class="py-space-sm px-space-md">
+<span class="inline-flex items-center gap-1 px-space-xs py-0.5 rounded bg-surface-container-highest text-on-surface font-label-sm text-[10px] tracking-wide font-bold">
+<span class="material-symbols-outlined text-[13px]">lightbulb</span>
+                  ALUMBRADO
+                </span>
+</td>
+<td class="py-space-sm px-space-md">
+<div class="flex flex-col">
+<span class="font-body-sm text-body-sm font-semibold text-on-surface line-clamp-1">Luminaria pública apagada en plaza principal</span>
+<span class="font-body-xs text-body-xs text-outline line-clamp-1">Sector pérgola central · Iluminación cero</span>
+</div>
+</td>
+<td class="py-space-sm px-space-md font-body-sm text-body-sm text-on-surface">Norte</td>
+<td class="py-space-sm px-space-md">
+<div class="flex items-center gap-1 font-body-sm text-body-sm text-on-surface">
+<span class="material-symbols-outlined text-[15px] text-secondary">domain</span>
+<span>Alumbrado Público</span>
+</div>
+</td>
+<td class="py-space-sm px-space-md">
+<span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-surface-variant text-on-surface font-label-sm text-[10px] uppercase font-bold tracking-wider">
+<span class="w-1.5 h-1.5 rounded-full bg-outline"></span>
+                  PENDIENTE
+                </span>
+</td>
+<td class="py-space-sm px-space-md">
+<span class="inline-flex items-center gap-1 px-2 py-0.5 rounded bg-secondary-container text-on-secondary-container font-label-sm text-[10px] uppercase font-bold tracking-wider">
+<span class="w-1.5 h-1.5 rounded-full bg-secondary"></span>
+                  MEDIA
+                </span>
+</td>
+<td class="py-space-sm px-space-md font-tabular-data text-body-sm text-on-surface-variant">29 oct 2026</td>
+<td class="py-space-sm px-space-md text-center">
+<button class="inline-flex items-center gap-1 px-space-sm py-1 rounded bg-surface-container text-primary font-label-sm text-label-sm font-semibold hover:bg-primary-container hover:text-on-primary transition-colors" type="button">
+<span class="material-symbols-outlined text-[15px]">visibility</span>
+<span>Ver detalle</span>
+</button>
+</td>
+</tr>
+<!-- Fila 3 (ID 413) -->
+<tr class="hover:bg-surface-container-low transition-colors group">
+<td class="py-space-sm px-space-md text-center">
+<div class="w-10 h-10 rounded overflow-hidden shadow-sm inline-block bg-surface-container">
+<img class="w-full h-full object-cover" data-alt="Close up street damage of a deep asphalt pothole on urban roadway with broken asphalt edges and lane markings visible in cold crisp daylight" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBNeW2lb9svg7DR7p_u8H6y8msyhrgTp7rEB1tvSpMluNNDt8I5aCSd__dYLIu3Ud4siHAlUN8XJ3KtRCNZvSiK5LxzMJKkjsnDEMPFrwNKuL2vDr3mgaeOr6u7oSsW1WhjC688yqv06ruCftIZuoHaXRMCUKHr-24OyxQ5Sskj_FdOu0WpPcH6zlFGfLhd6x-L0yaeG2Et8jWVfmH7IP05jtM0EZuFJy4lUX9NPJ4"/>
+</div>
+</td>
+<td class="py-space-sm px-space-md font-tabular-data text-body-sm font-bold text-on-surface">#413</td>
+<td class="py-space-sm px-space-md">
+<span class="inline-flex items-center gap-1 px-space-xs py-0.5 rounded bg-primary-fixed text-on-primary-fixed font-label-sm text-[10px] tracking-wide font-bold">
+<span class="material-symbols-outlined text-[13px]">construction</span>
+                  VIALIDAD
+                </span>
+</td>
+<td class="py-space-sm px-space-md">
+<div class="flex flex-col">
+<span class="font-body-sm text-body-sm font-semibold text-on-surface line-clamp-1">Bache profundo en calzada carril derecho</span>
+<span class="font-body-xs text-body-xs text-outline line-clamp-1">Calle Los Alerces con Av. Libertad</span>
+</div>
+</td>
+<td class="py-space-sm px-space-md font-body-sm text-body-sm text-on-surface">Poniente</td>
+<td class="py-space-sm px-space-md">
+<div class="flex items-center gap-1 font-body-sm text-body-sm text-on-surface">
+<span class="material-symbols-outlined text-[15px] text-secondary">domain</span>
+<span>Vialidad Urbana</span>
+</div>
+</td>
+<td class="py-space-sm px-space-md">
+<span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-surface-container-high text-primary font-label-sm text-[10px] uppercase font-bold tracking-wider">
+<span class="w-1.5 h-1.5 rounded-full bg-primary"></span>
+                  EN_REVISION
+                </span>
+</td>
+<td class="py-space-sm px-space-md">
+<span class="inline-flex items-center gap-1 px-2 py-0.5 rounded bg-surface-container-highest text-on-surface font-label-sm text-[10px] uppercase font-bold tracking-wider">
+<span class="w-1.5 h-1.5 rounded-full bg-on-surface-variant"></span>
+                  ALTA
+                </span>
+</td>
+<td class="py-space-sm px-space-md font-tabular-data text-body-sm text-on-surface-variant">28 oct 2026</td>
+<td class="py-space-sm px-space-md text-center">
+<button class="inline-flex items-center gap-1 px-space-sm py-1 rounded bg-surface-container text-primary font-label-sm text-label-sm font-semibold hover:bg-primary-container hover:text-on-primary transition-colors" type="button">
+<span class="material-symbols-outlined text-[15px]">visibility</span>
+<span>Ver detalle</span>
+</button>
+</td>
+</tr>
+<!-- Fila 4 (ID 412) -->
+<tr class="hover:bg-surface-container-low transition-colors group">
+<td class="py-space-sm px-space-md text-center">
+<div class="w-10 h-10 rounded overflow-hidden shadow-sm inline-block bg-surface-container">
+<img class="w-full h-full object-cover" data-alt="Urban public street overflowing green municipal trash container with domestic refuse spill on pedestrian sidewalk under neutral cloudy city sky" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAL2pqif3pavyttTa1le52HOOfD-kOLf0vEUArpura_RG0-yM959SApHA__zRc4s-1zsb5xkS7O2y8A8hfKkjdWBSBMlOwYmdxn5259_vMY6kGmYi_F4LqxsetMB6h6Lc3zsyxptMh7HdMkPOyMHqa6am8IYujZNpOc0A0ueKnG9YzgslOEjQ7D97l2oesDdMt3Nm8mnFgXM_Er9qEVgqJbinFHdp1NidfRG1rO5Zs"/>
+</div>
+</td>
+<td class="py-space-sm px-space-md font-tabular-data text-body-sm font-bold text-on-surface">#412</td>
+<td class="py-space-sm px-space-md">
+<span class="inline-flex items-center gap-1 px-space-xs py-0.5 rounded bg-tertiary-fixed text-on-tertiary-fixed font-label-sm text-[10px] tracking-wide font-bold">
+<span class="material-symbols-outlined text-[13px]">delete</span>
+                  RESIDUOS
+                </span>
+</td>
+<td class="py-space-sm px-space-md">
+<div class="flex flex-col">
+<span class="font-body-sm text-body-sm font-semibold text-on-surface line-clamp-1">Contenedor desbordado y microbasural</span>
+<span class="font-body-xs text-body-xs text-outline line-clamp-1">Pasaje El Carmen 441 · Esquina con Belgrano</span>
+</div>
+</td>
+<td class="py-space-sm px-space-md font-body-sm text-body-sm text-on-surface">Centro</td>
+<td class="py-space-sm px-space-md">
+<span class="inline-flex items-center gap-1 px-2 py-0.5 rounded bg-surface-container text-outline font-label-sm text-[11px] font-medium">
+                  Sin asignar
+                </span>
+</td>
+<td class="py-space-sm px-space-md">
+<span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-surface-variant text-on-surface font-label-sm text-[10px] uppercase font-bold tracking-wider">
+<span class="w-1.5 h-1.5 rounded-full bg-outline"></span>
+                  PENDIENTE
+                </span>
+</td>
+<td class="py-space-sm px-space-md">
+<span class="inline-flex items-center gap-1 px-2 py-0.5 rounded bg-secondary-container text-on-secondary-container font-label-sm text-[10px] uppercase font-bold tracking-wider">
+<span class="w-1.5 h-1.5 rounded-full bg-secondary"></span>
+                  MEDIA
+                </span>
+</td>
+<td class="py-space-sm px-space-md font-tabular-data text-body-sm text-on-surface-variant">28 oct 2026</td>
+<td class="py-space-sm px-space-md text-center">
+<button class="inline-flex items-center gap-1 px-space-sm py-1 rounded bg-surface-container text-primary font-label-sm text-label-sm font-semibold hover:bg-primary-container hover:text-on-primary transition-colors" type="button">
+<span class="material-symbols-outlined text-[15px]">visibility</span>
+<span>Ver detalle</span>
+</button>
+</td>
+</tr>
+<!-- Fila 5 (ID 411) -->
+<tr class="hover:bg-surface-container-low transition-colors group">
+<td class="py-space-sm px-space-md text-center">
+<div class="w-10 h-10 rounded overflow-hidden shadow-sm inline-block bg-surface-container">
+<img class="w-full h-full object-cover" data-alt="Urban street junction traffic light signal apparatus with yellow flashing indicator pole on an urban four-lane crossroads in daylight" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCgcn0GQhomCPtVVjcZoIeABEABdwrvlu4m_8pkT9bfFO6o3UqJp6zCR9Kg3vzVSjoJGLAvme4JEGn5fpuF0vMlOtZJURQkFCbMEnOUT7W3pHTKEWMM5lIIw8M8LgpHb_4knS_sEykIcxr4MYX0lwG6NjzR7Uqa8QnFzYu4D1wvHQN9Bs97ccu1Lp_vrJ7wXNE18MBiEzL1R4NLXKx50JGH8380YiYE-De-EdA4N5E"/>
+</div>
+</td>
+<td class="py-space-sm px-space-md font-tabular-data text-body-sm font-bold text-on-surface">#411</td>
+<td class="py-space-sm px-space-md">
+<span class="inline-flex items-center gap-1 px-space-xs py-0.5 rounded bg-secondary-fixed text-on-secondary-fixed-variant font-label-sm text-[10px] tracking-wide font-bold">
+<span class="material-symbols-outlined text-[13px]">traffic</span>
+                  SEMAFORO
+                </span>
+</td>
+<td class="py-space-sm px-space-md">
+<div class="flex flex-col">
+<span class="font-body-sm text-body-sm font-semibold text-on-surface line-clamp-1">Semáforo intermitente cruce Av. Central</span>
+<span class="font-body-xs text-body-xs text-outline line-clamp-1">Av. Central esquina Los Robles · Congestión alta</span>
+</div>
+</td>
+<td class="py-space-sm px-space-md font-body-sm text-body-sm text-on-surface">Sur</td>
+<td class="py-space-sm px-space-md">
+<div class="flex items-center gap-1 font-body-sm text-body-sm text-on-surface">
+<span class="material-symbols-outlined text-[15px] text-secondary">domain</span>
+<span>Vialidad Urbana</span>
+</div>
+</td>
+<td class="py-space-sm px-space-md">
+<span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-secondary-container text-on-secondary-container font-label-sm text-[10px] uppercase font-bold tracking-wider">
+<span class="w-1.5 h-1.5 rounded-full bg-secondary animate-pulse"></span>
+                  EN_PROCESO
+                </span>
+</td>
+<td class="py-space-sm px-space-md">
+<span class="inline-flex items-center gap-1 px-2 py-0.5 rounded bg-surface-container-highest text-on-surface font-label-sm text-[10px] uppercase font-bold tracking-wider">
+<span class="w-1.5 h-1.5 rounded-full bg-on-surface-variant"></span>
+                  ALTA
+                </span>
+</td>
+<td class="py-space-sm px-space-md font-tabular-data text-body-sm text-on-surface-variant">28 oct 2026</td>
+<td class="py-space-sm px-space-md text-center">
+<button class="inline-flex items-center gap-1 px-space-sm py-1 rounded bg-surface-container text-primary font-label-sm text-label-sm font-semibold hover:bg-primary-container hover:text-on-primary transition-colors" type="button">
+<span class="material-symbols-outlined text-[15px]">visibility</span>
+<span>Ver detalle</span>
+</button>
+</td>
+</tr>
+<!-- Fila 6 (ID 410) -->
+<tr class="hover:bg-surface-container-low transition-colors group">
+<td class="py-space-sm px-space-md text-center">
+<div class="w-10 h-10 rounded overflow-hidden shadow-sm inline-block bg-surface-container">
+<img class="w-full h-full object-cover" data-alt="Cracked concrete sidewalk slab with potable clean water overflowing from subterranean municipal main pipeline in residential metropolitan neighborhood" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCjIEnNeNjmotgOBbcW-iN18mmWj80a7iuMi1zm0OI3GuWdUT4sOAZdHWHjD9PjF09wFdvylVH9QT0YUMqYowK-l2BmcjKJ0CMjppS7NnSrIE4gwbzXOPw96gze885Vr1jmn1TCMYLlinTiBrvpuT2qQqzKDL0KM6oSCkckqrkhAsXtaBvenVvy71_7NdgwM5oAghozGt5-CvDn3xFSndcEMWhOQt1x2U6etvqHf7c"/>
+</div>
+</td>
+<td class="py-space-sm px-space-md font-tabular-data text-body-sm font-bold text-on-surface">#410</td>
+<td class="py-space-sm px-space-md">
+<span class="inline-flex items-center gap-1 px-space-xs py-0.5 rounded bg-secondary-container text-on-secondary-container font-label-sm text-[10px] tracking-wide font-bold">
+<span class="material-symbols-outlined text-[13px]">water_damage</span>
+                  FUGA_AGUA
+                </span>
+</td>
+<td class="py-space-sm px-space-md">
+<div class="flex flex-col">
+<span class="font-body-sm text-body-sm font-semibold text-on-surface line-clamp-1">Rotura de matriz en vereda peatonal</span>
+<span class="font-body-xs text-body-xs text-outline line-clamp-1">Calle Lautaro 892 · Paso de transeúntes bloqueado</span>
+</div>
+</td>
+<td class="py-space-sm px-space-md font-body-sm text-body-sm text-on-surface">Oriente</td>
+<td class="py-space-sm px-space-md">
+<div class="flex items-center gap-1 font-body-sm text-body-sm text-on-surface">
+<span class="material-symbols-outlined text-[15px] text-secondary">domain</span>
+<span>Empresa de Acueducto</span>
+</div>
+</td>
+<td class="py-space-sm px-space-md">
+<span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-surface-container-high text-primary font-label-sm text-[10px] uppercase font-bold tracking-wider">
+<span class="w-1.5 h-1.5 rounded-full bg-primary"></span>
+                  EN_REVISION
+                </span>
+</td>
+<td class="py-space-sm px-space-md">
+<span class="inline-flex items-center gap-1 px-2 py-0.5 rounded bg-error-container text-on-error-container font-label-sm text-[10px] uppercase font-bold tracking-wider">
+<span class="w-1.5 h-1.5 rounded-full bg-error animate-pulse"></span>
+                  CRITICA
+                </span>
+</td>
+<td class="py-space-sm px-space-md font-tabular-data text-body-sm text-on-surface-variant">27 oct 2026</td>
+<td class="py-space-sm px-space-md text-center">
+<button class="inline-flex items-center gap-1 px-space-sm py-1 rounded bg-surface-container text-primary font-label-sm text-label-sm font-semibold hover:bg-primary-container hover:text-on-primary transition-colors" type="button">
+<span class="material-symbols-outlined text-[15px]">visibility</span>
+<span>Ver detalle</span>
+</button>
+</td>
+</tr>
+<!-- Fila 7 (ID 409) -->
+<tr class="hover:bg-surface-container-low transition-colors group">
+<td class="py-space-sm px-space-md text-center">
+<div class="w-10 h-10 rounded overflow-hidden shadow-sm inline-block bg-surface-container">
+<img class="w-full h-full object-cover" data-alt="Reinforced concrete electric utility pole leaning precariously near curb edge with safety yellow hazard tape, daytime institutional urban record" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCPJJA1jomIgGwqgHprYqj4Za9e1OKQ6fBFE58NYILmZwdnB36AHiGa5NqhHCRn2LtD7e4VW2fod5DtRGRiWQKTnXKvwIMocz8WNGtOVOXUgFVm-bA8RtXZBN19L5aMExUTckbMJVB6SGvoIYrFBLD_ASGEvFqNAajxJKrXGKsv7UQjvM7i9hrLy1Zd-tQaXYGGg7TXewBR3rbE12OLZujYyAnKVGFFtMv7F8ftH10"/>
+</div>
+</td>
+<td class="py-space-sm px-space-md font-tabular-data text-body-sm font-bold text-on-surface">#409</td>
+<td class="py-space-sm px-space-md">
+<span class="inline-flex items-center gap-1 px-space-xs py-0.5 rounded bg-surface-container-highest text-on-surface font-label-sm text-[10px] tracking-wide font-bold">
+<span class="material-symbols-outlined text-[13px]">lightbulb</span>
+                  ALUMBRADO
+                </span>
+</td>
+<td class="py-space-sm px-space-md">
+<div class="flex flex-col">
+<span class="font-body-sm text-body-sm font-semibold text-on-surface line-clamp-1">Poste inclinado con riesgo de caída</span>
+<span class="font-body-xs text-body-xs text-outline line-clamp-1">Av. Circunvalación Norte 310 · Cuadrilla de turno</span>
+</div>
+</td>
+<td class="py-space-sm px-space-md font-body-sm text-body-sm text-on-surface">Norte</td>
+<td class="py-space-sm px-space-md">
+<div class="flex items-center gap-1 font-body-sm text-body-sm text-on-surface">
+<span class="material-symbols-outlined text-[15px] text-secondary">domain</span>
+<span>Alumbrado Público</span>
+</div>
+</td>
+<td class="py-space-sm px-space-md">
+<span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-secondary-fixed text-on-secondary-fixed font-label-sm text-[10px] uppercase font-bold tracking-wider">
+<span class="w-1.5 h-1.5 rounded-full bg-secondary"></span>
+                  RESUELTO
+                </span>
+</td>
+<td class="py-space-sm px-space-md">
+<span class="inline-flex items-center gap-1 px-2 py-0.5 rounded bg-error-container text-on-error-container font-label-sm text-[10px] uppercase font-bold tracking-wider">
+<span class="w-1.5 h-1.5 rounded-full bg-error"></span>
+                  CRITICA
+                </span>
+</td>
+<td class="py-space-sm px-space-md font-tabular-data text-body-sm text-on-surface-variant">27 oct 2026</td>
+<td class="py-space-sm px-space-md text-center">
+<button class="inline-flex items-center gap-1 px-space-sm py-1 rounded bg-surface-container text-primary font-label-sm text-label-sm font-semibold hover:bg-primary-container hover:text-on-primary transition-colors" type="button">
+<span class="material-symbols-outlined text-[15px]">visibility</span>
+<span>Ver detalle</span>
+</button>
+</td>
+</tr>
+<!-- Fila 8 (ID 408) -->
+<tr class="hover:bg-surface-container-low transition-colors group">
+<td class="py-space-sm px-space-md text-center">
+<div class="w-10 h-10 rounded overflow-hidden shadow-sm inline-block bg-surface-container">
+<img class="w-full h-full object-cover" data-alt="Subsidence depression of historical cobblestone pavement in an old town pedestrian alleyway, clean civic documentation photography" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDRwbPUspgTSxBbvxox8jKd0mXJzegLUjzuUVbPjcf9nwLEpVQKbEfPr9bSdVS0oFIXTnehLBaVg4ZBiZNSbXVA7FnNQjfUSl467O4e7mTHTb4kINoHb5_sxoEg0mJlCBsaUC9VjITYNWD2I3S714ZtOUTuxX3LyLcMgL1ni6NBjPrQQyhE1jaJLut8Q7UUDlCGTzRqAhQXf9ieGAz-YzhE7XZPR_YJ0FEAXjYNvX4"/>
+</div>
+</td>
+<td class="py-space-sm px-space-md font-tabular-data text-body-sm font-bold text-on-surface">#408</td>
+<td class="py-space-sm px-space-md">
+<span class="inline-flex items-center gap-1 px-space-xs py-0.5 rounded bg-primary-fixed text-on-primary-fixed font-label-sm text-[10px] tracking-wide font-bold">
+<span class="material-symbols-outlined text-[13px]">construction</span>
+                  VIALIDAD
+                </span>
+</td>
+<td class="py-space-sm px-space-md">
+<div class="flex flex-col">
+<span class="font-body-sm text-body-sm font-semibold text-on-surface line-clamp-1">Hundimiento de adoquines en pasaje histórico</span>
+<span class="font-body-xs text-body-xs text-outline line-clamp-1">Callejón Colonial 45 · Nivelación finalizada</span>
+</div>
+</td>
+<td class="py-space-sm px-space-md font-body-sm text-body-sm text-on-surface">Centro</td>
+<td class="py-space-sm px-space-md">
+<div class="flex items-center gap-1 font-body-sm text-body-sm text-on-surface">
+<span class="material-symbols-outlined text-[15px] text-secondary">domain</span>
+<span>Obras Viales</span>
+</div>
+</td>
+<td class="py-space-sm px-space-md">
+<span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-secondary-fixed text-on-secondary-fixed font-label-sm text-[10px] uppercase font-bold tracking-wider">
+<span class="w-1.5 h-1.5 rounded-full bg-secondary"></span>
+                  RESUELTO
+                </span>
+</td>
+<td class="py-space-sm px-space-md">
+<span class="inline-flex items-center gap-1 px-2 py-0.5 rounded bg-surface-container text-outline font-label-sm text-[10px] uppercase font-bold tracking-wider">
+<span class="w-1.5 h-1.5 rounded-full bg-outline"></span>
+                  BAJA
+                </span>
+</td>
+<td class="py-space-sm px-space-md font-tabular-data text-body-sm text-on-surface-variant">26 oct 2026</td>
+<td class="py-space-sm px-space-md text-center">
+<button class="inline-flex items-center gap-1 px-space-sm py-1 rounded bg-surface-container text-primary font-label-sm text-label-sm font-semibold hover:bg-primary-container hover:text-on-primary transition-colors" type="button">
+<span class="material-symbols-outlined text-[15px]">visibility</span>
+<span>Ver detalle</span>
+</button>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+<!-- Controles Inferiores de Paginación y Densidad -->
+<div class="flex flex-col sm:flex-row items-center justify-between gap-space-md px-space-lg py-space-md bg-surface-container-lowest">
+<!-- Selector de Densidad / Filas por página -->
+<div class="flex items-center gap-space-sm">
+<label class="font-body-sm text-body-sm text-on-surface-variant" for="rows-per-page">Filas por página:</label>
+<div class="relative">
+<select class="appearance-none bg-surface-container-low text-on-surface font-tabular-data text-body-sm py-1 pl-3 pr-7 rounded cursor-pointer focus:outline-none focus:bg-surface-container" id="rows-per-page">
+<option selected="" value="10">10</option>
+<option value="25">25</option>
+<option value="50">50</option>
+<option value="100">100</option>
+</select>
+<span class="absolute inset-y-0 right-0 pr-1.5 flex items-center pointer-events-none text-outline">
+<span class="material-symbols-outlined text-[16px]">expand_more</span>
+</span>
+</div>
+<span class="font-body-xs text-body-xs text-outline ml-space-sm hidden md:inline">· Mostrando 1 - 8 de 42 reportes</span>
+</div>
+<!-- Controles de Navegación de Páginas -->
+<div class="flex items-center gap-1">
+<button class="flex items-center gap-1 px-space-sm py-1 rounded bg-surface-container-low text-outline cursor-not-allowed font-label-md text-label-md" disabled="" type="button">
+<span class="material-symbols-outlined text-[16px]">chevron_left</span>
+<span class="hidden sm:inline">Anterior</span>
+</button>
+<div class="flex items-center gap-1 mx-space-xs">
+<button class="w-8 h-8 rounded bg-primary-container text-on-primary font-tabular-data text-body-sm font-bold flex items-center justify-center shadow-sm" type="button">1</button>
+<button class="w-8 h-8 rounded bg-surface-container-low text-on-surface hover:bg-surface-container font-tabular-data text-body-sm flex items-center justify-center transition-colors" type="button">2</button>
+<button class="w-8 h-8 rounded bg-surface-container-low text-on-surface hover:bg-surface-container font-tabular-data text-body-sm flex items-center justify-center transition-colors" type="button">3</button>
+<span class="w-6 text-center text-outline font-body-sm">...</span>
+<button class="w-8 h-8 rounded bg-surface-container-low text-on-surface hover:bg-surface-container font-tabular-data text-body-sm flex items-center justify-center transition-colors" type="button">6</button>
+</div>
+<button class="flex items-center gap-1 px-space-sm py-1 rounded bg-surface-container-low text-on-surface hover:bg-surface-container font-label-md text-label-md transition-colors" type="button">
+<span class="hidden sm:inline">Siguiente</span>
+<span class="material-symbols-outlined text-[16px]">chevron_right</span>
+</button>
+</div>
+</div>
+</div>
+</div>
+<!-- Sincronización de Navegación Persistente en Sidebar de Shell -->
+<script>
+    (function activateReportesTab() {
+      const activeNavClasses = ['bg-primary-container', 'text-on-primary', 'font-semibold'];
+      const inactiveNavClasses = ['text-on-surface-variant', 'hover:bg-surface-container-high', 'hover:text-on-surface'];
+      
+      const allLinks = document.querySelectorAll('aside nav a[data-path]');
+      allLinks.forEach(link => {
+        if (link.getAttribute('data-path') === 'reportes') {
+          link.classList.remove(...inactiveNavClasses);
+          link.classList.add(...activeNavClasses);
+        } else {
+          link.classList.remove(...activeNavClasses);
+          link.classList.add(...inactiveNavClasses);
+        }
+      });
+
+      const btnReset = document.getElementById('btn-reset-filters');
+      if (btnReset) {
+        btnReset.addEventListener('click', () => {
+          const search = document.getElementById('search-input');
+          const estado = document.getElementById('filter-estado');
+          const categoria = document.getElementById('filter-categoria');
+          const prioridad = document.getElementById('filter-prioridad');
+          const barrio = document.getElementById('filter-barrio');
+          if (search) search.value = '';
+          if (estado) estado.value = 'todos';
+          if (categoria) categoria.value = 'todas';
+          if (prioridad) prioridad.value = 'todas';
+          if (barrio) barrio.value = 'todos';
+        });
+      }
+    })();
+  </script>
+</div></main></div>
+</body></html>

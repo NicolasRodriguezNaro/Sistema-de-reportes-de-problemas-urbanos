@@ -1,0 +1,32 @@
+# Dependencias
+**/node_modules/
+
+# Compilaciones
+**/target/
+**/dist/
+**/dist-ssr/
+**/web-build/
+**/.expo/
+
+# Generados por el backend
+gestion-backend/data/
+gestion-backend/uploads/
+
+# Configuracion local y secretos
+**/.env
+**/.env.local
+**/.env.*.local
+**/application-dev.properties
+
+# Proyectos nativos generados por Expo
+gestion-mobile/android/
+gestion-mobile/ios/
+
+# Logs y archivos del sistema
+*.log
+.DS_Store
+Thumbs.db
+
+# Editores
+.idea/
+.vscode/
