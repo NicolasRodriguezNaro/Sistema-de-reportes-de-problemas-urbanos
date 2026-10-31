@@ -94,6 +94,32 @@ export interface EntidadResumen {
   contactoEmail: string;
 }
 
+export interface UsuarioGestion {
+  id: number;
+  nombre: string;
+  email: string;
+  rol: RolUsuario;
+  entidadId: number | null;
+  entidadNombre: string | null;
+  activo: boolean;
+  fechaRegistro: string | null;
+}
+
+export interface UsuarioCreacionRequest {
+  nombre: string;
+  email: string;
+  password: string;
+  rol: RolUsuario;
+  entidadId: number | null;
+}
+
+export interface UsuarioActualizacionRequest {
+  nombre: string;
+  rol: RolUsuario;
+  entidadId: number | null;
+  activo: boolean;
+}
+
 export interface ErrorApi {
   error: string;
   mensaje?: string;

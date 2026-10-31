@@ -1,5 +1,6 @@
 package com.gestion.backend.seguridad;
 
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationToken;
@@ -25,7 +26,11 @@ public class ServicioUsuarioActual {
 		}
 
 		Long id = Long.valueOf(jwt.getToken().getSubject());
-		return usuarioRepository.findById(id)
+		Usuario usuario = usuarioRepository.findById(id)
 				.orElseThrow(() -> new RecursoNoEncontradoException("Usuario autenticado no encontrado: " + id));
+		if (!Boolean.TRUE.equals(usuario.getActivo())) {
+			throw new AccessDeniedException("El usuario esta inactivo");
+		}
+		return usuario;
 	}
 }

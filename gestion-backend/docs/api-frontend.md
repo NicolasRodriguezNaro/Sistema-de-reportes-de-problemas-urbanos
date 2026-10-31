@@ -363,24 +363,83 @@ Respuesta `200 OK`:
 
 ### 4.5 Usuarios de prueba para el dashboard
 
-El registro público **solo crea ciudadanos**. No existe un endpoint para crear
-funcionarios o administradores desde el frontend. Para probar el dashboard, el equipo
-del backend debe promover un usuario en la base de datos:
+El registro público **solo crea ciudadanos**. Las cuentas de personal se crean desde
+la pantalla administrativa de usuarios o mediante la API descrita en 4.6.
 
-```sql
--- Funcionario de la entidad 1
-UPDATE usuarios
-SET rol = 'FUNCIONARIO', entidad_id = 1
-WHERE email = 'funcionario@example.com';
+Los usuarios existentes que fueron promovidos manualmente siguen funcionando, pero
+después de cambiarles el rol o la entidad deben cerrar sesión y volver a entrar para
+obtener un token con los valores nuevos. La entidad debe existir en `entidades`.
 
--- Administrador
-UPDATE usuarios
-SET rol = 'ADMINISTRADOR', entidad_id = NULL
-WHERE email = 'admin@example.com';
+### 4.6 Administración de usuarios
+
+Solo un `ADMINISTRADOR` puede acceder a estos endpoints.
+
+```http
+GET /api/usuarios?page=0&size=20&rol=FUNCIONARIO&entidadId=1&texto=ana&activo=true
+Authorization: Bearer <token-admin>
 ```
 
-Después del cambio, **cierra sesión y vuelve a entrar** para obtener un token con el rol
-nuevo. La entidad `1` debe existir en la tabla `entidades`.
+Respuesta:
+
+```json
+{
+  "contenido": [
+    {
+      "id": 124,
+      "nombre": "Ana Pérez",
+      "email": "ana@example.com",
+      "rol": "FUNCIONARIO",
+      "entidadId": 1,
+      "entidadNombre": "Secretaria de Obras Publicas",
+      "activo": true,
+      "fechaRegistro": "2026-10-31T18:00:00Z"
+    }
+  ],
+  "pagina": 0,
+  "tamano": 20,
+  "total": 1,
+  "totalPaginas": 1
+}
+```
+
+Crear:
+
+```http
+POST /api/usuarios
+Authorization: Bearer <token-admin>
+Content-Type: application/json
+
+{
+  "nombre": "Ana Pérez",
+  "email": "ana@example.com",
+  "password": "Password123",
+  "rol": "FUNCIONARIO",
+  "entidadId": 1
+}
+```
+
+Actualizar rol, entidad o estado:
+
+```http
+PATCH /api/usuarios/{id}
+Authorization: Bearer <token-admin>
+Content-Type: application/json
+
+{
+  "nombre": "Ana Pérez",
+  "rol": "FUNCIONARIO",
+  "entidadId": 1,
+  "activo": true
+}
+```
+
+Reglas:
+
+- `ADMINISTRADOR` y `CIUDADANO` no llevan entidad.
+- `FUNCIONARIO` y `EMPRESA` deben tener entidad.
+- No se puede cambiar el propio rol ni desactivar la propia cuenta.
+- No se puede desactivar ni cambiar el rol del último administrador activo.
+- Los usuarios inactivos no pueden iniciar sesión y sus tokens dejan de ser aceptados.
 
 ---
 

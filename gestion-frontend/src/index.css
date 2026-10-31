@@ -2326,6 +2326,157 @@ strong {
   }
 }
 
+.users-table-wrap {
+  overflow-x: auto;
+}
+
+.user-form-panel {
+  border-color: rgba(15, 76, 92, 0.25);
+  background: linear-gradient(180deg, #f8fcfc, var(--surface));
+}
+
+.user-form-grid {
+  align-items: flex-start;
+}
+
+.user-form-grid .field {
+  flex: 1 1 190px;
+}
+
+.checkbox-field {
+  justify-content: flex-end;
+}
+
+.checkbox-label {
+  min-height: 38px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: var(--text);
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.checkbox-label input {
+  width: 16px;
+  height: 16px;
+  accent-color: var(--brand);
+}
+
+.form-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+  margin-top: 16px;
+}
+
+.success-note {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 11px 13px;
+  border: 1px solid #86efac;
+  border-radius: 10px;
+  color: #166534;
+  background: var(--success-soft);
+  font-size: 11px;
+  font-weight: 700;
+}
+
+.user-cell {
+  min-width: 210px;
+  display: flex;
+  align-items: center;
+  gap: 9px;
+}
+
+.user-cell > div:last-child {
+  min-width: 0;
+}
+
+.user-cell strong,
+.user-cell span {
+  display: block;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.user-cell strong {
+  color: var(--text);
+  font-size: 11px;
+}
+
+.user-cell span {
+  margin-top: 2px;
+  color: var(--soft);
+  font-size: 10px;
+}
+
+.user-role {
+  color: var(--brand);
+  background: var(--brand-soft);
+}
+
+.user-role-administrador {
+  color: var(--violet);
+  background: var(--violet-soft);
+}
+
+.user-role-empresa {
+  color: #9a5d00;
+  background: var(--accent-soft);
+}
+
+.user-role-ciudadano {
+  color: var(--soft);
+  background: var(--surface-muted);
+}
+
+.user-status {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  font-size: 10px;
+  font-weight: 800;
+  white-space: nowrap;
+}
+
+.user-status-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: currentColor;
+}
+
+.user-status-active {
+  color: var(--success);
+}
+
+.user-status-inactive {
+  color: var(--danger);
+}
+
+.table-action-button {
+  padding: 0;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  border: 0;
+  background: transparent;
+  cursor: pointer;
+}
+
+.button:disabled {
+  cursor: not-allowed;
+  opacity: 0.55;
+}
+
+.field input:disabled {
+  color: var(--soft);
+  background: var(--surface-muted);
+}
+
 @keyframes spin {
   to {
     transform: rotate(360deg);

@@ -8,6 +8,7 @@ import {
   Menu,
   ShieldCheck,
   UserRound,
+  Users,
   X,
 } from "lucide-react";
 import { useEffect, useState } from "react";
@@ -21,6 +22,7 @@ const TITULOS: Record<string, string> = {
   "/reportes": "Reportes",
   "/mapa": "Mapa territorial",
   "/entidades": "Entidades",
+  "/usuarios": "Usuarios",
   "/perfil": "Perfil",
 };
 
@@ -84,11 +86,18 @@ export function AppLayout() {
             <span>Mapa</span>
           </NavLink>
           {esAdministrador && (
-            <NavLink to="/entidades" className={({ isActive }) => `nav-item ${isActive ? "active" : ""}`}>
-              <Building2 size={19} />
-              <span>Entidades</span>
-              <span className="nav-tag">Admin</span>
-            </NavLink>
+            <>
+              <NavLink to="/entidades" className={({ isActive }) => `nav-item ${isActive ? "active" : ""}`}>
+                <Building2 size={19} />
+                <span>Entidades</span>
+                <span className="nav-tag">Admin</span>
+              </NavLink>
+              <NavLink to="/usuarios" className={({ isActive }) => `nav-item ${isActive ? "active" : ""}`}>
+                <Users size={19} />
+                <span>Usuarios</span>
+                <span className="nav-tag">Admin</span>
+              </NavLink>
+            </>
           )}
           <NavLink to="/perfil" className={({ isActive }) => `nav-item ${isActive ? "active" : ""}`}>
             <UserRound size={19} />

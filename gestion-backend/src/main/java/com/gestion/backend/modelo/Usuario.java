@@ -45,5 +45,8 @@ public class Usuario {
 	@JoinColumn(name = "entidad_id")
 	private Entidad entidad;
 
+	@Column(nullable = false)
+	private Boolean activo = true;
+
 	private Instant fechaRegistro;
 }

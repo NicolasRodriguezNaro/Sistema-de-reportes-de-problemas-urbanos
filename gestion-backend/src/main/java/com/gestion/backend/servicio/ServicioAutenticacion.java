@@ -56,7 +56,8 @@ public class ServicioAutenticacion {
 		Usuario usuario = usuarioRepository.findByEmailIgnoreCase(solicitud.email().trim())
 				.orElseThrow(CredencialesInvalidasException::new);
 
-		if (!passwordEncoder.matches(solicitud.password(), usuario.getPasswordHash())) {
+		if (!passwordEncoder.matches(solicitud.password(), usuario.getPasswordHash())
+				|| !Boolean.TRUE.equals(usuario.getActivo())) {
 			throw new CredencialesInvalidasException();
 		}
 

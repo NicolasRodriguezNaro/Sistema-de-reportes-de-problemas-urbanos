@@ -5,16 +5,18 @@ export function Pagination({
   totalPaginas,
   total,
   onChange,
+  etiqueta = "reportes",
 }: {
   pagina: number;
   totalPaginas: number;
   total: number;
   onChange: (pagina: number) => void;
+  etiqueta?: string;
 }) {
   if (totalPaginas <= 1) {
     return (
       <div className="pagination">
-        <span className="pagination-info">{total} reportes</span>
+        <span className="pagination-info">{total} {etiqueta}</span>
       </div>
     );
   }
@@ -22,7 +24,7 @@ export function Pagination({
   return (
     <div className="pagination">
       <span className="pagination-info">
-        {total} reportes · página {pagina + 1} de {totalPaginas}
+        {total} {etiqueta} · página {pagina + 1} de {totalPaginas}
       </span>
       <div className="pagination-actions">
         <button

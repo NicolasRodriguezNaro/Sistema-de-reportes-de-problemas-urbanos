@@ -10,6 +10,7 @@ import { MapPage } from "./pages/MapPage";
 import { ProfilePage } from "./pages/ProfilePage";
 import { ReportDetailPage } from "./pages/ReportDetailPage";
 import { ReportsPage } from "./pages/ReportsPage";
+import { UsuariosPage } from "./pages/UsuariosPage";
 
 function RequireAuth({ children }: { children: React.ReactNode }) {
   const { usuario, cargando } = useAuth();
@@ -70,6 +71,14 @@ export default function App() {
             element={
               <RequireAdmin>
                 <EntitiesPage />
+              </RequireAdmin>
+            }
+          />
+          <Route
+            path="/usuarios"
+            element={
+              <RequireAdmin>
+                <UsuariosPage />
               </RequireAdmin>
             }
           />
