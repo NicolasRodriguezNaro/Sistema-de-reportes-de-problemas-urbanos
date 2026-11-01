@@ -69,6 +69,9 @@ public class ServicioSemantico {
 	}
 
 	public AnalisisSemantico analizar(Reporte reporte) {
+		if (reporte.getCategoriaIa() == null) {
+			return new AnalisisSemantico(prioridadPorSeveridad(reporte.getSeveridadIa()), null);
+		}
 		try {
 			Optional<SitioCercano> sitio = buscarSitioCercano(reporte.getUbicacion());
 			grafo.escribirReporte(reporte.getId(), reporte.getCategoriaIa(), reporte.getSeveridadIa(),

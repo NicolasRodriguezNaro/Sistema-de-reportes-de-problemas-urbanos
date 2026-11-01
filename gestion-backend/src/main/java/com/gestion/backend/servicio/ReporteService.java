@@ -80,6 +80,11 @@ public class ReporteService {
 		String descripcion = solicitud.descripcion() != null ? solicitud.descripcion()
 				: clasificacion.descripcionBorrador();
 
+		if (clasificacion != null && !clasificacion.esIncidencia()) {
+			categoria = null;
+			severidad = null;
+		}
+
 		Reporte reporte = new Reporte();
 		reporte.setUsuario(usuario);
 

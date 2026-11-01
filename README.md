@@ -16,6 +16,7 @@ Proyecto académico para reportar, clasificar y gestionar incidencias urbanas en
 - API del dashboard: `gestion-backend/docs/dashboard-api.md`
 - Guía de diseño e implementación: `gestion-backend/docs/diseno-frontend.md`
 - Seguridad: `gestion-backend/docs/seguridad.md`
+- Clasificación con Gemini: `gestion-backend/docs/ia-gemini.md`
 
 ## Ejecutar el backend
 

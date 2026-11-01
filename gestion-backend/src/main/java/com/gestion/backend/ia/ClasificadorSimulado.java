@@ -1,5 +1,6 @@
 package com.gestion.backend.ia;
 
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Service;
 
@@ -8,6 +9,7 @@ import com.gestion.backend.modelo.TipoIncidencia;
 
 @Service
 @Profile("dev")
+@ConditionalOnProperty(name = "gestion.ia.modo", havingValue = "simulado", matchIfMissing = true)
 public class ClasificadorSimulado implements ClasificadorIncidencias {
 
 	@Override
@@ -21,6 +23,6 @@ public class ClasificadorSimulado implements ClasificadorIncidencias {
 		String borrador = "Borrador generado por vision artificial (simulado): posible "
 				+ categoria.getDescripcion().toLowerCase() + ".";
 
-		return new ResultadoClasificacion(categoria, severidad, confianza, borrador);
+		return new ResultadoClasificacion(true, categoria, severidad, confianza, borrador);
 	}
 }
