@@ -441,6 +441,59 @@ Reglas:
 - No se puede desactivar ni cambiar el rol del último administrador activo.
 - Los usuarios inactivos no pueden iniciar sesión y sus tokens dejan de ser aceptados.
 
+### 4.7 Equipo de una empresa
+
+Solo un usuario con rol `EMPRESA` puede gestionar los funcionarios de su propia
+entidad. La entidad se toma del token; no se acepta en el cuerpo de la petición.
+
+```http
+GET /api/usuarios/equipo?page=0&size=20&texto=carlos&activo=true
+Authorization: Bearer <token-empresa>
+```
+
+Crear funcionario:
+
+```http
+POST /api/usuarios/equipo
+Authorization: Bearer <token-empresa>
+Content-Type: application/json
+
+{
+  "nombre": "Carlos Pérez",
+  "email": "carlos@entidad.gov.co",
+  "password": "Password123"
+}
+```
+
+El backend fuerza:
+
+```text
+rol = FUNCIONARIO
+entidad = entidad del usuario EMPRESA autenticado
+activo = true
+```
+
+Actualizar nombre o estado:
+
+```http
+PATCH /api/usuarios/equipo/{id}
+Authorization: Bearer <token-empresa>
+Content-Type: application/json
+
+{
+  "nombre": "Carlos Pérez Actualizado",
+  "activo": true
+}
+```
+
+Reglas:
+
+- La empresa no puede crear administradores, empresas ni ciudadanos.
+- La empresa no puede cambiar el rol ni la entidad de un funcionario.
+- Solo puede listar y editar funcionarios de su propia entidad.
+- Un `FUNCIONARIO`, `ADMINISTRADOR` o `CIUDADANO` no puede usar estos endpoints.
+- Un usuario `EMPRESA` sin entidad asignada recibe `403`.
+
 ---
 
 ## 5. Archivos e imágenes

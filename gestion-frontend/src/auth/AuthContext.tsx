@@ -20,6 +20,7 @@ interface AuthContextValue {
   iniciarSesion: (email: string, password: string) => Promise<UsuarioResumen>;
   cerrarSesion: () => void;
   esAdministrador: boolean;
+  esEmpresa: boolean;
   esPersonal: boolean;
 }
 
@@ -103,6 +104,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       iniciarSesion,
       cerrarSesion,
       esAdministrador: rol === "ADMINISTRADOR",
+      esEmpresa: rol === "EMPRESA",
       esPersonal: rol === "ADMINISTRADOR" || rol === "FUNCIONARIO" || rol === "EMPRESA",
     };
   }, [cargando, cerrarSesion, iniciarSesion, usuario]);

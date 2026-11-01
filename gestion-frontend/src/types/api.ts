@@ -120,6 +120,17 @@ export interface UsuarioActualizacionRequest {
   activo: boolean;
 }
 
+export interface FuncionarioCreacionRequest {
+  nombre: string;
+  email: string;
+  password: string;
+}
+
+export interface FuncionarioActualizacionRequest {
+  nombre: string;
+  activo: boolean;
+}
+
 export interface ErrorApi {
   error: string;
   mensaje?: string;

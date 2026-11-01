@@ -10,6 +10,7 @@ import { MapPage } from "./pages/MapPage";
 import { ProfilePage } from "./pages/ProfilePage";
 import { ReportDetailPage } from "./pages/ReportDetailPage";
 import { ReportsPage } from "./pages/ReportsPage";
+import { EquipoPage } from "./pages/EquipoPage";
 import { UsuariosPage } from "./pages/UsuariosPage";
 
 function RequireAuth({ children }: { children: React.ReactNode }) {
@@ -43,6 +44,12 @@ function RequireStaff({ children }: { children: React.ReactNode }) {
 function RequireAdmin({ children }: { children: React.ReactNode }) {
   const { esAdministrador } = useAuth();
   if (!esAdministrador) return <Navigate to="/dashboard" replace />;
+  return <>{children}</>;
+}
+
+function RequireEmpresa({ children }: { children: React.ReactNode }) {
+  const { esEmpresa } = useAuth();
+  if (!esEmpresa) return <Navigate to="/dashboard" replace />;
   return <>{children}</>;
 }
 
@@ -80,6 +87,14 @@ export default function App() {
               <RequireAdmin>
                 <UsuariosPage />
               </RequireAdmin>
+            }
+          />
+          <Route
+            path="/mi-equipo"
+            element={
+              <RequireEmpresa>
+                <EquipoPage />
+              </RequireEmpresa>
             }
           />
           <Route path="/perfil" element={<ProfilePage />} />

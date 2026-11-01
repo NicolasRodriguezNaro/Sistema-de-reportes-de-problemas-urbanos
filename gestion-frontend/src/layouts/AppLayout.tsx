@@ -23,11 +23,12 @@ const TITULOS: Record<string, string> = {
   "/mapa": "Mapa territorial",
   "/entidades": "Entidades",
   "/usuarios": "Usuarios",
+  "/mi-equipo": "Mi equipo",
   "/perfil": "Perfil",
 };
 
 export function AppLayout() {
-  const { usuario, cerrarSesion, esAdministrador } = useAuth();
+  const { usuario, cerrarSesion, esAdministrador, esEmpresa } = useAuth();
   const [menuAbierto, setMenuAbierto] = useState(false);
   const location = useLocation();
   const navigate = useNavigate();
@@ -98,6 +99,12 @@ export function AppLayout() {
                 <span className="nav-tag">Admin</span>
               </NavLink>
             </>
+          )}
+          {esEmpresa && (
+            <NavLink to="/mi-equipo" className={({ isActive }) => `nav-item ${isActive ? "active" : ""}`}>
+              <Users size={19} />
+              <span>Mi equipo</span>
+            </NavLink>
           )}
           <NavLink to="/perfil" className={({ isActive }) => `nav-item ${isActive ? "active" : ""}`}>
             <UserRound size={19} />
