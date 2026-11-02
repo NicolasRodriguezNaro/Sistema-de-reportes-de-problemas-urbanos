@@ -39,7 +39,8 @@ Reglas concretas:
   respetando el alcance por entidad. Un rechazo exige `motivoRechazo`; una reapertura
   exige `motivoReapertura` y solo puede volver a `EN_REVISION`.
 - `GET /api/reportes/{id}/historial`: mismo alcance que el detalle del reporte.
-- `PATCH /api/reportes/{id}/asignacion`: solo `ADMINISTRADOR`.
+- `PATCH /api/reportes/{id}/asignacion`: solo `ADMINISTRADOR`; no aplica a reportes
+  rechazados hasta que se reabran.
 
 Los catálogos (`barrios`, `sitios-interes`, `entidades`) son de consulta para los roles
 del dashboard.
@@ -323,7 +324,7 @@ Ambas rutas son públicas; el resto de `/api/**` exige token.
 - Preflight CORS para el origen del dashboard.
 - OpenAPI disponible sin token.
 
-Resultado de la suite: **64/64 pruebas en verde** con `./mvnw test`.
+Resultado de la suite: **65/65 pruebas en verde** con `./mvnw test`.
 
 ---
 

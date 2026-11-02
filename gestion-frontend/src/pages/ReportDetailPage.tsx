@@ -17,6 +17,7 @@ import { Link, useParams } from "react-router-dom";
 import { apiFetch } from "../api/client";
 import { useAuth } from "../auth/AuthContext";
 import { PriorityBadge, StatusBadge } from "../components/Badges";
+import { ConfirmDialog } from "../components/ConfirmDialog";
 import { MapPanel, ReportMap } from "../components/MapPanel";
 import { PageHeader } from "../components/PageHeader";
 import { ErrorState, LoadingState } from "../components/States";
@@ -64,6 +65,7 @@ export function ReportDetailPage() {
   const [motivoRechazo, setMotivoRechazo] = useState<MotivoRechazo | "">("");
   const [detalleRechazo, setDetalleRechazo] = useState("");
   const [motivoReapertura, setMotivoReapertura] = useState("");
+  const [confirmarReapertura, setConfirmarReapertura] = useState(false);
   const [entidadSeleccionada, setEntidadSeleccionada] = useState("");
   const [guardando, setGuardando] = useState(false);
   const [mensaje, setMensaje] = useState<string | null>(null);
@@ -91,6 +93,7 @@ export function ReportDetailPage() {
       setMotivoRechazo(data.motivoRechazo ?? "");
       setDetalleRechazo(data.detalleRechazo ?? "");
       setMotivoReapertura("");
+      setConfirmarReapertura(false);
       setEntidadSeleccionada(data.entidadAsignadaId ? String(data.entidadAsignadaId) : "");
       const geo = await apiFetch<FeatureCollection<ReporteGeoProperties>>("/api/reportes/geojson");
       setGeoReporte({
@@ -160,17 +163,18 @@ export function ReportDetailPage() {
     }
   };
 
-  const reabrirReporte = async () => {
-    if (!reporte) return;
+  const solicitarReapertura = () => {
     if (!motivoReapertura.trim()) {
       setMensaje(null);
       setErrorAccion("Escribe el motivo de reapertura.");
       return;
     }
-    const confirmado = window.confirm(
-      "El reporte volverá a En revisión y el rechazo quedará registrado en el historial. ¿Deseas continuar?"
-    );
-    if (!confirmado) return;
+    setErrorAccion(null);
+    setConfirmarReapertura(true);
+  };
+
+  const reabrirReporte = async () => {
+    if (!reporte) return;
 
     setGuardando(true);
     setMensaje(null);
@@ -188,12 +192,14 @@ export function ReportDetailPage() {
       setMotivoRechazo("");
       setDetalleRechazo("");
       setMotivoReapertura("");
+      setConfirmarReapertura(false);
       const historialActualizado = await apiFetch<HistorialReporte[]>(
         `/api/reportes/${reporte.id}/historial`
       ).catch(() => historial);
       setHistorial(historialActualizado);
       setMensaje("Reporte reabierto y enviado a revisión.");
     } catch (err) {
+      setConfirmarReapertura(false);
       setErrorAccion(err instanceof Error ? err.message : "No se pudo reabrir el reporte.");
     } finally {
       setGuardando(false);
@@ -401,7 +407,7 @@ export function ReportDetailPage() {
                   </label>
                   <button
                     className="button button-primary button-block"
-                    onClick={reabrirReporte}
+                    onClick={solicitarReapertura}
                     disabled={guardando || !motivoReapertura.trim()}
                   >
                     {guardando ? "Reabriendo..." : "Reabrir reporte"}
@@ -470,7 +476,7 @@ export function ReportDetailPage() {
               <p className="read-only-note">Tu rol puede consultar este reporte, pero no cambiar su estado.</p>
             )}
 
-            {puedeAsignar && (
+            {puedeAsignar && reporte.estado !== "RECHAZADO" && (
               <div className="action-block action-block-separated">
                 <label className="field">
                   <span>Entidad responsable</span>
@@ -491,6 +497,15 @@ export function ReportDetailPage() {
                 >
                   Asignar entidad
                 </button>
+              </div>
+            )}
+
+            {puedeAsignar && reporte.estado === "RECHAZADO" && (
+              <div className="action-block action-block-separated">
+                <p className="read-only-note">
+                  La entidad responsable no se puede cambiar mientras el reporte esté rechazado.
+                  Reábrelo primero para volver a asignarlo.
+                </p>
               </div>
             )}
           </article>
@@ -553,6 +568,22 @@ export function ReportDetailPage() {
           )}
         </aside>
       </section>
+
+      <ConfirmDialog
+        abierto={confirmarReapertura}
+        titulo={`Reabrir reporte #${reporte.id}`}
+        descripcion="El reporte volverá a En revisión. El rechazo anterior se conservará en el historial."
+        detalle={
+          <>
+            <span>Motivo de reapertura: </span>
+            <strong>{motivoReapertura}</strong>
+          </>
+        }
+        confirmarLabel="Reabrir reporte"
+        cargando={guardando}
+        onConfirmar={reabrirReporte}
+        onCancelar={() => setConfirmarReapertura(false)}
+      />
     </div>
   );
 }

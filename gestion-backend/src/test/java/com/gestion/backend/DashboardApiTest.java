@@ -603,6 +603,32 @@ class DashboardApiTest {
 	}
 
 	@Test
+	void noSePuedeAsignarEntidadAReporteRechazado() throws Exception {
+		List<Entidad> entidades = entidades();
+		Entidad entidadA = entidades.get(0);
+		Entidad entidadB = entidades.get(1);
+
+		Usuario admin = crearUsuario(RolUsuario.ADMINISTRADOR, null);
+		Usuario ciudadano = crearUsuario(RolUsuario.CIUDADANO, null);
+		Reporte reporte = crearReporte(ciudadano, entidadA, TipoIncidencia.HUECO_VIA,
+				PrioridadCalculada.MEDIA);
+		reporte.setEstado(EstadoReporte.RECHAZADO);
+		reporte.setMotivoRechazo(com.gestion.backend.modelo.MotivoRechazo.NO_RELACIONADO);
+		reporteRepository.saveAndFlush(reporte);
+
+		mockMvc.perform(patch("/api/reportes/" + reporte.getId() + "/asignacion")
+				.header(HttpHeaders.AUTHORIZATION, autorizacion(admin))
+				.contentType(MediaType.APPLICATION_JSON)
+				.content("{\"entidadId\":" + entidadB.getId() + "}"))
+				.andExpect(status().isBadRequest())
+				.andExpect(jsonPath("$.mensaje")
+						.value("No se puede asignar una entidad a un reporte rechazado. Reabrelo primero."));
+
+		Reporte sinCambios = reporteRepository.findById(reporte.getId()).orElseThrow();
+		assertThat(sinCambios.getEntidadAsignada().getId()).isEqualTo(entidadA.getId());
+	}
+
+	@Test
 	void administradorAsignaEntidadYFuncionarioNoPuedeAsignar() throws Exception {
 		List<Entidad> entidades = entidades();
 		Entidad entidadA = entidades.get(0);

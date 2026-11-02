@@ -1015,6 +1015,10 @@ Respuesta `200`: el reporte completo con la nueva `entidadAsignadaId`.
 La asignación **no cambia el estado**. Si quieres marcar el reporte como asignado,
 haz una segunda petición a `/estado` con `ASIGNADO`.
 
+Un reporte en estado `RECHAZADO` no puede reasignarse. Para cambiar su entidad hay
+que reabrirlo primero a `EN_REVISION` con `motivoReapertura`; en ese caso la API
+responde `400`.
+
 ### 6.8 GeoJSON de reportes
 
 ```http

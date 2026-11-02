@@ -255,6 +255,10 @@ public class ReporteService {
 	public ReporteResponse asignar(Long id, Integer entidadId) {
 		alcanceReportes.verificarPuedeAsignar(alcanceReportes.usuarioActual());
 		Reporte reporte = buscar(id);
+		if (reporte.getEstado() == EstadoReporte.RECHAZADO) {
+			throw new IllegalArgumentException(
+					"No se puede asignar una entidad a un reporte rechazado. Reabrelo primero.");
+		}
 		Entidad entidad = entidadRepository.findById(entidadId)
 				.orElseThrow(() -> new RecursoNoEncontradoException("Entidad no encontrada con id " + entidadId));
 		reporte.setEntidadAsignada(entidad);
