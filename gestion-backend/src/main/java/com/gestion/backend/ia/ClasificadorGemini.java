@@ -78,7 +78,7 @@ public class ClasificadorGemini implements ClasificadorIncidencias {
 			@Value("${gestion.ia.gemini.api-key:}") String apiKey,
 			@Value("${gestion.ia.gemini.modelo:gemini-3.5-flash-lite}") String modelo,
 			@Value("${gestion.ia.gemini.url:https://generativelanguage.googleapis.com/v1beta}") String urlBase,
-			@Value("${gestion.ia.gemini.timeout-segundos:20}") long timeoutSegundos,
+			@Value("${gestion.ia.gemini.timeout-segundos:60}") long timeoutSegundos,
 			@Value("${gestion.ia.gemini.confianza-minima:0.60}") double confianzaMinima) {
 		this.almacenamiento = almacenamiento;
 		this.apiKey = apiKey == null ? "" : apiKey.trim();

@@ -13,7 +13,7 @@ En `application.properties`:
 gestion.ia.modo=simulado
 gestion.ia.gemini.api-key=${GEMINI_API_KEY:}
 gestion.ia.gemini.modelo=gemini-3.5-flash-lite
-gestion.ia.gemini.timeout-segundos=20
+gestion.ia.gemini.timeout-segundos=60
 gestion.ia.gemini.confianza-minima=0.60
 ```
 
@@ -95,3 +95,5 @@ datos.
 - `ClasificadorGeminiHttpTest` simula la API con un servidor HTTP local y
   verifica que se envien la imagen y la clave en los headers, sin consumir la
   API real.
+- `ia-evaluation/` contiene el set publico de evaluacion y el comando
+  `EvaluacionGeminiManual` para medir accuracy contra la API real.
