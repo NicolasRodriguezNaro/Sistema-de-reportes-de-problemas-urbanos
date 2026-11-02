@@ -1603,6 +1603,13 @@ strong {
   line-height: 1.45;
 }
 
+.history-reopen {
+  margin-top: 2px;
+  color: #166534;
+  font-size: 9px;
+  line-height: 1.45;
+}
+
 .metadata-list {
   display: flex;
   flex-direction: column;

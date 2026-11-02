@@ -52,6 +52,9 @@ public class ReporteHistorial {
 	@Column(columnDefinition = "TEXT")
 	private String detalle;
 
+	@Column(name = "motivo_reapertura", columnDefinition = "TEXT")
+	private String motivoReapertura;
+
 	@Column(nullable = false)
 	private Instant fecha;
 

@@ -14,5 +14,8 @@ public record CambioEstadoRequest(
 		MotivoRechazo motivoRechazo,
 
 		@Size(max = 1000, message = "El detalle no puede superar 1000 caracteres")
-		String detalleRechazo) {
+		String detalleRechazo,
+
+		@Size(max = 1000, message = "El motivo de reapertura no puede superar 1000 caracteres")
+		String motivoReapertura) {
 }

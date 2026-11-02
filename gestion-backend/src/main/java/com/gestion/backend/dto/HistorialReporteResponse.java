@@ -14,6 +14,7 @@ public record HistorialReporteResponse(
 		String usuarioNombre,
 		MotivoRechazo motivo,
 		String detalle,
+		String motivoReapertura,
 		Instant fecha) {
 
 	public static HistorialReporteResponse desde(ReporteHistorial historial) {
@@ -25,6 +26,7 @@ public record HistorialReporteResponse(
 				historial.getUsuario().getNombre(),
 				historial.getMotivo(),
 				historial.getDetalle(),
+				historial.getMotivoReapertura(),
 				historial.getFecha());
 	}
 }

@@ -82,6 +82,7 @@ export interface HistorialReporte {
   usuarioNombre: string;
   motivo: MotivoRechazo | null;
   detalle: string | null;
+  motivoReapertura: string | null;
   fecha: string;
 }
 

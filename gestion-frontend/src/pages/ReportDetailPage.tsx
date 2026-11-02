@@ -63,6 +63,7 @@ export function ReportDetailPage() {
   const [nuevoEstado, setNuevoEstado] = useState<EstadoReporte>("PENDIENTE");
   const [motivoRechazo, setMotivoRechazo] = useState<MotivoRechazo | "">("");
   const [detalleRechazo, setDetalleRechazo] = useState("");
+  const [motivoReapertura, setMotivoReapertura] = useState("");
   const [entidadSeleccionada, setEntidadSeleccionada] = useState("");
   const [guardando, setGuardando] = useState(false);
   const [mensaje, setMensaje] = useState<string | null>(null);
@@ -89,6 +90,7 @@ export function ReportDetailPage() {
       setNuevoEstado(data.estado);
       setMotivoRechazo(data.motivoRechazo ?? "");
       setDetalleRechazo(data.detalleRechazo ?? "");
+      setMotivoReapertura("");
       setEntidadSeleccionada(data.entidadAsignadaId ? String(data.entidadAsignadaId) : "");
       const geo = await apiFetch<FeatureCollection<ReporteGeoProperties>>("/api/reportes/geojson");
       setGeoReporte({
@@ -153,6 +155,46 @@ export function ReportDetailPage() {
       setMensaje("Estado actualizado correctamente.");
     } catch (err) {
       setErrorAccion(err instanceof Error ? err.message : "No se pudo cambiar el estado.");
+    } finally {
+      setGuardando(false);
+    }
+  };
+
+  const reabrirReporte = async () => {
+    if (!reporte) return;
+    if (!motivoReapertura.trim()) {
+      setMensaje(null);
+      setErrorAccion("Escribe el motivo de reapertura.");
+      return;
+    }
+    const confirmado = window.confirm(
+      "El reporte volverá a En revisión y el rechazo quedará registrado en el historial. ¿Deseas continuar?"
+    );
+    if (!confirmado) return;
+
+    setGuardando(true);
+    setMensaje(null);
+    setErrorAccion(null);
+    try {
+      const actualizado = await apiFetch<ReporteResponse>(`/api/reportes/${reporte.id}/estado`, {
+        method: "PATCH",
+        body: JSON.stringify({
+          estado: "EN_REVISION",
+          motivoReapertura: motivoReapertura.trim(),
+        }),
+      });
+      setReporte(actualizado);
+      setNuevoEstado(actualizado.estado);
+      setMotivoRechazo("");
+      setDetalleRechazo("");
+      setMotivoReapertura("");
+      const historialActualizado = await apiFetch<HistorialReporte[]>(
+        `/api/reportes/${reporte.id}/historial`
+      ).catch(() => historial);
+      setHistorial(historialActualizado);
+      setMensaje("Reporte reabierto y enviado a revisión.");
+    } catch (err) {
+      setErrorAccion(err instanceof Error ? err.message : "No se pudo reabrir el reporte.");
     } finally {
       setGuardando(false);
     }
@@ -341,63 +383,89 @@ export function ReportDetailPage() {
             </div>
 
             {puedeGestionar ? (
-              <div className="action-block">
-                <label className="field">
-                  <span>Cambiar estado</span>
-                  <select
-                    value={nuevoEstado}
-                    onChange={(event) => {
-                      const estado = event.target.value as EstadoReporte;
-                      setNuevoEstado(estado);
-                      if (estado !== "RECHAZADO") {
-                        setMotivoRechazo("");
-                        setDetalleRechazo("");
-                      }
-                    }}
+              reporte.estado === "RECHAZADO" ? (
+                <div className="action-block">
+                  <p className="read-only-note">
+                    Este reporte está rechazado. Para corregir la decisión, reábrelo y explica el motivo.
+                    Volverá al estado En revisión.
+                  </p>
+                  <label className="field">
+                    <span>Motivo de reapertura</span>
+                    <textarea
+                      value={motivoReapertura}
+                      maxLength={1000}
+                      rows={3}
+                      placeholder="Explica por qué se reabre este reporte."
+                      onChange={(event) => setMotivoReapertura(event.target.value)}
+                    />
+                  </label>
+                  <button
+                    className="button button-primary button-block"
+                    onClick={reabrirReporte}
+                    disabled={guardando || !motivoReapertura.trim()}
                   >
-                    {Object.entries(ETIQUETAS_ESTADO).map(([valor, label]) => (
-                      <option key={valor} value={valor}>{label}</option>
-                    ))}
-                  </select>
-                </label>
-                {nuevoEstado === "RECHAZADO" && (
-                  <>
-                    <label className="field">
-                      <span>Motivo de rechazo</span>
-                      <select
-                        value={motivoRechazo}
-                        onChange={(event) =>
-                          setMotivoRechazo(event.target.value as MotivoRechazo | "")
+                    {guardando ? "Reabriendo..." : "Reabrir reporte"}
+                  </button>
+                </div>
+              ) : (
+                <div className="action-block">
+                  <label className="field">
+                    <span>Cambiar estado</span>
+                    <select
+                      value={nuevoEstado}
+                      onChange={(event) => {
+                        const estado = event.target.value as EstadoReporte;
+                        setNuevoEstado(estado);
+                        if (estado !== "RECHAZADO") {
+                          setMotivoRechazo("");
+                          setDetalleRechazo("");
                         }
-                      >
-                        <option value="">Selecciona un motivo</option>
-                        {Object.entries(ETIQUETAS_MOTIVO_RECHAZO).map(([valor, label]) => (
-                          <option key={valor} value={valor}>{label}</option>
-                        ))}
-                      </select>
-                    </label>
-                    <label className="field">
-                      <span>
-                        Detalle {motivoRechazo === "OTRO" ? "(obligatorio)" : "(opcional)"}
-                      </span>
-                      <textarea
-                        value={detalleRechazo}
-                        maxLength={1000}
-                        rows={3}
-                        placeholder="Explica brevemente la decisión para el ciudadano."
-                        onChange={(event) => setDetalleRechazo(event.target.value)}
-                      />
-                    </label>
-                  </>
-                )}
-                <button
-                  className="button button-primary button-block"
-                  onClick={cambiarEstado}
-                  disabled={guardando || nuevoEstado === reporte.estado || rechazoIncompleto}
-                >
-                  {guardando ? "Guardando..." : "Guardar estado"}
-                </button>
-              </div>
+                      }}
+                    >
+                      {Object.entries(ETIQUETAS_ESTADO).map(([valor, label]) => (
+                        <option key={valor} value={valor}>{label}</option>
+                      ))}
+                    </select>
+                  </label>
+                  {nuevoEstado === "RECHAZADO" && (
+                    <>
+                      <label className="field">
+                        <span>Motivo de rechazo</span>
+                        <select
+                          value={motivoRechazo}
+                          onChange={(event) =>
+                            setMotivoRechazo(event.target.value as MotivoRechazo | "")
+                          }
+                        >
+                          <option value="">Selecciona un motivo</option>
+                          {Object.entries(ETIQUETAS_MOTIVO_RECHAZO).map(([valor, label]) => (
+                            <option key={valor} value={valor}>{label}</option>
+                          ))}
+                        </select>
+                      </label>
+                      <label className="field">
+                        <span>
+                          Detalle {motivoRechazo === "OTRO" ? "(obligatorio)" : "(opcional)"}
+                        </span>
+                        <textarea
+                          value={detalleRechazo}
+                          maxLength={1000}
+                          rows={3}
+                          placeholder="Explica brevemente la decisión para el ciudadano."
+                          onChange={(event) => setDetalleRechazo(event.target.value)}
+                        />
+                      </label>
+                    </>
+                  )}
+                  <button
+                    className="button button-primary button-block"
+                    onClick={cambiarEstado}
+                    disabled={guardando || nuevoEstado === reporte.estado || rechazoIncompleto}
+                  >
+                    {guardando ? "Guardando..." : "Guardar estado"}
+                  </button>
+                </div>
+              )
             ) : (
               <p className="read-only-note">Tu rol puede consultar este reporte, pero no cambiar su estado.</p>
             )}
@@ -454,6 +522,11 @@ export function ReportDetailPage() {
                         <span className="history-reason">
                           {ETIQUETAS_MOTIVO_RECHAZO[evento.motivo]}
                           {evento.detalle ? ` · ${evento.detalle}` : ""}
+                        </span>
+                      )}
+                      {evento.motivoReapertura && (
+                        <span className="history-reopen">
+                          Motivo de reapertura: {evento.motivoReapertura}
                         </span>
                       )}
                     </div>

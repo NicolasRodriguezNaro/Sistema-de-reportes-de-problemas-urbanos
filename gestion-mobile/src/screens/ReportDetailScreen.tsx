@@ -226,6 +226,11 @@ export function ReportDetailScreen({ id }: { id: number }) {
                         {evento.detalle ? ` · ${evento.detalle}` : ""}
                       </Text>
                     )}
+                    {evento.motivoReapertura && (
+                      <Text style={styles.historyReopen}>
+                        Motivo de reapertura: {evento.motivoReapertura}
+                      </Text>
+                    )}
                   </View>
                 </View>
               ))
@@ -503,6 +508,12 @@ const styles = StyleSheet.create({
   },
   historyReason: {
     color: colors.danger,
+    fontFamily: fonts.regular,
+    fontSize: 9,
+    lineHeight: 14,
+  },
+  historyReopen: {
+    color: colors.success,
     fontFamily: fonts.regular,
     fontSize: 9,
     lineHeight: 14,

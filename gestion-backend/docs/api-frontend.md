@@ -922,13 +922,25 @@ hasta 1000 caracteres.
 Respuesta `200`: el reporte completo actualizado. Incluye `motivoRechazo` y
 `detalleRechazo`; estos campos se limpian cuando el reporte sale del estado `RECHAZADO`.
 
+Para reabrir un reporte rechazado se exige un motivo y solo se permite volver a
+`EN_REVISION`:
+
+```json
+{
+  "estado": "EN_REVISION",
+  "motivoReapertura": "El rechazo fue un error de moderación."
+}
+```
+
 Reglas:
 
 - Un funcionario o una empresa solo pueden cambiar el estado de reportes de su entidad.
 - Un administrador puede cambiar cualquiera.
 - Un ciudadano recibe `403`.
+- Un reporte en `RECHAZADO` no puede volver directamente a `PENDIENTE`, `ASIGNADO` o
+  `RESUELTO`; debe reabrirse a `EN_REVISION` y explicar el motivo.
 - Cada cambio de estado queda en un historial append-only con usuario, fecha,
-  estado anterior, estado nuevo y motivo/detalle del rechazo.
+  estado anterior, estado nuevo, motivo/detalle del rechazo o motivo de reapertura.
 
 ### 6.6 Historial de estados
 
@@ -963,7 +975,19 @@ Respuesta `200`:
     "usuarioNombre": "Carlos Funcionario",
     "motivo": "NO_RELACIONADO",
     "detalle": "La imagen no corresponde a una incidencia urbana.",
+    "motivoReapertura": null,
     "fecha": "2026-11-02T16:05:00Z"
+  },
+  {
+    "id": 52,
+    "estadoAnterior": "RECHAZADO",
+    "estadoNuevo": "EN_REVISION",
+    "usuarioId": 3,
+    "usuarioNombre": "Carlos Funcionario",
+    "motivo": null,
+    "detalle": null,
+    "motivoReapertura": "El rechazo fue un error de moderación.",
+    "fecha": "2026-11-02T16:20:00Z"
   }
 ]
 ```
@@ -1358,6 +1382,7 @@ export interface HistorialReporte {
   usuarioNombre: string;
   motivo: MotivoRechazo | null;
   detalle: string | null;
+  motivoReapertura: string | null;
   fecha: string;
 }
 
@@ -1392,6 +1417,7 @@ export interface CambioEstadoRequest {
   estado: EstadoReporte;
   motivoRechazo?: MotivoRechazo | null;
   detalleRechazo?: string | null;
+  motivoReapertura?: string | null;
 }
 
 export interface CambioAsignacionRequest {
@@ -1699,11 +1725,12 @@ export function cambiarEstado(
   id: number,
   estado: EstadoReporte,
   motivoRechazo?: MotivoRechazo,
-  detalleRechazo?: string
+  detalleRechazo?: string,
+  motivoReapertura?: string
 ) {
   return apiFetch<ReporteResponse>(`/api/reportes/${id}/estado`, {
     method: "PATCH",
-    body: JSON.stringify({ estado, motivoRechazo, detalleRechazo }),
+    body: JSON.stringify({ estado, motivoRechazo, detalleRechazo, motivoReapertura }),
   });
 }
 

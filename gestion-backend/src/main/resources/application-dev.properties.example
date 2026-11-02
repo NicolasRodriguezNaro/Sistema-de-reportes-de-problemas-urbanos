@@ -7,6 +7,8 @@ spring.jpa.show-sql=true
 spring.jpa.properties.hibernate.format_sql=true
 
 gestion.almacenamiento.minio.endpoint=http://localhost:9000
+# Host publico usado solo para firmar URLs. En un celular debe ser la IP LAN del PC.
+gestion.almacenamiento.minio.endpoint-publico=${MINIO_PUBLIC_ENDPOINT:http://localhost:9000}
 gestion.almacenamiento.minio.bucket=reportes
 gestion.almacenamiento.minio.region=us-east-1
 gestion.almacenamiento.minio.access-key=${MINIO_ROOT_USER:minioadmin}

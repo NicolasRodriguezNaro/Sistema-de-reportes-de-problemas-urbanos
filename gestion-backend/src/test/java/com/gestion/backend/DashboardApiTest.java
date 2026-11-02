@@ -468,6 +468,24 @@ class DashboardApiTest {
 				.header(HttpHeaders.AUTHORIZATION, autorizacion)
 				.contentType(MediaType.APPLICATION_JSON)
 				.content("{\"estado\":\"EN_REVISION\"}"))
+				.andExpect(status().isBadRequest())
+				.andExpect(jsonPath("$.mensaje").value("Debe indicar el motivo de reapertura"));
+
+		mockMvc.perform(patch("/api/reportes/" + reporte.getId() + "/estado")
+				.header(HttpHeaders.AUTHORIZATION, autorizacion)
+				.contentType(MediaType.APPLICATION_JSON)
+				.content("{\"estado\":\"PENDIENTE\",\"motivoReapertura\":\"Correccion\"}"))
+				.andExpect(status().isBadRequest())
+				.andExpect(jsonPath("$.mensaje")
+						.value("Un reporte rechazado solo puede reabrirse al estado EN_REVISION"));
+
+		mockMvc.perform(patch("/api/reportes/" + reporte.getId() + "/estado")
+				.header(HttpHeaders.AUTHORIZATION, autorizacion)
+				.contentType(MediaType.APPLICATION_JSON)
+				.content("""
+						{"estado":"EN_REVISION",
+						 "motivoReapertura":"El rechazo fue un error de moderacion."}
+						"""))
 				.andExpect(status().isOk())
 				.andExpect(jsonPath("$.estado").value("EN_REVISION"))
 				.andExpect(jsonPath("$.motivoRechazo").value(org.hamcrest.Matchers.nullValue()))
@@ -478,7 +496,9 @@ class DashboardApiTest {
 				.andExpect(status().isOk())
 				.andExpect(jsonPath("$.length()").value(2))
 				.andExpect(jsonPath("$[1].estadoAnterior").value("RECHAZADO"))
-				.andExpect(jsonPath("$[1].estadoNuevo").value("EN_REVISION"));
+				.andExpect(jsonPath("$[1].estadoNuevo").value("EN_REVISION"))
+				.andExpect(jsonPath("$[1].motivoReapertura")
+						.value("El rechazo fue un error de moderacion."));
 	}
 
 	@Test

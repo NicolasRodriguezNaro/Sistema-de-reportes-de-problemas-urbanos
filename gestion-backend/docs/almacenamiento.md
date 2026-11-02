@@ -127,13 +127,18 @@ La respuesta incluye `claveImagenHd`, `urlImagenHd` (resuelta), `claveImagenThum
 `application-dev.properties` (ignorado por git) contiene:
 
 ```properties
+# Endpoint interno del backend hacia Silo/MinIO
 gestion.almacenamiento.minio.endpoint=http://localhost:9000
+# Host publico que se usa al firmar las URLs (celular, navegador LAN, dominio en produccion)
+gestion.almacenamiento.minio.endpoint-publico=http://192.168.x.x:9000
 gestion.almacenamiento.minio.bucket=reportes
 gestion.almacenamiento.minio.region=us-east-1
 gestion.almacenamiento.minio.access-key=${MINIO_ROOT_USER:minioadmin}
 gestion.almacenamiento.minio.secret-key=${MINIO_ROOT_PASSWORD:minioadmin}
 gestion.almacenamiento.minio.expiracion-url-minutos=15
 ```
+
+Si `endpoint-publico` queda vacío, se usa el mismo valor de `endpoint`.
 
 Límites multipart (en `application.properties`):
 
@@ -195,8 +200,9 @@ curl -X POST http://localhost:8080/api/archivos -F "archivo=@C:\ruta\foto.jpg"
   decodificable se conserva la HD y la miniatura queda null.
 - **Validación de contenido**: hoy se valida MIME declarado y tamaño; una validación por
   *magic bytes* queda como mejora.
-- **Cliente móvil en otro dispositivo**: `localhost` no resuelve; configura el endpoint con la
-  IP LAN del PC (`http://192.168.x.x:9000`) para que las URLs firmadas sean alcanzables.
+- **Cliente móvil en otro dispositivo**: `localhost` no resuelve; configura
+  `gestion.almacenamiento.minio.endpoint-publico` con la IP LAN del PC
+  (`http://192.168.x.x:9000`). El backend puede seguir usando `endpoint` interno.
 - **Producción (AWS S3)**: mismo adaptador; se cambian endpoint/región/credenciales (IAM) y
   se elimina `forcePathStyle` si se usa el endpoint de AWS.
 - **Credenciales**: nunca en git. `.env` y `application-dev.properties` están ignorados.

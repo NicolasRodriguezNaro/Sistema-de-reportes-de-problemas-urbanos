@@ -100,7 +100,7 @@ public class ReporteController {
 	@PreAuthorize(ROLES_GESTION)
 	public ReporteResponse cambiarEstado(@PathVariable Long id, @Valid @RequestBody CambioEstadoRequest solicitud) {
 		return reporteService.cambiarEstado(id, solicitud.estado(), solicitud.motivoRechazo(),
-				solicitud.detalleRechazo());
+				solicitud.detalleRechazo(), solicitud.motivoReapertura());
 	}
 
 	@GetMapping("/{id}/historial")

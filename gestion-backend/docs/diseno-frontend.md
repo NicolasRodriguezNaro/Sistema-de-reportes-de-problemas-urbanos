@@ -978,7 +978,8 @@ src/
 ## 14. Decisiones y notas
 
 - La asignación de entidad **no cambia el estado** del reporte.
-- El detalle del reporte muestra el historial de estados y el motivo del rechazo.
+- El detalle del reporte muestra el historial de estados, el motivo del rechazo y,
+  cuando aplica, el motivo de reapertura.
 - No hay notificaciones ni WebSockets.
 - No hay refresh token; al expirar la sesión se vuelve al login.
 - La app móvil no incluye el dashboard administrativo.

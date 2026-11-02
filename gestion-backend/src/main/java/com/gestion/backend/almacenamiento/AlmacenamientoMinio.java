@@ -40,6 +40,7 @@ public class AlmacenamientoMinio implements AlmacenamientoArchivos {
 
 	public AlmacenamientoMinio(
 			@Value("${gestion.almacenamiento.minio.endpoint:http://localhost:9000}") String endpoint,
+			@Value("${gestion.almacenamiento.minio.endpoint-publico:}") String endpointPublico,
 			@Value("${gestion.almacenamiento.minio.bucket:reportes}") String bucket,
 			@Value("${gestion.almacenamiento.minio.region:us-east-1}") String region,
 			@Value("${gestion.almacenamiento.minio.access-key:minioadmin}") String accessKey,
@@ -50,6 +51,9 @@ public class AlmacenamientoMinio implements AlmacenamientoArchivos {
 
 		StaticCredentialsProvider credenciales = StaticCredentialsProvider.create(
 				AwsBasicCredentials.create(accessKey, secretKey));
+		String endpointFirmas = endpointPublico == null || endpointPublico.isBlank()
+				? endpoint
+				: endpointPublico;
 
 		this.cliente = S3Client.builder()
 				.endpointOverride(URI.create(endpoint))
@@ -59,7 +63,7 @@ public class AlmacenamientoMinio implements AlmacenamientoArchivos {
 				.build();
 
 		this.firmador = S3Presigner.builder()
-				.endpointOverride(URI.create(endpoint))
+				.endpointOverride(URI.create(endpointFirmas))
 				.region(Region.of(region))
 				.credentialsProvider(credenciales)
 				.serviceConfiguration(S3Configuration.builder().pathStyleAccessEnabled(true).build())

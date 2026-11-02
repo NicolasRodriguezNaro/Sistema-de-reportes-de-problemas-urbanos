@@ -122,7 +122,7 @@ public class ReporteService {
 			guardado.setEntidadAsignada(entidadRepository.getReferenceById(analisis.entidadId()));
 		}
 
-		registrarHistorial(guardado, null, guardado.getEstado(), null, null, usuario);
+		registrarHistorial(guardado, null, guardado.getEstado(), null, null, null, usuario);
 
 		return aRespuesta(guardado);
 	}
@@ -160,16 +160,22 @@ public class ReporteService {
 
 	@Transactional
 	public ReporteResponse cambiarEstado(Long id, EstadoReporte nuevoEstado, MotivoRechazo motivoRechazo,
-			String detalleRechazo) {
+			String detalleRechazo, String motivoReapertura) {
 		Usuario usuario = alcanceReportes.usuarioActual();
 		Reporte reporte = buscar(id);
 		alcanceReportes.verificarPuedeGestionar(usuario, reporte);
 
-		validarRechazo(nuevoEstado, motivoRechazo, detalleRechazo);
 		EstadoReporte estadoAnterior = reporte.getEstado();
+		validarRechazo(nuevoEstado, motivoRechazo, detalleRechazo);
+		validarReapertura(estadoAnterior, nuevoEstado, motivoReapertura);
+
 		String detalleNormalizado = nuevoEstado == EstadoReporte.RECHAZADO
 				? normalizarDetalle(detalleRechazo)
 				: null;
+		String motivoReaperturaNormalizado = estadoAnterior == EstadoReporte.RECHAZADO
+				&& nuevoEstado != EstadoReporte.RECHAZADO
+						? normalizarDetalle(motivoReapertura)
+						: null;
 
 		reporte.setEstado(nuevoEstado);
 		if (nuevoEstado == EstadoReporte.RECHAZADO) {
@@ -182,7 +188,7 @@ public class ReporteService {
 
 		Reporte guardado = reporteRepository.saveAndFlush(reporte);
 		registrarHistorial(guardado, estadoAnterior, nuevoEstado, motivoRechazo,
-				detalleNormalizado, usuario);
+				detalleNormalizado, motivoReaperturaNormalizado, usuario);
 
 		return aRespuesta(guardado);
 	}
@@ -209,6 +215,22 @@ public class ReporteService {
 		}
 	}
 
+	private void validarReapertura(EstadoReporte anterior, EstadoReporte nuevo, String motivo) {
+		if (anterior == EstadoReporte.RECHAZADO && nuevo != EstadoReporte.RECHAZADO) {
+			if (nuevo != EstadoReporte.EN_REVISION) {
+				throw new IllegalArgumentException(
+						"Un reporte rechazado solo puede reabrirse al estado EN_REVISION");
+			}
+			if (motivo == null || motivo.isBlank()) {
+				throw new IllegalArgumentException("Debe indicar el motivo de reapertura");
+			}
+			return;
+		}
+		if (anterior != EstadoReporte.RECHAZADO && motivo != null && !motivo.isBlank()) {
+			throw new IllegalArgumentException("El motivo de reapertura solo aplica a reportes rechazados");
+		}
+	}
+
 	private String normalizarDetalle(String detalle) {
 		if (detalle == null || detalle.isBlank()) {
 			return null;
@@ -217,7 +239,7 @@ public class ReporteService {
 	}
 
 	private void registrarHistorial(Reporte reporte, EstadoReporte anterior, EstadoReporte nuevo,
-			MotivoRechazo motivo, String detalle, Usuario usuario) {
+			MotivoRechazo motivo, String detalle, String motivoReapertura, Usuario usuario) {
 		ReporteHistorial historial = new ReporteHistorial();
 		historial.setReporte(reporteRepository.getReferenceById(reporte.getId()));
 		historial.setEstadoAnterior(anterior);
@@ -225,6 +247,7 @@ public class ReporteService {
 		historial.setUsuario(usuario);
 		historial.setMotivo(motivo);
 		historial.setDetalle(detalle);
+		historial.setMotivoReapertura(motivoReapertura);
 		reporteHistorialRepository.save(historial);
 	}
 

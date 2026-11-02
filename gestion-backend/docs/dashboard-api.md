@@ -36,7 +36,8 @@ Reglas concretas:
 - `GET /api/reportes/{id}`: el dueño si es ciudadano; la entidad asignada si es
   funcionario/empresa; cualquier reporte si es administrador.
 - `PATCH /api/reportes/{id}/estado`: `FUNCIONARIO`, `ADMINISTRADOR` o `EMPRESA`,
-  respetando el alcance por entidad. Un rechazo exige `motivoRechazo`.
+  respetando el alcance por entidad. Un rechazo exige `motivoRechazo`; una reapertura
+  exige `motivoReapertura` y solo puede volver a `EN_REVISION`.
 - `GET /api/reportes/{id}/historial`: mismo alcance que el detalle del reporte.
 - `PATCH /api/reportes/{id}/asignacion`: solo `ADMINISTRADOR`.
 
