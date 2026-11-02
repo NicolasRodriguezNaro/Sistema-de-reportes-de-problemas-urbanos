@@ -418,6 +418,117 @@ class DashboardApiTest {
 	}
 
 	@Test
+	void rechazoRequiereMotivoYQuedaRegistradoEnElHistorial() throws Exception {
+		Usuario admin = crearUsuario(RolUsuario.ADMINISTRADOR, null);
+		Usuario ciudadano = crearUsuario(RolUsuario.CIUDADANO, null);
+		Entidad entidad = entidades().get(0);
+		Reporte reporte = crearReporte(ciudadano, entidad, TipoIncidencia.HUECO_VIA,
+				PrioridadCalculada.MEDIA);
+		String autorizacion = autorizacion(admin);
+
+		mockMvc.perform(patch("/api/reportes/" + reporte.getId() + "/estado")
+				.header(HttpHeaders.AUTHORIZATION, autorizacion)
+				.contentType(MediaType.APPLICATION_JSON)
+				.content("{\"estado\":\"RECHAZADO\"}"))
+				.andExpect(status().isBadRequest())
+				.andExpect(jsonPath("$.mensaje").value("Debe indicar el motivo del rechazo"));
+
+		mockMvc.perform(patch("/api/reportes/" + reporte.getId() + "/estado")
+				.header(HttpHeaders.AUTHORIZATION, autorizacion)
+				.contentType(MediaType.APPLICATION_JSON)
+				.content("{\"estado\":\"RECHAZADO\",\"motivoRechazo\":\"OTRO\"}"))
+				.andExpect(status().isBadRequest())
+				.andExpect(jsonPath("$.mensaje")
+						.value("Debe explicar el motivo cuando selecciona OTRO"));
+
+		mockMvc.perform(patch("/api/reportes/" + reporte.getId() + "/estado")
+				.header(HttpHeaders.AUTHORIZATION, autorizacion)
+				.contentType(MediaType.APPLICATION_JSON)
+				.content("""
+						{"estado":"RECHAZADO","motivoRechazo":"NO_RELACIONADO",
+						 "detalleRechazo":"La imagen no corresponde a una incidencia urbana."}
+						"""))
+				.andExpect(status().isOk())
+				.andExpect(jsonPath("$.estado").value("RECHAZADO"))
+				.andExpect(jsonPath("$.motivoRechazo").value("NO_RELACIONADO"))
+				.andExpect(jsonPath("$.detalleRechazo")
+						.value("La imagen no corresponde a una incidencia urbana."));
+
+		mockMvc.perform(get("/api/reportes/" + reporte.getId() + "/historial")
+				.header(HttpHeaders.AUTHORIZATION, autorizacion))
+				.andExpect(status().isOk())
+				.andExpect(jsonPath("$.length()").value(1))
+				.andExpect(jsonPath("$[0].estadoAnterior").value("PENDIENTE"))
+				.andExpect(jsonPath("$[0].estadoNuevo").value("RECHAZADO"))
+				.andExpect(jsonPath("$[0].motivo").value("NO_RELACIONADO"))
+				.andExpect(jsonPath("$[0].usuarioId").value(admin.getId()))
+				.andExpect(jsonPath("$[0].usuarioNombre").value(admin.getNombre()));
+
+		mockMvc.perform(patch("/api/reportes/" + reporte.getId() + "/estado")
+				.header(HttpHeaders.AUTHORIZATION, autorizacion)
+				.contentType(MediaType.APPLICATION_JSON)
+				.content("{\"estado\":\"EN_REVISION\"}"))
+				.andExpect(status().isOk())
+				.andExpect(jsonPath("$.estado").value("EN_REVISION"))
+				.andExpect(jsonPath("$.motivoRechazo").value(org.hamcrest.Matchers.nullValue()))
+				.andExpect(jsonPath("$.detalleRechazo").value(org.hamcrest.Matchers.nullValue()));
+
+		mockMvc.perform(get("/api/reportes/" + reporte.getId() + "/historial")
+				.header(HttpHeaders.AUTHORIZATION, autorizacion))
+				.andExpect(status().isOk())
+				.andExpect(jsonPath("$.length()").value(2))
+				.andExpect(jsonPath("$[1].estadoAnterior").value("RECHAZADO"))
+				.andExpect(jsonPath("$[1].estadoNuevo").value("EN_REVISION"));
+	}
+
+	@Test
+	void resumenSeparaRechazadosYReportesSinClasificar() throws Exception {
+		Usuario admin = crearUsuario(RolUsuario.ADMINISTRADOR, null);
+		Usuario ciudadano = crearUsuario(RolUsuario.CIUDADANO, null);
+		String autorizacion = autorizacion(admin);
+
+		MvcResult antes = mockMvc.perform(get("/api/dashboard/resumen")
+				.header(HttpHeaders.AUTHORIZATION, autorizacion))
+				.andExpect(status().isOk())
+				.andReturn();
+		long rechazadosAntes = ((Number) JsonPath.read(
+				antes.getResponse().getContentAsString(), "$.rechazados")).longValue();
+		long sinClasificarAntes = ((Number) JsonPath.read(
+				antes.getResponse().getContentAsString(), "$.pendientesClasificacion")).longValue();
+		long sinAsignarAntes = ((Number) JsonPath.read(
+				antes.getResponse().getContentAsString(), "$.sinAsignar")).longValue();
+
+		Reporte rechazado = crearReporte(ciudadano, null, null, PrioridadCalculada.MEDIA);
+		rechazado.setEstado(EstadoReporte.RECHAZADO);
+		rechazado.setMotivoRechazo(com.gestion.backend.modelo.MotivoRechazo.NO_RELACIONADO);
+		reporteRepository.saveAndFlush(rechazado);
+
+		MvcResult despuesRechazo = mockMvc.perform(get("/api/dashboard/resumen")
+				.header(HttpHeaders.AUTHORIZATION, autorizacion))
+				.andExpect(status().isOk())
+				.andReturn();
+		String cuerpoDespuesRechazo = despuesRechazo.getResponse().getContentAsString();
+		assertThat(((Number) JsonPath.read(cuerpoDespuesRechazo, "$.rechazados")).longValue())
+				.isEqualTo(rechazadosAntes + 1);
+		assertThat(((Number) JsonPath.read(cuerpoDespuesRechazo, "$.pendientesClasificacion")).longValue())
+				.isEqualTo(sinClasificarAntes);
+		assertThat(((Number) JsonPath.read(cuerpoDespuesRechazo, "$.sinAsignar")).longValue())
+				.isEqualTo(sinAsignarAntes);
+
+		crearReporte(ciudadano, null, null, PrioridadCalculada.MEDIA);
+
+		MvcResult despuesPendiente = mockMvc.perform(get("/api/dashboard/resumen")
+				.header(HttpHeaders.AUTHORIZATION, autorizacion))
+				.andExpect(status().isOk())
+				.andReturn();
+		String cuerpoDespuesPendiente = despuesPendiente.getResponse().getContentAsString();
+		assertThat(((Number) JsonPath.read(cuerpoDespuesPendiente, "$.pendientesClasificacion")).longValue())
+				.isEqualTo(sinClasificarAntes + 1);
+		assertThat(((Number) JsonPath.read(cuerpoDespuesPendiente, "$.sinAsignar")).longValue())
+				.isEqualTo(sinAsignarAntes + 1);
+	}
+
+	@Test
 	void geojsonDeReportesTieneFeaturesYPuntosValidos() throws Exception {
 		Usuario admin = crearUsuario(RolUsuario.ADMINISTRADOR, null);
 		Usuario ciudadano = crearUsuario(RolUsuario.CIUDADANO, null);

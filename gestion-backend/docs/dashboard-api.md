@@ -36,7 +36,8 @@ Reglas concretas:
 - `GET /api/reportes/{id}`: el dueño si es ciudadano; la entidad asignada si es
   funcionario/empresa; cualquier reporte si es administrador.
 - `PATCH /api/reportes/{id}/estado`: `FUNCIONARIO`, `ADMINISTRADOR` o `EMPRESA`,
-  respetando el alcance por entidad.
+  respetando el alcance por entidad. Un rechazo exige `motivoRechazo`.
+- `GET /api/reportes/{id}/historial`: mismo alcance que el detalle del reporte.
 - `PATCH /api/reportes/{id}/asignacion`: solo `ADMINISTRADOR`.
 
 Los catálogos (`barrios`, `sitios-interes`, `entidades`) son de consulta para los roles
@@ -154,6 +155,8 @@ Respuesta `200`:
   },
   "criticos": 3,
   "sinAsignar": 0,
+  "rechazados": 2,
+  "pendientesClasificacion": 4,
   "porBarrio": [
     { "barrioId": 124, "nombre": "Centro", "total": 8 }
   ]
@@ -164,8 +167,12 @@ Detalles:
 
 - Los mapas `porEstado`, `porCategoria` y `porPrioridad` incluyen **todas** las claves
   del enum, con `0` cuando no hay reportes.
-- `criticos` cuenta los reportes con `prioridadCalculada = CRITICA`.
-- `sinAsignar` cuenta los que tienen `entidadAsignadaId = null`.
+- `criticos` cuenta los reportes activos con `prioridadCalculada = CRITICA`; excluye
+  los rechazados.
+- `sinAsignar` cuenta los reportes activos con `entidadAsignadaId = null`; excluye
+  los rechazados.
+- `rechazados` cuenta los reportes en estado `RECHAZADO`.
+- `pendientesClasificacion` cuenta los reportes activos con `categoriaIa = null`.
 - `porBarrio` devuelve como máximo los **10 barrios con más reportes**.
 - `total` es el total del alcance y los filtros aplicados, no una suma de los mapas si
   existen datos históricos con campos nulos.
@@ -315,13 +322,14 @@ Ambas rutas son públicas; el resto de `/api/**` exige token.
 - Preflight CORS para el origen del dashboard.
 - OpenAPI disponible sin token.
 
-Resultado de la suite: **43/43 pruebas en verde** con `./mvnw clean test`.
+Resultado de la suite: **64/64 pruebas en verde** con `./mvnw test`.
 
 ---
 
 ## 11. Limitaciones actuales
 
-- No hay historial completo de cambios de estado; se difirió para una fase posterior.
+- El historial de estados es append-only y registra usuario, fecha, transición y motivo
+  de rechazo. Los reportes creados antes de la migración V5 no tienen eventos retroactivos.
 - La asignación no dispara notificaciones ni correos.
 - El GeoJSON de reportes limita a 2000 features para mantener el mapa fluido; si se
   necesita más, se debe implementar clustering o paginación geográfica.

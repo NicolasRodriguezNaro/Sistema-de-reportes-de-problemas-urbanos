@@ -19,39 +19,54 @@ import {
   StatusBadge,
 } from "../components/ui";
 import { colors, fonts, radius, spacing } from "../theme";
-import type { ReporteDetalle } from "../types";
+import type { HistorialReporte, ReporteDetalle } from "../types";
 import {
   ETIQUETAS_CATEGORIA,
+  ETIQUETAS_ESTADO,
+  ETIQUETAS_MOTIVO_RECHAZO,
   ETIQUETAS_SEVERIDAD,
 } from "../types";
+
+async function obtenerReporte(id: number) {
+  return Promise.all([
+    apiFetch<ReporteDetalle>(`/api/reportes/${id}`),
+    apiFetch<HistorialReporte[]>(`/api/reportes/${id}/historial`).catch(
+      () => [] as HistorialReporte[]
+    ),
+  ]);
+}
 
 export function ReportDetailScreen({ id }: { id: number }) {
   const router = useRouter();
   const insets = useSafeAreaInsets();
   const [reporte, setReporte] = useState<ReporteDetalle | null>(null);
+  const [historial, setHistorial] = useState<HistorialReporte[]>([]);
   const [cargando, setCargando] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [imageError, setImageError] = useState(false);
 
-  const cargar = useCallback(async () => {
+  const reintentar = useCallback(() => {
     setCargando(true);
     setError(null);
-    try {
-      const data = await apiFetch<ReporteDetalle>(`/api/reportes/${id}`);
-      setReporte(data);
-    } catch (err) {
-      setError(err instanceof Error ? err.message : "No se pudo cargar el reporte.");
-    } finally {
-      setCargando(false);
-    }
+    obtenerReporte(id)
+      .then(([data, historialData]) => {
+        setReporte(data);
+        setHistorial(historialData);
+      })
+      .catch((err: unknown) => {
+        setError(err instanceof Error ? err.message : "No se pudo cargar el reporte.");
+      })
+      .finally(() => setCargando(false));
   }, [id]);
 
   useEffect(() => {
     let activo = true;
 
-    apiFetch<ReporteDetalle>(`/api/reportes/${id}`)
-      .then((data) => {
-        if (activo) setReporte(data);
+    obtenerReporte(id)
+      .then(([data, historialData]) => {
+        if (!activo) return;
+        setReporte(data);
+        setHistorial(historialData);
       })
       .catch((err: unknown) => {
         if (activo) setError(err instanceof Error ? err.message : "No se pudo cargar el reporte.");
@@ -78,7 +93,7 @@ export function ReportDetailScreen({ id }: { id: number }) {
     return (
       <View style={[styles.screen, { paddingTop: insets.top + 12 }]}>
         <BackButton onPress={() => router.back()} />
-        <ErrorView message={error ?? "Reporte no encontrado"} onRetry={() => void cargar()} />
+        <ErrorView message={error ?? "Reporte no encontrado"} onRetry={reintentar} />
       </View>
     );
   }
@@ -143,6 +158,23 @@ export function ReportDetailScreen({ id }: { id: number }) {
             </Text>
           </View>
 
+          {reporte.estado === "RECHAZADO" && (
+            <View style={styles.rejectionCard}>
+              <View style={styles.rejectionHeader}>
+                <Ionicons name="close-circle" size={20} color={colors.danger} />
+                <Text style={styles.rejectionTitle}>Reporte rechazado</Text>
+              </View>
+              <Text style={styles.rejectionReason}>
+                {reporte.motivoRechazo
+                  ? ETIQUETAS_MOTIVO_RECHAZO[reporte.motivoRechazo]
+                  : "No se registró un motivo."}
+              </Text>
+              {reporte.detalleRechazo && (
+                <Text style={styles.rejectionDetail}>{reporte.detalleRechazo}</Text>
+              )}
+            </View>
+          )}
+
           <View style={styles.card}>
             <Text style={styles.cardKicker}>UBICACIÓN</Text>
             <View style={styles.locationRow}>
@@ -159,6 +191,49 @@ export function ReportDetailScreen({ id }: { id: number }) {
                 </Text>
               </View>
             </View>
+          </View>
+
+          <View style={styles.card}>
+            <Text style={styles.cardKicker}>HISTORIAL DE ESTADOS</Text>
+            {historial.length > 0 ? (
+              historial.map((evento) => (
+                <View key={evento.id} style={styles.historyRow}>
+                  <View style={styles.historyRail}>
+                    <View
+                      style={[
+                        styles.historyDot,
+                        evento.estadoNuevo === "RECHAZADO" && styles.historyDotDanger,
+                      ]}
+                    />
+                  </View>
+                  <View style={styles.historyCopy}>
+                    <Text style={styles.historyTitle}>
+                      {evento.estadoAnterior
+                        ? `${ETIQUETAS_ESTADO[evento.estadoAnterior]} → ${ETIQUETAS_ESTADO[evento.estadoNuevo]}`
+                        : ETIQUETAS_ESTADO[evento.estadoNuevo]}
+                    </Text>
+                    <Text style={styles.historyMeta}>
+                      {new Date(evento.fecha).toLocaleDateString("es-CO", {
+                        day: "2-digit",
+                        month: "short",
+                        year: "numeric",
+                      })}{" "}
+                      · {evento.usuarioNombre}
+                    </Text>
+                    {evento.motivo && (
+                      <Text style={styles.historyReason}>
+                        {ETIQUETAS_MOTIVO_RECHAZO[evento.motivo]}
+                        {evento.detalle ? ` · ${evento.detalle}` : ""}
+                      </Text>
+                    )}
+                  </View>
+                </View>
+              ))
+            ) : (
+              <Text style={styles.description}>
+                Este reporte no tiene movimientos de estado registrados.
+              </Text>
+            )}
           </View>
 
           <View style={styles.card}>
@@ -363,6 +438,74 @@ const styles = StyleSheet.create({
     fontFamily: fonts.semibold,
     fontSize: 10,
     textAlign: "right",
+  },
+  rejectionCard: {
+    gap: spacing.xs,
+    padding: spacing.md,
+    borderWidth: 1,
+    borderColor: "#fdba74",
+    borderRadius: radius.md,
+    backgroundColor: colors.dangerSoft,
+  },
+  rejectionHeader: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: spacing.xs,
+  },
+  rejectionTitle: {
+    color: colors.danger,
+    fontFamily: fonts.bold,
+    fontSize: 11,
+  },
+  rejectionReason: {
+    color: colors.text,
+    fontFamily: fonts.semibold,
+    fontSize: 11,
+  },
+  rejectionDetail: {
+    color: colors.muted,
+    fontFamily: fonts.regular,
+    fontSize: 10,
+    lineHeight: 15,
+  },
+  historyRow: {
+    flexDirection: "row",
+    gap: spacing.sm,
+    paddingTop: spacing.sm,
+  },
+  historyRail: {
+    width: 10,
+    alignItems: "center",
+  },
+  historyDot: {
+    width: 8,
+    height: 8,
+    marginTop: 4,
+    borderRadius: 4,
+    backgroundColor: colors.brand,
+  },
+  historyDotDanger: {
+    backgroundColor: colors.danger,
+  },
+  historyCopy: {
+    flex: 1,
+    gap: 2,
+  },
+  historyTitle: {
+    color: colors.text,
+    fontFamily: fonts.semibold,
+    fontSize: 10,
+  },
+  historyMeta: {
+    color: colors.soft,
+    fontFamily: fonts.regular,
+    fontSize: 9,
+  },
+  historyReason: {
+    color: colors.danger,
+    fontFamily: fonts.regular,
+    fontSize: 9,
+    lineHeight: 14,
   },
   notice: {
     flexDirection: "row",

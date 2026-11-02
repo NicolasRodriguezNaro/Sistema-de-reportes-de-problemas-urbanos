@@ -14,6 +14,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.gestion.backend.almacenamiento.ResolvedorUrlArchivos;
+import com.gestion.backend.dto.HistorialReporteResponse;
 import com.gestion.backend.dto.PaginaResponse;
 import com.gestion.backend.dto.ReporteCreacionRequest;
 import com.gestion.backend.dto.ReporteResumenResponse;
@@ -24,8 +25,10 @@ import com.gestion.backend.ia.ClasificadorIncidencias;
 import com.gestion.backend.ia.ResultadoClasificacion;
 import com.gestion.backend.modelo.Entidad;
 import com.gestion.backend.modelo.EstadoReporte;
+import com.gestion.backend.modelo.MotivoRechazo;
 import com.gestion.backend.modelo.PrioridadCalculada;
 import com.gestion.backend.modelo.Reporte;
+import com.gestion.backend.modelo.ReporteHistorial;
 import com.gestion.backend.modelo.Severidad;
 import com.gestion.backend.modelo.TipoIncidencia;
 import com.gestion.backend.modelo.Usuario;
@@ -33,6 +36,7 @@ import com.gestion.backend.repositorio.BarrioRepository;
 import com.gestion.backend.repositorio.EntidadRepository;
 import com.gestion.backend.repositorio.ReporteEspecificaciones;
 import com.gestion.backend.repositorio.ReporteFiltros;
+import com.gestion.backend.repositorio.ReporteHistorialRepository;
 import com.gestion.backend.repositorio.ReporteRepository;
 import com.gestion.backend.semantica.AnalisisSemantico;
 import com.gestion.backend.semantica.ServicioSemantico;
@@ -44,6 +48,7 @@ public class ReporteService {
 	private static final double RADIO_DEDUPLICACION_METROS = 5.0;
 
 	private final ReporteRepository reporteRepository;
+	private final ReporteHistorialRepository reporteHistorialRepository;
 	private final EntidadRepository entidadRepository;
 	private final BarrioRepository barrioRepository;
 	private final ServicioGeoespacial servicioGeoespacial;
@@ -52,11 +57,14 @@ public class ReporteService {
 	private final ResolvedorUrlArchivos resolvedorUrlArchivos;
 	private final AlcanceReportes alcanceReportes;
 
-	public ReporteService(ReporteRepository reporteRepository, EntidadRepository entidadRepository,
+	public ReporteService(ReporteRepository reporteRepository,
+			ReporteHistorialRepository reporteHistorialRepository,
+			EntidadRepository entidadRepository,
 			BarrioRepository barrioRepository, ServicioGeoespacial servicioGeoespacial,
 			ClasificadorIncidencias clasificadorIncidencias, ServicioSemantico servicioSemantico,
 			ResolvedorUrlArchivos resolvedorUrlArchivos, AlcanceReportes alcanceReportes) {
 		this.reporteRepository = reporteRepository;
+		this.reporteHistorialRepository = reporteHistorialRepository;
 		this.entidadRepository = entidadRepository;
 		this.barrioRepository = barrioRepository;
 		this.servicioGeoespacial = servicioGeoespacial;
@@ -114,6 +122,8 @@ public class ReporteService {
 			guardado.setEntidadAsignada(entidadRepository.getReferenceById(analisis.entidadId()));
 		}
 
+		registrarHistorial(guardado, null, guardado.getEstado(), null, null, usuario);
+
 		return aRespuesta(guardado);
 	}
 
@@ -149,12 +159,73 @@ public class ReporteService {
 	}
 
 	@Transactional
-	public ReporteResponse cambiarEstado(Long id, EstadoReporte nuevoEstado) {
+	public ReporteResponse cambiarEstado(Long id, EstadoReporte nuevoEstado, MotivoRechazo motivoRechazo,
+			String detalleRechazo) {
+		Usuario usuario = alcanceReportes.usuarioActual();
 		Reporte reporte = buscar(id);
-		alcanceReportes.verificarPuedeGestionar(alcanceReportes.usuarioActual(), reporte);
+		alcanceReportes.verificarPuedeGestionar(usuario, reporte);
+
+		validarRechazo(nuevoEstado, motivoRechazo, detalleRechazo);
+		EstadoReporte estadoAnterior = reporte.getEstado();
+		String detalleNormalizado = nuevoEstado == EstadoReporte.RECHAZADO
+				? normalizarDetalle(detalleRechazo)
+				: null;
+
 		reporte.setEstado(nuevoEstado);
+		if (nuevoEstado == EstadoReporte.RECHAZADO) {
+			reporte.setMotivoRechazo(motivoRechazo);
+			reporte.setDetalleRechazo(detalleNormalizado);
+		} else {
+			reporte.setMotivoRechazo(null);
+			reporte.setDetalleRechazo(null);
+		}
+
 		Reporte guardado = reporteRepository.saveAndFlush(reporte);
+		registrarHistorial(guardado, estadoAnterior, nuevoEstado, motivoRechazo,
+				detalleNormalizado, usuario);
+
 		return aRespuesta(guardado);
+	}
+
+	@Transactional(readOnly = true)
+	public List<HistorialReporteResponse> obtenerHistorial(Long id) {
+		Reporte reporte = buscar(id);
+		alcanceReportes.verificarPuedeVer(alcanceReportes.usuarioActual(), reporte);
+		return reporteHistorialRepository.findByReporteIdOrderByFechaAscIdAsc(id).stream()
+				.map(HistorialReporteResponse::desde)
+				.toList();
+	}
+
+	private void validarRechazo(EstadoReporte estado, MotivoRechazo motivo, String detalle) {
+		if (estado == EstadoReporte.RECHAZADO && motivo == null) {
+			throw new IllegalArgumentException("Debe indicar el motivo del rechazo");
+		}
+		if (estado != EstadoReporte.RECHAZADO
+				&& (motivo != null || (detalle != null && !detalle.isBlank()))) {
+			throw new IllegalArgumentException("El motivo y el detalle de rechazo solo aplican al estado RECHAZADO");
+		}
+		if (motivo == MotivoRechazo.OTRO && (detalle == null || detalle.isBlank())) {
+			throw new IllegalArgumentException("Debe explicar el motivo cuando selecciona OTRO");
+		}
+	}
+
+	private String normalizarDetalle(String detalle) {
+		if (detalle == null || detalle.isBlank()) {
+			return null;
+		}
+		return detalle.trim();
+	}
+
+	private void registrarHistorial(Reporte reporte, EstadoReporte anterior, EstadoReporte nuevo,
+			MotivoRechazo motivo, String detalle, Usuario usuario) {
+		ReporteHistorial historial = new ReporteHistorial();
+		historial.setReporte(reporteRepository.getReferenceById(reporte.getId()));
+		historial.setEstadoAnterior(anterior);
+		historial.setEstadoNuevo(nuevo);
+		historial.setUsuario(usuario);
+		historial.setMotivo(motivo);
+		historial.setDetalle(detalle);
+		reporteHistorialRepository.save(historial);
 	}
 
 	@Transactional
@@ -235,6 +306,8 @@ public class ReporteService {
 				reporte.getBarrio() != null ? reporte.getBarrio().getNombre() : null,
 				reporte.getEntidadAsignada() != null ? reporte.getEntidadAsignada().getId() : null,
 				reporte.getEntidadAsignada() != null ? reporte.getEntidadAsignada().getNombre() : null,
+				reporte.getMotivoRechazo(),
+				reporte.getDetalleRechazo(),
 				reporte.getReportePadre() != null ? reporte.getReportePadre().getId() : null);
 	}
 

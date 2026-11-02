@@ -2,6 +2,7 @@ package com.gestion.backend.controlador;
 
 import java.net.URI;
 import java.time.LocalDate;
+import java.util.List;
 
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.ResponseEntity;
@@ -18,6 +19,7 @@ import org.springframework.web.bind.annotation.RestController;
 import com.gestion.backend.dto.CambioAsignacionRequest;
 import com.gestion.backend.dto.CambioEstadoRequest;
 import com.gestion.backend.dto.FeatureCollection;
+import com.gestion.backend.dto.HistorialReporteResponse;
 import com.gestion.backend.dto.PaginaResponse;
 import com.gestion.backend.dto.ReporteCreacionRequest;
 import com.gestion.backend.dto.ReporteResumenResponse;
@@ -97,7 +99,13 @@ public class ReporteController {
 	@PatchMapping("/{id}/estado")
 	@PreAuthorize(ROLES_GESTION)
 	public ReporteResponse cambiarEstado(@PathVariable Long id, @Valid @RequestBody CambioEstadoRequest solicitud) {
-		return reporteService.cambiarEstado(id, solicitud.estado());
+		return reporteService.cambiarEstado(id, solicitud.estado(), solicitud.motivoRechazo(),
+				solicitud.detalleRechazo());
+	}
+
+	@GetMapping("/{id}/historial")
+	public List<HistorialReporteResponse> historial(@PathVariable Long id) {
+		return reporteService.obtenerHistorial(id);
 	}
 
 	@PatchMapping("/{id}/asignacion")

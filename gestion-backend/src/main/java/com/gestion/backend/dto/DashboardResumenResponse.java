@@ -14,5 +14,7 @@ public record DashboardResumenResponse(
 		Map<PrioridadCalculada, Long> porPrioridad,
 		long criticos,
 		long sinAsignar,
+		long rechazados,
+		long pendientesClasificacion,
 		List<ConteoBarrio> porBarrio) {
 }

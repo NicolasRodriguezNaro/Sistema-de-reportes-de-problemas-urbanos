@@ -1487,6 +1487,122 @@ strong {
   white-space: pre-wrap;
 }
 
+.rejection-banner {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  padding: 14px 16px;
+  border: 1px solid #fca5a5;
+  border-radius: 12px;
+  color: #991b1b;
+  background: var(--danger-soft);
+}
+
+.rejection-banner svg {
+  flex-shrink: 0;
+  margin-top: 2px;
+}
+
+.rejection-banner strong {
+  display: block;
+  font-size: 12px;
+}
+
+.rejection-banner p {
+  margin: 4px 0 0;
+  color: #7f1d1d;
+  font-size: 11px;
+  line-height: 1.55;
+}
+
+.history-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.history-item {
+  position: relative;
+  display: flex;
+  gap: 11px;
+  padding: 0 0 16px 0;
+}
+
+.history-item:last-child {
+  padding-bottom: 0;
+}
+
+.history-item:not(:last-child)::before {
+  content: "";
+  position: absolute;
+  top: 12px;
+  bottom: 0;
+  left: 4px;
+  width: 1px;
+  background: var(--border);
+}
+
+.history-dot {
+  position: relative;
+  z-index: 1;
+  width: 9px;
+  height: 9px;
+  flex-shrink: 0;
+  margin-top: 4px;
+  border: 2px solid var(--surface);
+  border-radius: 50%;
+  background: var(--brand);
+  box-shadow: 0 0 0 1px var(--border);
+}
+
+.history-dot-rechazado {
+  background: var(--danger);
+}
+
+.history-dot-resuelto {
+  background: var(--success);
+}
+
+.history-dot-pendiente {
+  background: var(--warning, #d97706);
+}
+
+.history-content {
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.history-heading {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+.history-heading strong {
+  color: var(--text);
+  font-size: 10px;
+  font-weight: 700;
+}
+
+.history-heading span,
+.history-actor {
+  color: var(--soft);
+  font-size: 9px;
+}
+
+.history-reason {
+  margin-top: 2px;
+  color: #991b1b;
+  font-size: 9px;
+  line-height: 1.45;
+}
+
 .metadata-list {
   display: flex;
   flex-direction: column;

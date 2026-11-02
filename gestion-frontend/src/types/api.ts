@@ -8,6 +8,15 @@ export type Severidad = "BAJA" | "MEDIA" | "ALTA" | "CRITICA";
 
 export type PrioridadCalculada = "BAJA" | "MEDIA" | "ALTA" | "CRITICA";
 
+export type MotivoRechazo =
+  | "NO_RELACIONADO"
+  | "INFORMACION_INSUFICIENTE"
+  | "IMAGEN_ILEGIBLE"
+  | "UBICACION_INCORRECTA"
+  | "DUPLICADO"
+  | "SPAM"
+  | "OTRO";
+
 export type TipoEntidad =
   | "SECRETARIA_OBRAS_PUBLICAS"
   | "EMPRESA_SERVICIOS_PUBLICOS"
@@ -61,6 +70,19 @@ export interface ReporteResponse extends ReporteResumen {
   longitud: number;
   claveImagenHd: string;
   urlImagenHd: string | null;
+  motivoRechazo: MotivoRechazo | null;
+  detalleRechazo: string | null;
+}
+
+export interface HistorialReporte {
+  id: number;
+  estadoAnterior: EstadoReporte | null;
+  estadoNuevo: EstadoReporte;
+  usuarioId: number;
+  usuarioNombre: string;
+  motivo: MotivoRechazo | null;
+  detalle: string | null;
+  fecha: string;
 }
 
 export interface PaginaResponse<T> {
@@ -84,6 +106,8 @@ export interface DashboardResumen {
   porPrioridad: Record<PrioridadCalculada, number>;
   criticos: number;
   sinAsignar: number;
+  rechazados: number;
+  pendientesClasificacion: number;
   porBarrio: ConteoBarrio[];
 }
 

@@ -75,6 +75,13 @@ public class Reporte {
 	private EstadoReporte estado;
 
 	@Enumerated(EnumType.STRING)
+	@Column(name = "motivo_rechazo", length = 50)
+	private MotivoRechazo motivoRechazo;
+
+	@Column(name = "detalle_rechazo", columnDefinition = "TEXT")
+	private String detalleRechazo;
+
+	@Enumerated(EnumType.STRING)
 	@Column(length = 50)
 	private PrioridadCalculada prioridadCalculada;
 

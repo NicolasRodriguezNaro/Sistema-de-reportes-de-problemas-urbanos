@@ -25,7 +25,8 @@ Esta guía explica **qué endpoints puede consumir el frontend, qué recibe, qu�
 | `GET` | `/api/reportes` | Funcionario/Admin/Empresa | Listado paginado con filtros |
 | `GET` | `/api/reportes/mios` | Autenticado | Reportes del usuario actual |
 | `GET` | `/api/reportes/geojson` | Funcionario/Admin/Empresa | Puntos para el mapa |
-| `PATCH` | `/api/reportes/{id}/estado` | Funcionario/Admin/Empresa | Cambiar el estado |
+| `PATCH` | `/api/reportes/{id}/estado` | Funcionario/Admin/Empresa | Cambiar el estado; exige motivo si es `RECHAZADO` |
+| `GET` | `/api/reportes/{id}/historial` | Según alcance del reporte | Consultar el historial de estados |
 | `PATCH` | `/api/reportes/{id}/asignacion` | Administrador | Reasignar la entidad responsable |
 | `GET` | `/api/dashboard/resumen` | Funcionario/Admin/Empresa | Métricas y tarjetas del dashboard |
 | `GET` | `/api/barrios/geojson` | Funcionario/Admin/Empresa | Capa GeoJSON de barrios |
@@ -885,7 +886,7 @@ Content-Type: application/json
 
 Roles: `FUNCIONARIO`, `ADMINISTRADOR` o `EMPRESA`.
 
-Body:
+Body para un cambio normal:
 
 ```json
 {
@@ -893,26 +894,81 @@ Body:
 }
 ```
 
-Valores permitidos:
+Para rechazar, `motivoRechazo` es obligatorio:
 
-```text
-PENDIENTE
-EN_REVISION
-ASIGNADO
-RESUELTO
-RECHAZADO
+```json
+{
+  "estado": "RECHAZADO",
+  "motivoRechazo": "NO_RELACIONADO",
+  "detalleRechazo": "La imagen no corresponde a una incidencia urbana."
+}
 ```
 
-Respuesta `200`: el reporte completo actualizado.
+Motivos permitidos:
+
+```text
+NO_RELACIONADO
+INFORMACION_INSUFICIENTE
+IMAGEN_ILEGIBLE
+UBICACION_INCORRECTA
+DUPLICADO
+SPAM
+OTRO
+```
+
+Si el motivo es `OTRO`, `detalleRechazo` también es obligatorio. El detalle admite
+hasta 1000 caracteres.
+
+Respuesta `200`: el reporte completo actualizado. Incluye `motivoRechazo` y
+`detalleRechazo`; estos campos se limpian cuando el reporte sale del estado `RECHAZADO`.
 
 Reglas:
 
 - Un funcionario o una empresa solo pueden cambiar el estado de reportes de su entidad.
 - Un administrador puede cambiar cualquiera.
 - Un ciudadano recibe `403`.
-- No hay historial de estados en esta versión.
+- Cada cambio de estado queda en un historial append-only con usuario, fecha,
+  estado anterior, estado nuevo y motivo/detalle del rechazo.
 
-### 6.6 Asignar entidad
+### 6.6 Historial de estados
+
+```http
+GET /api/reportes/{id}/historial
+Authorization: Bearer <token>
+```
+
+Devuelve los eventos en orden cronológico. El alcance es el mismo del detalle del
+reporte: el ciudadano solo puede consultar sus propios reportes y funcionarios,
+empresas o administradores según su entidad.
+
+Respuesta `200`:
+
+```json
+[
+  {
+    "id": 31,
+    "estadoAnterior": null,
+    "estadoNuevo": "PENDIENTE",
+    "usuarioId": 14,
+    "usuarioNombre": "Ana Ciudadana",
+    "motivo": null,
+    "detalle": null,
+    "fecha": "2026-11-02T15:20:00Z"
+  },
+  {
+    "id": 47,
+    "estadoAnterior": "PENDIENTE",
+    "estadoNuevo": "RECHAZADO",
+    "usuarioId": 3,
+    "usuarioNombre": "Carlos Funcionario",
+    "motivo": "NO_RELACIONADO",
+    "detalle": "La imagen no corresponde a una incidencia urbana.",
+    "fecha": "2026-11-02T16:05:00Z"
+  }
+]
+```
+
+### 6.7 Asignar entidad
 
 ```http
 PATCH /api/reportes/{id}/asignacion
@@ -935,7 +991,7 @@ Respuesta `200`: el reporte completo con la nueva `entidadAsignadaId`.
 La asignación **no cambia el estado**. Si quieres marcar el reporte como asignado,
 haz una segunda petición a `/estado` con `ASIGNADO`.
 
-### 6.7 GeoJSON de reportes
+### 6.8 GeoJSON de reportes
 
 ```http
 GET /api/reportes/geojson
@@ -1030,6 +1086,8 @@ Respuesta `200`:
   },
   "criticos": 3,
   "sinAsignar": 0,
+  "rechazados": 2,
+  "pendientesClasificacion": 4,
   "porBarrio": [
     {
       "barrioId": 124,
@@ -1045,9 +1103,14 @@ Interpretación:
 - `total`: total del alcance y filtros aplicados.
 - `porEstado`, `porCategoria`, `porPrioridad`: incluyen todas las claves del enum,
   con `0` cuando no hay datos.
-- `criticos`: reportes con prioridad `CRITICA`.
-- `sinAsignar`: reportes con `entidadAsignadaId = null`. Para un funcionario o empresa
-  normalmente será 0 porque su alcance solo incluye reportes asignados.
+- `criticos`: reportes con prioridad `CRITICA`, excluyendo los rechazados.
+- `sinAsignar`: reportes activos con `entidadAsignadaId = null`. Excluye rechazados.
+  Para un funcionario o empresa normalmente será 0 porque su alcance solo incluye
+  reportes asignados.
+- `rechazados`: reportes en estado `RECHAZADO`.
+- `pendientesClasificacion`: reportes activos con `categoriaIa = null`.
+- `total` y `porEstado` siguen incluyendo los rechazados para que la suma de estados
+  coincida con el total; las métricas operativas los separan.
 - `porBarrio`: hasta los 10 barrios con más reportes.
 
 ---
@@ -1197,6 +1260,15 @@ export type Severidad = "BAJA" | "MEDIA" | "ALTA" | "CRITICA";
 
 export type PrioridadCalculada = "BAJA" | "MEDIA" | "ALTA" | "CRITICA";
 
+export type MotivoRechazo =
+  | "NO_RELACIONADO"
+  | "INFORMACION_INSUFICIENTE"
+  | "IMAGEN_ILEGIBLE"
+  | "UBICACION_INCORRECTA"
+  | "DUPLICADO"
+  | "SPAM"
+  | "OTRO";
+
 export type TipoEntidad =
   | "SECRETARIA_OBRAS_PUBLICAS"
   | "EMPRESA_SERVICIOS_PUBLICOS"
@@ -1273,7 +1345,20 @@ export interface ReporteResponse {
   barrioNombre: string | null;
   entidadAsignadaId: number | null;
   entidadNombre: string | null;
+  motivoRechazo: MotivoRechazo | null;
+  detalleRechazo: string | null;
   reportePadreId: number | null;
+}
+
+export interface HistorialReporte {
+  id: number;
+  estadoAnterior: EstadoReporte | null;
+  estadoNuevo: EstadoReporte;
+  usuarioId: number;
+  usuarioNombre: string;
+  motivo: MotivoRechazo | null;
+  detalle: string | null;
+  fecha: string;
 }
 
 export interface ReporteResumen {
@@ -1305,6 +1390,8 @@ export interface PaginaResponse<T> {
 
 export interface CambioEstadoRequest {
   estado: EstadoReporte;
+  motivoRechazo?: MotivoRechazo | null;
+  detalleRechazo?: string | null;
 }
 
 export interface CambioAsignacionRequest {
@@ -1326,6 +1413,8 @@ export interface DashboardResumen {
   porPrioridad: Record<PrioridadCalculada, number>;
   criticos: number;
   sinAsignar: number;
+  rechazados: number;
+  pendientesClasificacion: number;
   porBarrio: ConteoBarrio[];
 }
 
@@ -1606,11 +1695,20 @@ export function cargarResumen(
 import type { EstadoReporte, ReporteResponse } from "../types/api";
 import { apiFetch } from "./client";
 
-export function cambiarEstado(id: number, estado: EstadoReporte) {
+export function cambiarEstado(
+  id: number,
+  estado: EstadoReporte,
+  motivoRechazo?: MotivoRechazo,
+  detalleRechazo?: string
+) {
   return apiFetch<ReporteResponse>(`/api/reportes/${id}/estado`, {
     method: "PATCH",
-    body: JSON.stringify({ estado }),
+    body: JSON.stringify({ estado, motivoRechazo, detalleRechazo }),
   });
+}
+
+export function obtenerHistorial(id: number) {
+  return apiFetch<HistorialReporte[]>(`/api/reportes/${id}/historial`);
 }
 
 export function asignarEntidad(id: number, entidadId: number) {

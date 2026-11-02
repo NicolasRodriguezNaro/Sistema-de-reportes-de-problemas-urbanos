@@ -56,12 +56,16 @@ public class DashboardService {
 				filtro);
 
 		long criticos = contar("SELECT count(*) FROM reportes" + filtro.where()
-				+ " AND prioridad_calculada = 'CRITICA'", filtro.parametros());
+				+ " AND prioridad_calculada = 'CRITICA' AND estado <> 'RECHAZADO'", filtro.parametros());
 		long sinAsignar = contar("SELECT count(*) FROM reportes" + filtro.where()
-				+ " AND entidad_asignada_id IS NULL", filtro.parametros());
+				+ " AND entidad_asignada_id IS NULL AND estado <> 'RECHAZADO'", filtro.parametros());
+		long rechazados = contar("SELECT count(*) FROM reportes" + filtro.where()
+				+ " AND estado = 'RECHAZADO'", filtro.parametros());
+		long pendientesClasificacion = contar("SELECT count(*) FROM reportes" + filtro.where()
+				+ " AND categoria_ia IS NULL AND estado <> 'RECHAZADO'", filtro.parametros());
 
 		return new DashboardResumenResponse(total, porEstado, porCategoria, porPrioridad, criticos, sinAsignar,
-				porBarrio(filtro));
+				rechazados, pendientesClasificacion, porBarrio(filtro));
 	}
 
 	@Transactional(readOnly = true)

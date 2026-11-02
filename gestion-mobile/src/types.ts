@@ -8,6 +8,15 @@ export type Severidad = "BAJA" | "MEDIA" | "ALTA" | "CRITICA";
 
 export type PrioridadCalculada = "BAJA" | "MEDIA" | "ALTA" | "CRITICA";
 
+export type MotivoRechazo =
+  | "NO_RELACIONADO"
+  | "INFORMACION_INSUFICIENTE"
+  | "IMAGEN_ILEGIBLE"
+  | "UBICACION_INCORRECTA"
+  | "DUPLICADO"
+  | "SPAM"
+  | "OTRO";
+
 export interface UsuarioResumen {
   id: number;
   nombre: string;
@@ -56,6 +65,19 @@ export interface ReporteDetalle extends ReporteResumen {
   longitud: number;
   claveImagenHd: string;
   urlImagenHd: string | null;
+  motivoRechazo: MotivoRechazo | null;
+  detalleRechazo: string | null;
+}
+
+export interface HistorialReporte {
+  id: number;
+  estadoAnterior: EstadoReporte | null;
+  estadoNuevo: EstadoReporte;
+  usuarioId: number;
+  usuarioNombre: string;
+  motivo: MotivoRechazo | null;
+  detalle: string | null;
+  fecha: string;
 }
 
 export interface PaginaResponse<T> {
@@ -92,6 +114,16 @@ export const ETIQUETAS_SEVERIDAD: Record<Severidad, string> = {
   MEDIA: "Media",
   ALTA: "Alta",
   CRITICA: "Crítica",
+};
+
+export const ETIQUETAS_MOTIVO_RECHAZO: Record<MotivoRechazo, string> = {
+  NO_RELACIONADO: "No es una incidencia urbana",
+  INFORMACION_INSUFICIENTE: "Información insuficiente",
+  IMAGEN_ILEGIBLE: "Imagen ilegible",
+  UBICACION_INCORRECTA: "Ubicación incorrecta",
+  DUPLICADO: "Reporte duplicado",
+  SPAM: "Spam",
+  OTRO: "Otro motivo",
 };
 
 export const ETIQUETAS_PRIORIDAD: Record<PrioridadCalculada, string> = {

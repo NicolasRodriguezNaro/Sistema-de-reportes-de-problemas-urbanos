@@ -158,6 +158,29 @@ class ReporteApiTest {
 	}
 
 	@Test
+	void crearReporteRegistraElEstadoInicialEnElHistorial() throws Exception {
+		Usuario usuario = crearUsuarioDePrueba();
+		String autorizacion = autorizacion(usuario);
+
+		MvcResult creacion = mockMvc.perform(post("/api/reportes")
+				.header("Authorization", autorizacion)
+				.contentType(MediaType.APPLICATION_JSON)
+				.content(solicitudValida()))
+				.andExpect(status().isCreated())
+				.andReturn();
+		Number id = leerCampo(creacion, "$.id");
+
+		mockMvc.perform(get("/api/reportes/" + id.longValue() + "/historial")
+				.header("Authorization", autorizacion))
+				.andExpect(status().isOk())
+				.andExpect(jsonPath("$.length()").value(1))
+				.andExpect(jsonPath("$[0].estadoAnterior").doesNotExist())
+				.andExpect(jsonPath("$[0].estadoNuevo").value("PENDIENTE"))
+				.andExpect(jsonPath("$[0].usuarioId").value(usuario.getId().intValue()))
+				.andExpect(jsonPath("$[0].usuarioNombre").value(usuario.getNombre()));
+	}
+
+	@Test
 	void deduplicacionAgrupaReportesDentroDe5MetrosBajoElPadre() throws Exception {
 		Usuario usuario = crearUsuarioDePrueba();
 		String autorizacion = autorizacion(usuario);

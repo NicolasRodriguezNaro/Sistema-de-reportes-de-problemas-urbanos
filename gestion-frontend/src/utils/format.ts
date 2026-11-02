@@ -1,5 +1,6 @@
 import type {
   EstadoReporte,
+  MotivoRechazo,
   PrioridadCalculada,
   RolUsuario,
   Severidad,
@@ -41,6 +42,16 @@ export const ETIQUETAS_ROL: Record<RolUsuario, string> = {
   FUNCIONARIO: "Funcionario",
   ADMINISTRADOR: "Administrador",
   EMPRESA: "Empresa",
+};
+
+export const ETIQUETAS_MOTIVO_RECHAZO: Record<MotivoRechazo, string> = {
+  NO_RELACIONADO: "No es una incidencia urbana",
+  INFORMACION_INSUFICIENTE: "Información insuficiente",
+  IMAGEN_ILEGIBLE: "Imagen ilegible",
+  UBICACION_INCORRECTA: "Ubicación incorrecta",
+  DUPLICADO: "Reporte duplicado",
+  SPAM: "Spam",
+  OTRO: "Otro motivo",
 };
 
 export const ETIQUETAS_ENTIDAD: Record<TipoEntidad, string> = {

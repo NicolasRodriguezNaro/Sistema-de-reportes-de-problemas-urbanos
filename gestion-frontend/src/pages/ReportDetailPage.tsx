@@ -1,9 +1,11 @@
 import {
   ArrowLeft,
+  Ban,
   Building2,
   CalendarDays,
   CheckCircle2,
   ChevronRight,
+  History,
   ImageOff,
   MapPin,
   Tag,
@@ -22,6 +24,8 @@ import type {
   EntidadResumen,
   EstadoReporte,
   FeatureCollection,
+  HistorialReporte,
+  MotivoRechazo,
   ReporteGeoProperties,
   ReporteResponse,
   TipoIncidencia,
@@ -29,6 +33,7 @@ import type {
 import {
   ETIQUETAS_CATEGORIA,
   ETIQUETAS_ESTADO,
+  ETIQUETAS_MOTIVO_RECHAZO,
   ETIQUETAS_SEVERIDAD,
   formatearFechaHora,
 } from "../utils/format";
@@ -52,9 +57,12 @@ export function ReportDetailPage() {
   const [reporte, setReporte] = useState<ReporteResponse | null>(null);
   const [entidades, setEntidades] = useState<EntidadResumen[]>([]);
   const [geoReporte, setGeoReporte] = useState<FeatureCollection<ReporteGeoProperties> | null>(null);
+  const [historial, setHistorial] = useState<HistorialReporte[]>([]);
   const [cargando, setCargando] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [nuevoEstado, setNuevoEstado] = useState<EstadoReporte>("PENDIENTE");
+  const [motivoRechazo, setMotivoRechazo] = useState<MotivoRechazo | "">("");
+  const [detalleRechazo, setDetalleRechazo] = useState("");
   const [entidadSeleccionada, setEntidadSeleccionada] = useState("");
   const [guardando, setGuardando] = useState(false);
   const [mensaje, setMensaje] = useState<string | null>(null);
@@ -72,9 +80,15 @@ export function ReportDetailPage() {
     setCargando(true);
     setError(null);
     try {
-      const data = await apiFetch<ReporteResponse>(`/api/reportes/${id}`);
+      const [data, historialData] = await Promise.all([
+        apiFetch<ReporteResponse>(`/api/reportes/${id}`),
+        apiFetch<HistorialReporte[]>(`/api/reportes/${id}/historial`).catch(() => []),
+      ]);
       setReporte(data);
+      setHistorial(historialData);
       setNuevoEstado(data.estado);
+      setMotivoRechazo(data.motivoRechazo ?? "");
+      setDetalleRechazo(data.detalleRechazo ?? "");
       setEntidadSeleccionada(data.entidadAsignadaId ? String(data.entidadAsignadaId) : "");
       const geo = await apiFetch<FeatureCollection<ReporteGeoProperties>>("/api/reportes/geojson");
       setGeoReporte({
@@ -101,17 +115,41 @@ export function ReportDetailPage() {
     [entidades]
   );
 
+  const rechazoIncompleto =
+    nuevoEstado === "RECHAZADO" &&
+    (!motivoRechazo || (motivoRechazo === "OTRO" && !detalleRechazo.trim()));
+
   const cambiarEstado = async () => {
     if (!reporte) return;
+    if (rechazoIncompleto) {
+      setMensaje(null);
+      setErrorAccion(
+        motivoRechazo === "OTRO"
+          ? "Explica el motivo del rechazo."
+          : "Selecciona un motivo de rechazo."
+      );
+      return;
+    }
     setGuardando(true);
     setMensaje(null);
     setErrorAccion(null);
     try {
       const actualizado = await apiFetch<ReporteResponse>(`/api/reportes/${reporte.id}/estado`, {
         method: "PATCH",
-        body: JSON.stringify({ estado: nuevoEstado }),
+        body: JSON.stringify({
+          estado: nuevoEstado,
+          motivoRechazo: nuevoEstado === "RECHAZADO" ? motivoRechazo : null,
+          detalleRechazo:
+            nuevoEstado === "RECHAZADO" ? detalleRechazo.trim() || null : null,
+        }),
       });
       setReporte(actualizado);
+      setMotivoRechazo(actualizado.motivoRechazo ?? "");
+      setDetalleRechazo(actualizado.detalleRechazo ?? "");
+      const historialActualizado = await apiFetch<HistorialReporte[]>(
+        `/api/reportes/${reporte.id}/historial`
+      ).catch(() => historial);
+      setHistorial(historialActualizado);
       setMensaje("Estado actualizado correctamente.");
     } catch (err) {
       setErrorAccion(err instanceof Error ? err.message : "No se pudo cambiar el estado.");
@@ -175,6 +213,24 @@ export function ReportDetailPage() {
       {(mensaje || errorAccion) && (
         <div className={`form-feedback ${errorAccion ? "form-feedback-error" : "form-feedback-success"}`}>
           {errorAccion ?? mensaje}
+        </div>
+      )}
+
+      {reporte.estado === "RECHAZADO" && (
+        <div className="rejection-banner">
+          <Ban size={22} />
+          <div>
+            <strong>
+              Reporte rechazado
+              {reporte.motivoRechazo
+                ? `: ${ETIQUETAS_MOTIVO_RECHAZO[reporte.motivoRechazo]}`
+                : ""}
+            </strong>
+            <p>
+              {reporte.detalleRechazo ||
+                "No se registró una explicación adicional para este rechazo."}
+            </p>
+          </div>
         </div>
       )}
 
@@ -288,16 +344,56 @@ export function ReportDetailPage() {
               <div className="action-block">
                 <label className="field">
                   <span>Cambiar estado</span>
-                  <select value={nuevoEstado} onChange={(event) => setNuevoEstado(event.target.value as EstadoReporte)}>
+                  <select
+                    value={nuevoEstado}
+                    onChange={(event) => {
+                      const estado = event.target.value as EstadoReporte;
+                      setNuevoEstado(estado);
+                      if (estado !== "RECHAZADO") {
+                        setMotivoRechazo("");
+                        setDetalleRechazo("");
+                      }
+                    }}
+                  >
                     {Object.entries(ETIQUETAS_ESTADO).map(([valor, label]) => (
                       <option key={valor} value={valor}>{label}</option>
                     ))}
                   </select>
                 </label>
+                {nuevoEstado === "RECHAZADO" && (
+                  <>
+                    <label className="field">
+                      <span>Motivo de rechazo</span>
+                      <select
+                        value={motivoRechazo}
+                        onChange={(event) =>
+                          setMotivoRechazo(event.target.value as MotivoRechazo | "")
+                        }
+                      >
+                        <option value="">Selecciona un motivo</option>
+                        {Object.entries(ETIQUETAS_MOTIVO_RECHAZO).map(([valor, label]) => (
+                          <option key={valor} value={valor}>{label}</option>
+                        ))}
+                      </select>
+                    </label>
+                    <label className="field">
+                      <span>
+                        Detalle {motivoRechazo === "OTRO" ? "(obligatorio)" : "(opcional)"}
+                      </span>
+                      <textarea
+                        value={detalleRechazo}
+                        maxLength={1000}
+                        rows={3}
+                        placeholder="Explica brevemente la decisión para el ciudadano."
+                        onChange={(event) => setDetalleRechazo(event.target.value)}
+                      />
+                    </label>
+                  </>
+                )}
                 <button
                   className="button button-primary button-block"
                   onClick={cambiarEstado}
-                  disabled={guardando || nuevoEstado === reporte.estado}
+                  disabled={guardando || nuevoEstado === reporte.estado || rechazoIncompleto}
                 >
                   {guardando ? "Guardando..." : "Guardar estado"}
                 </button>
@@ -328,6 +424,46 @@ export function ReportDetailPage() {
                   Asignar entidad
                 </button>
               </div>
+            )}
+          </article>
+
+          <article className="panel">
+            <div className="panel-header">
+              <div>
+                <span className="eyebrow">Trazabilidad</span>
+                <h2>Historial de estados</h2>
+              </div>
+              <History size={18} />
+            </div>
+            {historial.length > 0 ? (
+              <ol className="history-list">
+                {historial.map((evento) => (
+                  <li className="history-item" key={evento.id}>
+                    <span className={`history-dot history-dot-${evento.estadoNuevo.toLowerCase()}`} />
+                    <div className="history-content">
+                      <div className="history-heading">
+                        <strong>
+                          {evento.estadoAnterior
+                            ? `${ETIQUETAS_ESTADO[evento.estadoAnterior]} → ${ETIQUETAS_ESTADO[evento.estadoNuevo]}`
+                            : ETIQUETAS_ESTADO[evento.estadoNuevo]}
+                        </strong>
+                        <span>{formatearFechaHora(evento.fecha)}</span>
+                      </div>
+                      <span className="history-actor">por {evento.usuarioNombre}</span>
+                      {evento.motivo && (
+                        <span className="history-reason">
+                          {ETIQUETAS_MOTIVO_RECHAZO[evento.motivo]}
+                          {evento.detalle ? ` · ${evento.detalle}` : ""}
+                        </span>
+                      )}
+                    </div>
+                  </li>
+                ))}
+              </ol>
+            ) : (
+              <p className="read-only-note">
+                Este reporte no tiene movimientos de estado registrados.
+              </p>
             )}
           </article>
 

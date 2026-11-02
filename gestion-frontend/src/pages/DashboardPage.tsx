@@ -1,9 +1,11 @@
 import {
   AlertTriangle,
   ArrowUpRight,
+  Ban,
   CheckCircle2,
   Clock3,
   FileText,
+  Inbox,
   Map as MapIcon,
   RefreshCw,
   UserRoundX,
@@ -202,6 +204,19 @@ export function DashboardPage() {
           hint="Esperando revisión"
           icon={<Clock3 size={18} />}
           tone="warning"
+        />
+        <MetricCard
+          label="Sin clasificar"
+          value={formatearNumero(resumen.pendientesClasificacion)}
+          hint="La IA no pudo asignar categoría"
+          icon={<Inbox size={18} />}
+        />
+        <MetricCard
+          label="Rechazados"
+          value={formatearNumero(resumen.rechazados)}
+          hint="Fuera de la operación activa"
+          icon={<Ban size={18} />}
+          tone="danger"
         />
         <MetricCard
           label="En revisión"

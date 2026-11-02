@@ -3,6 +3,7 @@ package com.gestion.backend.dto;
 import java.time.Instant;
 
 import com.gestion.backend.modelo.EstadoReporte;
+import com.gestion.backend.modelo.MotivoRechazo;
 import com.gestion.backend.modelo.PrioridadCalculada;
 import com.gestion.backend.modelo.Severidad;
 import com.gestion.backend.modelo.TipoIncidencia;
@@ -48,6 +49,10 @@ public record ReporteResponse(
 		Integer entidadAsignadaId,
 
 		String entidadNombre,
+
+		MotivoRechazo motivoRechazo,
+
+		String detalleRechazo,
 
 		Long reportePadreId) {
 }
