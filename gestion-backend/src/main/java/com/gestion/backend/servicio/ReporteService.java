@@ -4,8 +4,11 @@ import java.time.Instant;
 import java.time.LocalDate;
 import java.time.ZoneId;
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 import org.locationtech.jts.geom.Point;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -46,6 +49,15 @@ import com.gestion.backend.seguridad.AlcanceReportes;
 public class ReporteService {
 
 	private static final double RADIO_DEDUPLICACION_METROS = 5.0;
+
+	private static final Map<EstadoReporte, Set<EstadoReporte>> TRANSICIONES = Map.of(
+			EstadoReporte.PENDIENTE, Set.of(EstadoReporte.EN_REVISION, EstadoReporte.RECHAZADO),
+			EstadoReporte.EN_REVISION,
+			Set.of(EstadoReporte.PENDIENTE, EstadoReporte.ASIGNADO, EstadoReporte.RECHAZADO),
+			EstadoReporte.ASIGNADO,
+			Set.of(EstadoReporte.EN_REVISION, EstadoReporte.RESUELTO, EstadoReporte.RECHAZADO),
+			EstadoReporte.RESUELTO, Set.of(EstadoReporte.EN_REVISION),
+			EstadoReporte.RECHAZADO, Set.of(EstadoReporte.EN_REVISION));
 
 	private final ReporteRepository reporteRepository;
 	private final ReporteHistorialRepository reporteHistorialRepository;
@@ -167,15 +179,14 @@ public class ReporteService {
 
 		EstadoReporte estadoAnterior = reporte.getEstado();
 		validarRechazo(nuevoEstado, motivoRechazo, detalleRechazo);
-		validarReapertura(estadoAnterior, nuevoEstado, motivoReapertura);
+		validarTransicion(reporte, estadoAnterior, nuevoEstado, motivoReapertura, usuario);
 
 		String detalleNormalizado = nuevoEstado == EstadoReporte.RECHAZADO
 				? normalizarDetalle(detalleRechazo)
 				: null;
-		String motivoReaperturaNormalizado = estadoAnterior == EstadoReporte.RECHAZADO
-				&& nuevoEstado != EstadoReporte.RECHAZADO
-						? normalizarDetalle(motivoReapertura)
-						: null;
+		String motivoReaperturaNormalizado = esReapertura(estadoAnterior)
+				? normalizarDetalle(motivoReapertura)
+				: null;
 
 		reporte.setEstado(nuevoEstado);
 		if (nuevoEstado == EstadoReporte.RECHAZADO) {
@@ -215,20 +226,36 @@ public class ReporteService {
 		}
 	}
 
-	private void validarReapertura(EstadoReporte anterior, EstadoReporte nuevo, String motivo) {
-		if (anterior == EstadoReporte.RECHAZADO && nuevo != EstadoReporte.RECHAZADO) {
-			if (nuevo != EstadoReporte.EN_REVISION) {
-				throw new IllegalArgumentException(
-						"Un reporte rechazado solo puede reabrirse al estado EN_REVISION");
+	private void validarTransicion(Reporte reporte, EstadoReporte anterior, EstadoReporte nuevo,
+			String motivoReapertura, Usuario usuario) {
+		Set<EstadoReporte> permitidos = TRANSICIONES.get(anterior);
+		if (permitidos == null || !permitidos.contains(nuevo)) {
+			throw new IllegalArgumentException("No se permite cambiar el estado de " + anterior + " a " + nuevo);
+		}
+
+		if (nuevo == EstadoReporte.ASIGNADO && reporte.getEntidadAsignada() == null) {
+			throw new IllegalArgumentException(
+					"Debe asignar una entidad responsable antes de marcar el reporte como ASIGNADO");
+		}
+
+		if (esReapertura(anterior)) {
+			if (anterior == EstadoReporte.RESUELTO && !alcanceReportes.esAdministrador(usuario)) {
+				throw new AccessDeniedException("Solo un administrador puede reabrir un reporte resuelto");
 			}
-			if (motivo == null || motivo.isBlank()) {
+			if (motivoReapertura == null || motivoReapertura.isBlank()) {
 				throw new IllegalArgumentException("Debe indicar el motivo de reapertura");
 			}
 			return;
 		}
-		if (anterior != EstadoReporte.RECHAZADO && motivo != null && !motivo.isBlank()) {
-			throw new IllegalArgumentException("El motivo de reapertura solo aplica a reportes rechazados");
+
+		if (motivoReapertura != null && !motivoReapertura.isBlank()) {
+			throw new IllegalArgumentException(
+					"El motivo de reapertura solo aplica a reportes rechazados o resueltos");
 		}
+	}
+
+	private boolean esReapertura(EstadoReporte anterior) {
+		return anterior == EstadoReporte.RECHAZADO || anterior == EstadoReporte.RESUELTO;
 	}
 
 	private String normalizarDetalle(String detalle) {
@@ -258,6 +285,10 @@ public class ReporteService {
 		if (reporte.getEstado() == EstadoReporte.RECHAZADO) {
 			throw new IllegalArgumentException(
 					"No se puede asignar una entidad a un reporte rechazado. Reabrelo primero.");
+		}
+		if (reporte.getEstado() == EstadoReporte.RESUELTO) {
+			throw new IllegalArgumentException(
+					"No se puede asignar una entidad a un reporte resuelto. Reabrelo primero.");
 		}
 		Entidad entidad = entidadRepository.findById(entidadId)
 				.orElseThrow(() -> new RecursoNoEncontradoException("Entidad no encontrada con id " + entidadId));

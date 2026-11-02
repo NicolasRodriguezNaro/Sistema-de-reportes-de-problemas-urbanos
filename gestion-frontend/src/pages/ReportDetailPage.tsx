@@ -38,6 +38,7 @@ import {
   ETIQUETAS_SEVERIDAD,
   formatearFechaHora,
 } from "../utils/format";
+import { estadoSugerido, estadosPermitidos } from "../utils/estados";
 
 function ImagenReporte({ src, alt }: { src: string | null; alt: string }) {
   const [error, setError] = useState(false);
@@ -89,7 +90,9 @@ export function ReportDetailPage() {
       ]);
       setReporte(data);
       setHistorial(historialData);
-      setNuevoEstado(data.estado);
+      setNuevoEstado(
+        estadoSugerido(data.estado, esAdministrador, Boolean(data.entidadAsignadaId))
+      );
       setMotivoRechazo(data.motivoRechazo ?? "");
       setDetalleRechazo(data.detalleRechazo ?? "");
       setMotivoReapertura("");
@@ -149,6 +152,9 @@ export function ReportDetailPage() {
         }),
       });
       setReporte(actualizado);
+      setNuevoEstado(
+        estadoSugerido(actualizado.estado, esAdministrador, Boolean(actualizado.entidadAsignadaId))
+      );
       setMotivoRechazo(actualizado.motivoRechazo ?? "");
       setDetalleRechazo(actualizado.detalleRechazo ?? "");
       const historialActualizado = await apiFetch<HistorialReporte[]>(
@@ -188,7 +194,9 @@ export function ReportDetailPage() {
         }),
       });
       setReporte(actualizado);
-      setNuevoEstado(actualizado.estado);
+      setNuevoEstado(
+        estadoSugerido(actualizado.estado, esAdministrador, Boolean(actualizado.entidadAsignadaId))
+      );
       setMotivoRechazo("");
       setDetalleRechazo("");
       setMotivoReapertura("");
@@ -217,6 +225,9 @@ export function ReportDetailPage() {
         body: JSON.stringify({ entidadId: Number(entidadSeleccionada) }),
       });
       setReporte(actualizado);
+      setNuevoEstado(
+        estadoSugerido(actualizado.estado, esAdministrador, Boolean(actualizado.entidadAsignadaId))
+      );
       setMensaje("Entidad asignada correctamente.");
     } catch (err) {
       setErrorAccion(err instanceof Error ? err.message : "No se pudo asignar la entidad.");
@@ -238,6 +249,15 @@ export function ReportDetailPage() {
   const categoria = reporte.categoriaIa
     ? ETIQUETAS_CATEGORIA[reporte.categoriaIa as TipoIncidencia]
     : "Sin clasificar";
+  const estadosSiguientes = estadosPermitidos(
+    reporte.estado,
+    esAdministrador,
+    Boolean(reporte.entidadAsignadaId)
+  );
+  const puedeReabrir =
+    reporte.estado === "RECHAZADO" || (reporte.estado === "RESUELTO" && esAdministrador);
+  const puedeCambiarEntidad =
+    esAdministrador && reporte.estado !== "RECHAZADO" && reporte.estado !== "RESUELTO";
 
   return (
     <div className="page-stack">
@@ -389,11 +409,13 @@ export function ReportDetailPage() {
             </div>
 
             {puedeGestionar ? (
-              reporte.estado === "RECHAZADO" ? (
+              puedeReabrir ? (
                 <div className="action-block">
                   <p className="read-only-note">
-                    Este reporte está rechazado. Para corregir la decisión, reábrelo y explica el motivo.
-                    Volverá al estado En revisión.
+                    {reporte.estado === "RECHAZADO"
+                      ? "Este reporte está rechazado. Para corregir la decisión, reábrelo y explica el motivo."
+                      : "Este reporte está resuelto. Como administrador puedes reabrirlo explicando el motivo."}
+                    {" "}Volverá al estado En revisión.
                   </p>
                   <label className="field">
                     <span>Motivo de reapertura</span>
@@ -413,7 +435,7 @@ export function ReportDetailPage() {
                     {guardando ? "Reabriendo..." : "Reabrir reporte"}
                   </button>
                 </div>
-              ) : (
+              ) : estadosSiguientes.length > 0 ? (
                 <div className="action-block">
                   <label className="field">
                     <span>Cambiar estado</span>
@@ -428,8 +450,8 @@ export function ReportDetailPage() {
                         }
                       }}
                     >
-                      {Object.entries(ETIQUETAS_ESTADO).map(([valor, label]) => (
-                        <option key={valor} value={valor}>{label}</option>
+                      {estadosSiguientes.map((estado) => (
+                        <option key={estado} value={estado}>{ETIQUETAS_ESTADO[estado]}</option>
                       ))}
                     </select>
                   </label>
@@ -471,12 +493,16 @@ export function ReportDetailPage() {
                     {guardando ? "Guardando..." : "Guardar estado"}
                   </button>
                 </div>
+              ) : (
+                <p className="read-only-note">
+                  Este reporte está resuelto. Solo un administrador puede reabrirlo.
+                </p>
               )
             ) : (
               <p className="read-only-note">Tu rol puede consultar este reporte, pero no cambiar su estado.</p>
             )}
 
-            {puedeAsignar && reporte.estado !== "RECHAZADO" && (
+            {puedeAsignar && puedeCambiarEntidad && (
               <div className="action-block action-block-separated">
                 <label className="field">
                   <span>Entidad responsable</span>
@@ -500,11 +526,11 @@ export function ReportDetailPage() {
               </div>
             )}
 
-            {puedeAsignar && reporte.estado === "RECHAZADO" && (
+            {puedeAsignar && !puedeCambiarEntidad && (
               <div className="action-block action-block-separated">
                 <p className="read-only-note">
-                  La entidad responsable no se puede cambiar mientras el reporte esté rechazado.
-                  Reábrelo primero para volver a asignarlo.
+                  La entidad responsable no se puede cambiar mientras el reporte esté{" "}
+                  {ETIQUETAS_ESTADO[reporte.estado].toLowerCase()}. Reábrelo primero para volver a asignarlo.
                 </p>
               </div>
             )}
@@ -572,7 +598,11 @@ export function ReportDetailPage() {
       <ConfirmDialog
         abierto={confirmarReapertura}
         titulo={`Reabrir reporte #${reporte.id}`}
-        descripcion="El reporte volverá a En revisión. El rechazo anterior se conservará en el historial."
+        descripcion={
+          reporte.estado === "RECHAZADO"
+            ? "El reporte volverá a En revisión. El rechazo anterior se conservará en el historial."
+            : "El reporte volverá a En revisión. El cierre anterior se conservará en el historial."
+        }
         detalle={
           <>
             <span>Motivo de reapertura: </span>

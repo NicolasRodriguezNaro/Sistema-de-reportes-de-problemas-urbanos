@@ -939,8 +939,20 @@ Reglas:
 - Un ciudadano recibe `403`.
 - Un reporte en `RECHAZADO` no puede volver directamente a `PENDIENTE`, `ASIGNADO` o
   `RESUELTO`; debe reabrirse a `EN_REVISION` y explicar el motivo.
+- Un reporte en `RESUELTO` solo puede reabrirlo un administrador, también con motivo.
+- Para pasar a `ASIGNADO` el reporte debe tener una entidad responsable.
 - Cada cambio de estado queda en un historial append-only con usuario, fecha,
   estado anterior, estado nuevo, motivo/detalle del rechazo o motivo de reapertura.
+
+Matriz de transiciones permitidas:
+
+| Estado actual | Estados siguientes |
+|---|---|
+| `PENDIENTE` | `EN_REVISION`, `RECHAZADO` |
+| `EN_REVISION` | `ASIGNADO`, `RECHAZADO`, `PENDIENTE` |
+| `ASIGNADO` | `RESUELTO`, `EN_REVISION`, `RECHAZADO` |
+| `RESUELTO` | `EN_REVISION` solo administrador |
+| `RECHAZADO` | `EN_REVISION` con motivo |
 
 ### 6.6 Historial de estados
 
@@ -1015,9 +1027,9 @@ Respuesta `200`: el reporte completo con la nueva `entidadAsignadaId`.
 La asignación **no cambia el estado**. Si quieres marcar el reporte como asignado,
 haz una segunda petición a `/estado` con `ASIGNADO`.
 
-Un reporte en estado `RECHAZADO` no puede reasignarse. Para cambiar su entidad hay
-que reabrirlo primero a `EN_REVISION` con `motivoReapertura`; en ese caso la API
-responde `400`.
+Un reporte en estado `RECHAZADO` o `RESUELTO` no puede reasignarse. Para cambiar su
+entidad hay que reabrirlo primero a `EN_REVISION` con `motivoReapertura`; en ese caso
+la API responde `400`.
 
 ### 6.8 GeoJSON de reportes
 

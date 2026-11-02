@@ -477,7 +477,7 @@ class DashboardApiTest {
 				.content("{\"estado\":\"PENDIENTE\",\"motivoReapertura\":\"Correccion\"}"))
 				.andExpect(status().isBadRequest())
 				.andExpect(jsonPath("$.mensaje")
-						.value("Un reporte rechazado solo puede reabrirse al estado EN_REVISION"));
+						.value("No se permite cambiar el estado de RECHAZADO a PENDIENTE"));
 
 		mockMvc.perform(patch("/api/reportes/" + reporte.getId() + "/estado")
 				.header(HttpHeaders.AUTHORIZATION, autorizacion)
@@ -626,6 +626,100 @@ class DashboardApiTest {
 
 		Reporte sinCambios = reporteRepository.findById(reporte.getId()).orElseThrow();
 		assertThat(sinCambios.getEntidadAsignada().getId()).isEqualTo(entidadA.getId());
+	}
+
+	@Test
+	void respetaLaMatrizDeTransicionesYBloqueaReaperturaDeResueltosSinAdmin() throws Exception {
+		Entidad entidadA = entidades().get(0);
+		Entidad entidadB = entidades().get(1);
+		Usuario admin = crearUsuario(RolUsuario.ADMINISTRADOR, null);
+		Usuario funcionario = crearUsuario(RolUsuario.FUNCIONARIO, entidadA);
+		Usuario ciudadano = crearUsuario(RolUsuario.CIUDADANO, null);
+		Reporte reporte = crearReporte(ciudadano, entidadA, TipoIncidencia.HUECO_VIA,
+				PrioridadCalculada.MEDIA);
+
+		mockMvc.perform(patch("/api/reportes/" + reporte.getId() + "/estado")
+				.header(HttpHeaders.AUTHORIZATION, autorizacion(admin))
+				.contentType(MediaType.APPLICATION_JSON)
+				.content("{\"estado\":\"RESUELTO\"}"))
+				.andExpect(status().isBadRequest());
+
+		mockMvc.perform(patch("/api/reportes/" + reporte.getId() + "/estado")
+				.header(HttpHeaders.AUTHORIZATION, autorizacion(admin))
+				.contentType(MediaType.APPLICATION_JSON)
+				.content("{\"estado\":\"EN_REVISION\"}"))
+				.andExpect(status().isOk());
+
+		mockMvc.perform(patch("/api/reportes/" + reporte.getId() + "/estado")
+				.header(HttpHeaders.AUTHORIZATION, autorizacion(admin))
+				.contentType(MediaType.APPLICATION_JSON)
+				.content("{\"estado\":\"ASIGNADO\"}"))
+				.andExpect(status().isOk())
+				.andExpect(jsonPath("$.estado").value("ASIGNADO"));
+
+		mockMvc.perform(patch("/api/reportes/" + reporte.getId() + "/estado")
+				.header(HttpHeaders.AUTHORIZATION, autorizacion(admin))
+				.contentType(MediaType.APPLICATION_JSON)
+				.content("{\"estado\":\"RESUELTO\"}"))
+				.andExpect(status().isOk())
+				.andExpect(jsonPath("$.estado").value("RESUELTO"));
+
+		mockMvc.perform(patch("/api/reportes/" + reporte.getId() + "/asignacion")
+				.header(HttpHeaders.AUTHORIZATION, autorizacion(admin))
+				.contentType(MediaType.APPLICATION_JSON)
+				.content("{\"entidadId\":" + entidadB.getId() + "}"))
+				.andExpect(status().isBadRequest())
+				.andExpect(jsonPath("$.mensaje")
+						.value("No se puede asignar una entidad a un reporte resuelto. Reabrelo primero."));
+
+		mockMvc.perform(patch("/api/reportes/" + reporte.getId() + "/estado")
+				.header(HttpHeaders.AUTHORIZATION, autorizacion(funcionario))
+				.contentType(MediaType.APPLICATION_JSON)
+				.content("{\"estado\":\"EN_REVISION\",\"motivoReapertura\":\"Correccion\"}"))
+				.andExpect(status().isForbidden());
+
+		mockMvc.perform(patch("/api/reportes/" + reporte.getId() + "/estado")
+				.header(HttpHeaders.AUTHORIZATION, autorizacion(admin))
+				.contentType(MediaType.APPLICATION_JSON)
+				.content("{\"estado\":\"EN_REVISION\"}"))
+				.andExpect(status().isBadRequest())
+				.andExpect(jsonPath("$.mensaje").value("Debe indicar el motivo de reapertura"));
+
+		mockMvc.perform(patch("/api/reportes/" + reporte.getId() + "/estado")
+				.header(HttpHeaders.AUTHORIZATION, autorizacion(admin))
+				.contentType(MediaType.APPLICATION_JSON)
+				.content("{\"estado\":\"EN_REVISION\",\"motivoReapertura\":\"Se corrigio el cierre\"}"))
+				.andExpect(status().isOk())
+				.andExpect(jsonPath("$.estado").value("EN_REVISION"));
+
+		mockMvc.perform(get("/api/reportes/" + reporte.getId() + "/historial")
+				.header(HttpHeaders.AUTHORIZATION, autorizacion(admin)))
+				.andExpect(status().isOk())
+				.andExpect(jsonPath("$.length()").value(4))
+				.andExpect(jsonPath("$[3].estadoAnterior").value("RESUELTO"))
+				.andExpect(jsonPath("$[3].estadoNuevo").value("EN_REVISION"))
+				.andExpect(jsonPath("$[3].motivoReapertura").value("Se corrigio el cierre"));
+	}
+
+	@Test
+	void noSePuedeMarcarAsignadoSinEntidadResponsable() throws Exception {
+		Usuario admin = crearUsuario(RolUsuario.ADMINISTRADOR, null);
+		Usuario ciudadano = crearUsuario(RolUsuario.CIUDADANO, null);
+		Reporte reporte = crearReporte(ciudadano, null, null, PrioridadCalculada.BAJA);
+
+		mockMvc.perform(patch("/api/reportes/" + reporte.getId() + "/estado")
+				.header(HttpHeaders.AUTHORIZATION, autorizacion(admin))
+				.contentType(MediaType.APPLICATION_JSON)
+				.content("{\"estado\":\"EN_REVISION\"}"))
+				.andExpect(status().isOk());
+
+		mockMvc.perform(patch("/api/reportes/" + reporte.getId() + "/estado")
+				.header(HttpHeaders.AUTHORIZATION, autorizacion(admin))
+				.contentType(MediaType.APPLICATION_JSON)
+				.content("{\"estado\":\"ASIGNADO\"}"))
+				.andExpect(status().isBadRequest())
+				.andExpect(jsonPath("$.mensaje").value(
+						"Debe asignar una entidad responsable antes de marcar el reporte como ASIGNADO"));
 	}
 
 	@Test

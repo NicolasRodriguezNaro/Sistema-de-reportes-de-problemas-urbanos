@@ -37,7 +37,11 @@ Reglas concretas:
   funcionario/empresa; cualquier reporte si es administrador.
 - `PATCH /api/reportes/{id}/estado`: `FUNCIONARIO`, `ADMINISTRADOR` o `EMPRESA`,
   respetando el alcance por entidad. Un rechazo exige `motivoRechazo`; una reapertura
-  exige `motivoReapertura` y solo puede volver a `EN_REVISION`.
+  exige `motivoReapertura` y solo puede volver a `EN_REVISION`. Un reporte `RESUELTO`
+  solo puede reabrirlo un administrador. Las transiciones siguen esta matriz:
+  `PENDIENTE → EN_REVISION|RECHAZADO`, `EN_REVISION → ASIGNADO|RECHAZADO|PENDIENTE`,
+  `ASIGNADO → RESUELTO|EN_REVISION|RECHAZADO`, `RESUELTO → EN_REVISION`,
+  `RECHAZADO → EN_REVISION`. Para `ASIGNADO` debe existir entidad responsable.
 - `GET /api/reportes/{id}/historial`: mismo alcance que el detalle del reporte.
 - `PATCH /api/reportes/{id}/asignacion`: solo `ADMINISTRADOR`; no aplica a reportes
   rechazados hasta que se reabran.
@@ -324,7 +328,7 @@ Ambas rutas son públicas; el resto de `/api/**` exige token.
 - Preflight CORS para el origen del dashboard.
 - OpenAPI disponible sin token.
 
-Resultado de la suite: **65/65 pruebas en verde** con `./mvnw test`.
+Resultado de la suite: **67/67 pruebas en verde** con `./mvnw test`.
 
 ---
 
