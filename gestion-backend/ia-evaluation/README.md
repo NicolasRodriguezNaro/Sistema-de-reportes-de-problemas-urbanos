@@ -1,9 +1,8 @@
 # Evaluacion de clasificacion con Gemini
 
-Este directorio contiene un set pequeno de imagenes publicas para medir la
-clasificacion del backend con Gemini 3.5 Flash-Lite. No es una validacion
-definitiva: es una linea base para detectar errores evidentes antes de usar
-fotos de campo.
+Este directorio contiene un set de imagenes publicas para medir la clasificacion
+del backend con Gemini 3.5 Flash-Lite. No es una validacion definitiva: es una
+linea base antes de usar fotos de campo.
 
 ## Estructura
 
@@ -11,6 +10,8 @@ fotos de campo.
 ia-evaluation/
 ├── descargar-imagenes.mjs
 ├── manifest.csv
+├── resultados.csv            # salida por imagen de la ultima evaluacion
+├── metricas.md               # resumen de la ultima evaluacion
 ├── imagenes/                 # ignorado por Git
 │   ├── HUECO_VIA/
 │   ├── FUGA_AGUA/
@@ -32,7 +33,8 @@ cd gestion-backend
 node ia-evaluation/descargar-imagenes.mjs
 ```
 
-Si Wikimedia devuelve `429`, esperar unos segundos y volver a ejecutar.
+El descargador hace las consultas en lotes y reintenta cuando Wikimedia
+devuelve `429`.
 
 ## Ejecutar la evaluacion real
 
@@ -56,67 +58,124 @@ Se puede filtrar por archivo para reintentar casos concretos:
   -Devaluacion.filtro="archivo1.jpg,archivo2.jpg" test
 ```
 
-## Metodologia
+La evaluacion genera:
 
-El evaluador reutiliza el mismo `ClasificadorGemini`, el mismo modelo y el mismo
-prompt del backend. Compara la categoria esperada con la obtenida.
+- `resultados.csv`: categoria esperada, prediccion, confianza, latencia y
+  descripcion para cada imagen.
+- `metricas.md`: accuracy, F1 macro, matriz de confusion, metricas por
+  categoria, latencia y errores.
 
-Para una primera prueba se usaron 15 imagenes: 3 por categoria y 3 no
-relacionadas. Los resultados iniciales fueron:
+## Set actual
 
-```text
-Accuracy inicial: 10/15 = 66,67%
-Timeouts con limite de 20 s: 3
-Imagenes con etiqueta ambigua al revisarlas: 3
-```
+El set actual tiene **50 imagenes**, 10 por categoria:
 
-Los timeouts no eran errores de clasificacion: el limite de 20 s era demasiado
-corto para algunas llamadas. Se subio el timeout a 60 s y se reintentaron los
-tres casos fallidos:
+| Categoria | Soporte |
+|---|---:|
+| `HUECO_VIA` | 10 |
+| `FUGA_AGUA` | 10 |
+| `FALLA_ALUMBRADO` | 10 |
+| `ACUMULACION_BASURA` | 10 |
+| `NO_RELACIONADO` | 10 |
+| **Total** | **50** |
 
-- `A_photo_of_a_water_leak_on_Camberwell_Place_2022-10-08_9.jpg` → `FUGA_AGUA`
-- `mer.png` → `NO_RELACIONADO`
-- `Damaged_street_light_25593659424_.jpg` → la imagen era realmente una escena
-  de escombros/demolicion, no una falla de alumbrado; se descarto por etiqueta
-  incorrecta.
+La distribucion es balanceada. Las imagenes siguen siendo publicas y no
+corresponden a Florencia.
 
-Tambien se descartaron dos muestras por no ser claramente representativas:
+## Resultado del set actual
 
-- `Tiverton_Bampton_Street_Water_Leak...`: calle mojada, sin fuga evidente.
-- `Broken_Street_Light_Stevenage...`: la luminaria aparece encendida.
-
-## Resultado del set curado
-
-Set final: 12 imagenes evaluadas correctamente.
-
-| Categoria | Soporte | Aciertos |
-|---|---:|---:|
-| HUECO_VIA | 3 | 3 |
-| FUGA_AGUA | 2 | 2 |
-| FALLA_ALUMBRADO | 1 | 1 |
-| ACUMULACION_BASURA | 3 | 3 |
-| NO_RELACIONADO | 3 | 3 |
-| **Total** | **12** | **12** |
+Ejecucion con `gemini-3.5-flash-lite`, umbral de confianza `0.60` y timeout de
+60 segundos:
 
 ```text
-Accuracy del set curado: 12/12 = 100%
+Imagenes evaluadas: 50
+Accuracy: 41/50 = 82.00%
+F1 macro: 81.53%
+Latencia promedio: 4.94 s
+Latencia maxima: 25.42 s
+Predicciones PENDIENTE: 0
+Errores tecnicos: 0
 ```
+
+### Matriz de confusion
+
+| Esperado | HUECO_VIA | FUGA_AGUA | FALLA_ALUMBRADO | ACUMULACION_BASURA | NO_RELACIONADO |
+|---|---:|---:|---:|---:|---:|
+| `HUECO_VIA` | 10 | 0 | 0 | 0 | 0 |
+| `FUGA_AGUA` | 3 | 7 | 0 | 0 | 0 |
+| `FALLA_ALUMBRADO` | 0 | 0 | 5 | 0 | 5 |
+| `ACUMULACION_BASURA` | 0 | 0 | 0 | 9 | 1 |
+| `NO_RELACIONADO` | 0 | 0 | 0 | 0 | 10 |
+
+### Metricas por categoria
+
+| Categoria | Precision | Recall | F1 | Soporte |
+|---|---:|---:|---:|---:|
+| `HUECO_VIA` | 76.92% | 100.00% | 86.96% | 10 |
+| `FUGA_AGUA` | 100.00% | 70.00% | 82.35% | 10 |
+| `FALLA_ALUMBRADO` | 100.00% | 50.00% | 66.67% | 10 |
+| `ACUMULACION_BASURA` | 100.00% | 90.00% | 94.74% | 10 |
+| `NO_RELACIONADO` | 62.50% | 100.00% | 76.92% | 10 |
+
+## Analisis de errores
+
+Se produjeron 9 errores. No se eliminaron despues de ver el resultado para no
+inflar artificialmente la metrica; se conservan en el set y se documentan.
+
+### FUGA_AGUA clasificada como HUECO_VIA
+
+- `Burst_pipe_-_Hawley_Lane...`
+- `Burst_water_pipe_-_geograph...6866868...`
+- `Burst_water_pipe_in_Churchland_Lane...`
+
+Las tres muestran pavimento mojado, zanjas o trabajos viales, pero no siempre
+una fuga claramente visible. Son casos donde la etiqueta depende del contexto
+de la fuente.
+
+### FALLA_ALUMBRADO clasificada como NO_RELACIONADO
+
+- `Apollostraat...01`
+- `Apollostraat...02`
+- `Damaged_public_street_light_Feijenoord...01`
+- `Damaged_public_street_light_Feijenoord...03`
+- `Damaged_public_street_light_Feijenoord...04`
+
+Varias muestran postes con avisos o etiquetas de mantenimiento, o una vista
+general del puerto, sin una luminaria rota claramente visible. El modelo tiende
+a no considerar que exista una incidencia visual.
+
+### ACUMULACION_BASURA clasificada como NO_RELACIONADO
+
+- `Puerto_Vallarta_trash_in_the_road.jpg`
+
+La imagen es una vista urbana general; la basura no es evidente desde el angulo
+capturado.
 
 ## Interpretacion
 
-El resultado es bueno para una demostracion, pero **no debe interpretarse como
-100% de precision en produccion**:
+El resultado es util como linea base, pero **no debe interpretarse como una
+precision del 82% en produccion**:
 
-- el set es muy pequeno;
-- las imagenes son publicas y no de Florencia;
-- hay solo una muestra de alumbrado;
-- las etiquetas fueron revisadas visualmente y se descartaron las ambiguas;
+- el set es pequeno y publico;
+- algunas etiquetas dependen del contexto de la fuente;
+- hay imagenes con dano indicado por avisos, no visible directamente;
 - no se probaron fotos nocturnas, lluvia fuerte, imagenes borrosas ni angulos
   extremos;
-- Gemini puede variar entre ejecuciones y la confianza no esta calibrada.
+- Gemini puede variar entre ejecuciones y la confianza no esta calibrada;
+- no se activa rechazo automatico con IA.
 
-La siguiente medicion debe hacerse con fotos de campo, al menos 10 por
-categoria, y con un conjunto separado para ajustar el prompt.
+La siguiente medicion debe hacerse con fotos de campo, idealmente 10-20 por
+categoria, separando un conjunto para ajustar el prompt y otro para prueba. La
+validacion con imagenes publicas sirve para detectar errores y preparar el
+protocolo, no para sustituir la validacion local.
+
+## Historial de evaluaciones
+
+- **Linea base inicial:** 15 imagenes, 10/15 = 66.67%, con 3 timeouts de 20 s
+  y etiquetas ambiguas.
+- **Set curado inicial:** 12 imagenes, 12/12 = 100%; era una linea base muy
+  pequena.
+- **Set ampliado actual:** 50 imagenes, 41/50 = 82.00%; se conservaron los
+  errores para analizarlos.
 
 ## Privacidad y licencias
 

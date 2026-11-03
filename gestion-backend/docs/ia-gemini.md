@@ -95,5 +95,7 @@ datos.
 - `ClasificadorGeminiHttpTest` simula la API con un servidor HTTP local y
   verifica que se envien la imagen y la clave en los headers, sin consumir la
   API real.
-- `ia-evaluation/` contiene el set publico de evaluacion y el comando
-  `EvaluacionGeminiManual` para medir accuracy contra la API real.
+- `ia-evaluation/` contiene el set publico de evaluacion, el comando
+  `EvaluacionGeminiManual` y los resultados reproducibles en `resultados.csv`
+  y `metricas.md`. La ejecucion ampliada actual usa 50 imagenes y obtuvo
+  41/50 = 82% de accuracy.
