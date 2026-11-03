@@ -196,7 +196,7 @@ WHERE email = 'demo@test.local';
 
 ## 11. Verificación
 
-- **67/67 tests** en verde.
+- **68/68 tests** en verde.
 - `SeguridadTest` cubre: registro/login, contraseña incorrecta, 401 sin token, 401 con token
   inválido, `GET /api/auth/yo` (401 sin token / 200 con token), ciudadano bloqueado en
   `PATCH` (403), funcionario con entidad permitido (200) y que el reporte use el usuario

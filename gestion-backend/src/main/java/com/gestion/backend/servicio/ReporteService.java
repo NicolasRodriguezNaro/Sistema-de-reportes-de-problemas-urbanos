@@ -17,6 +17,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.gestion.backend.almacenamiento.ResolvedorUrlArchivos;
+import com.gestion.backend.dto.AsignacionReporteResponse;
 import com.gestion.backend.dto.HistorialReporteResponse;
 import com.gestion.backend.dto.PaginaResponse;
 import com.gestion.backend.dto.ReporteCreacionRequest;
@@ -29,14 +30,17 @@ import com.gestion.backend.ia.ResultadoClasificacion;
 import com.gestion.backend.modelo.Entidad;
 import com.gestion.backend.modelo.EstadoReporte;
 import com.gestion.backend.modelo.MotivoRechazo;
+import com.gestion.backend.modelo.OrigenAsignacion;
 import com.gestion.backend.modelo.PrioridadCalculada;
 import com.gestion.backend.modelo.Reporte;
+import com.gestion.backend.modelo.ReporteAsignacionHistorial;
 import com.gestion.backend.modelo.ReporteHistorial;
 import com.gestion.backend.modelo.Severidad;
 import com.gestion.backend.modelo.TipoIncidencia;
 import com.gestion.backend.modelo.Usuario;
 import com.gestion.backend.repositorio.BarrioRepository;
 import com.gestion.backend.repositorio.EntidadRepository;
+import com.gestion.backend.repositorio.ReporteAsignacionHistorialRepository;
 import com.gestion.backend.repositorio.ReporteEspecificaciones;
 import com.gestion.backend.repositorio.ReporteFiltros;
 import com.gestion.backend.repositorio.ReporteHistorialRepository;
@@ -61,6 +65,7 @@ public class ReporteService {
 
 	private final ReporteRepository reporteRepository;
 	private final ReporteHistorialRepository reporteHistorialRepository;
+	private final ReporteAsignacionHistorialRepository reporteAsignacionHistorialRepository;
 	private final EntidadRepository entidadRepository;
 	private final BarrioRepository barrioRepository;
 	private final ServicioGeoespacial servicioGeoespacial;
@@ -71,12 +76,14 @@ public class ReporteService {
 
 	public ReporteService(ReporteRepository reporteRepository,
 			ReporteHistorialRepository reporteHistorialRepository,
+			ReporteAsignacionHistorialRepository reporteAsignacionHistorialRepository,
 			EntidadRepository entidadRepository,
 			BarrioRepository barrioRepository, ServicioGeoespacial servicioGeoespacial,
 			ClasificadorIncidencias clasificadorIncidencias, ServicioSemantico servicioSemantico,
 			ResolvedorUrlArchivos resolvedorUrlArchivos, AlcanceReportes alcanceReportes) {
 		this.reporteRepository = reporteRepository;
 		this.reporteHistorialRepository = reporteHistorialRepository;
+		this.reporteAsignacionHistorialRepository = reporteAsignacionHistorialRepository;
 		this.entidadRepository = entidadRepository;
 		this.barrioRepository = barrioRepository;
 		this.servicioGeoespacial = servicioGeoespacial;
@@ -131,7 +138,10 @@ public class ReporteService {
 		AnalisisSemantico analisis = servicioSemantico.analizar(guardado);
 		guardado.setPrioridadCalculada(analisis.prioridad());
 		if (analisis.entidadId() != null) {
-			guardado.setEntidadAsignada(entidadRepository.getReferenceById(analisis.entidadId()));
+			Entidad entidadAsignada = entidadRepository.getReferenceById(analisis.entidadId());
+			guardado.setEntidadAsignada(entidadAsignada);
+			registrarAsignacion(guardado, null, entidadAsignada, OrigenAsignacion.JENA,
+					"Asignacion automatica por analisis semantico.", null);
 		}
 
 		registrarHistorial(guardado, null, guardado.getEstado(), null, null, null, usuario);
@@ -213,6 +223,15 @@ public class ReporteService {
 				.toList();
 	}
 
+	@Transactional(readOnly = true)
+	public List<AsignacionReporteResponse> obtenerAsignaciones(Long id) {
+		Reporte reporte = buscar(id);
+		alcanceReportes.verificarPuedeVer(alcanceReportes.usuarioActual(), reporte);
+		return reporteAsignacionHistorialRepository.findByReporteIdOrderByFechaAscIdAsc(id).stream()
+				.map(AsignacionReporteResponse::desde)
+				.toList();
+	}
+
 	private void validarRechazo(EstadoReporte estado, MotivoRechazo motivo, String detalle) {
 		if (estado == EstadoReporte.RECHAZADO && motivo == null) {
 			throw new IllegalArgumentException("Debe indicar el motivo del rechazo");
@@ -278,9 +297,22 @@ public class ReporteService {
 		reporteHistorialRepository.save(historial);
 	}
 
+	private void registrarAsignacion(Reporte reporte, Entidad anterior, Entidad nueva,
+			OrigenAsignacion origen, String motivo, Usuario usuario) {
+		ReporteAsignacionHistorial asignacion = new ReporteAsignacionHistorial();
+		asignacion.setReporte(reporteRepository.getReferenceById(reporte.getId()));
+		asignacion.setEntidadAnterior(anterior);
+		asignacion.setEntidadNueva(nueva);
+		asignacion.setOrigen(origen);
+		asignacion.setMotivo(motivo);
+		asignacion.setUsuario(usuario);
+		reporteAsignacionHistorialRepository.save(asignacion);
+	}
+
 	@Transactional
-	public ReporteResponse asignar(Long id, Integer entidadId) {
-		alcanceReportes.verificarPuedeAsignar(alcanceReportes.usuarioActual());
+	public ReporteResponse asignar(Long id, Integer entidadId, String motivo) {
+		Usuario usuario = alcanceReportes.usuarioActual();
+		alcanceReportes.verificarPuedeAsignar(usuario);
 		Reporte reporte = buscar(id);
 		if (reporte.getEstado() == EstadoReporte.RECHAZADO) {
 			throw new IllegalArgumentException(
@@ -292,8 +324,16 @@ public class ReporteService {
 		}
 		Entidad entidad = entidadRepository.findById(entidadId)
 				.orElseThrow(() -> new RecursoNoEncontradoException("Entidad no encontrada con id " + entidadId));
+		Entidad entidadAnterior = reporte.getEntidadAsignada();
+		if (entidadAnterior != null && entidadAnterior.getId().equals(entidad.getId())) {
+			return aRespuesta(reporte);
+		}
+
 		reporte.setEntidadAsignada(entidad);
-		return aRespuesta(reporteRepository.saveAndFlush(reporte));
+		Reporte guardado = reporteRepository.saveAndFlush(reporte);
+		registrarAsignacion(guardado, entidadAnterior, entidad, OrigenAsignacion.ADMINISTRADOR,
+				normalizarDetalle(motivo), usuario);
+		return aRespuesta(guardado);
 	}
 
 	private Reporte buscar(Long id) {

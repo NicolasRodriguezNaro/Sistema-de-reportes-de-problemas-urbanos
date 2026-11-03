@@ -28,6 +28,7 @@ Esta guía explica **qué endpoints puede consumir el frontend, qué recibe, qu�
 | `PATCH` | `/api/reportes/{id}/estado` | Funcionario/Admin/Empresa | Cambiar el estado; exige motivo si es `RECHAZADO` |
 | `GET` | `/api/reportes/{id}/historial` | Según alcance del reporte | Consultar el historial de estados |
 | `PATCH` | `/api/reportes/{id}/asignacion` | Administrador | Reasignar la entidad responsable |
+| `GET` | `/api/reportes/{id}/asignaciones` | Según alcance del reporte | Consultar el historial de asignaciones |
 | `GET` | `/api/dashboard/resumen` | Funcionario/Admin/Empresa | Métricas y tarjetas del dashboard |
 | `GET` | `/api/barrios/geojson` | Funcionario/Admin/Empresa | Capa GeoJSON de barrios |
 | `GET` | `/api/sitios-interes/geojson` | Funcionario/Admin/Empresa | Capa GeoJSON de sitios de interés |
@@ -1004,7 +1005,37 @@ Respuesta `200`:
 ]
 ```
 
-### 6.7 Asignar entidad
+### 6.7 Historial de asignaciones
+
+```http
+GET /api/reportes/{id}/asignaciones
+Authorization: Bearer <token>
+```
+
+Devuelve la asignación automática inicial de Jena y las reasignaciones manuales.
+Tiene el mismo alcance que el detalle del reporte. Los reportes creados antes de la
+migración V7 no tienen eventos retroactivos.
+
+Respuesta `200`:
+
+```json
+[
+  {
+    "id": 18,
+    "entidadAnteriorId": null,
+    "entidadAnteriorNombre": null,
+    "entidadNuevaId": 1,
+    "entidadNuevaNombre": "Secretaría de Obras Públicas",
+    "usuarioId": null,
+    "usuarioNombre": null,
+    "origen": "JENA",
+    "motivo": "Asignación automática por análisis semántico.",
+    "fecha": "2026-11-02T18:20:00Z"
+  }
+]
+```
+
+### 6.8 Asignar entidad
 
 ```http
 PATCH /api/reportes/{id}/asignacion
@@ -1018,9 +1049,13 @@ Body:
 
 ```json
 {
-  "entidadId": 2
+  "entidadId": 2,
+  "motivo": "La entidad calculada por Jena no corresponde."
 }
 ```
+
+El motivo es opcional y admite hasta 500 caracteres. Si el administrador envía la
+misma entidad que ya tiene el reporte, no se crea un evento duplicado.
 
 Respuesta `200`: el reporte completo con la nueva `entidadAsignadaId`.
 
@@ -1031,7 +1066,7 @@ Un reporte en estado `RECHAZADO` o `RESUELTO` no puede reasignarse. Para cambiar
 entidad hay que reabrirlo primero a `EN_REVISION` con `motivoReapertura`; en ese caso
 la API responde `400`.
 
-### 6.8 GeoJSON de reportes
+### 6.9 GeoJSON de reportes
 
 ```http
 GET /api/reportes/geojson
@@ -1436,8 +1471,22 @@ export interface CambioEstadoRequest {
   motivoReapertura?: string | null;
 }
 
+export interface AsignacionReporte {
+  id: number;
+  entidadAnteriorId: number | null;
+  entidadAnteriorNombre: string | null;
+  entidadNuevaId: number;
+  entidadNuevaNombre: string;
+  usuarioId: number | null;
+  usuarioNombre: string | null;
+  origen: "JENA" | "ADMINISTRADOR";
+  motivo: string | null;
+  fecha: string;
+}
+
 export interface CambioAsignacionRequest {
   entidadId: number;
+  motivo?: string | null;
 }
 
 // ---------- Dashboard ----------

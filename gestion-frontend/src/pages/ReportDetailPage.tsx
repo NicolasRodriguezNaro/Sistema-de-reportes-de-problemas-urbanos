@@ -22,6 +22,7 @@ import { MapPanel, ReportMap } from "../components/MapPanel";
 import { PageHeader } from "../components/PageHeader";
 import { ErrorState, LoadingState } from "../components/States";
 import type {
+  AsignacionReporte,
   EntidadResumen,
   EstadoReporte,
   FeatureCollection,
@@ -60,6 +61,7 @@ export function ReportDetailPage() {
   const [entidades, setEntidades] = useState<EntidadResumen[]>([]);
   const [geoReporte, setGeoReporte] = useState<FeatureCollection<ReporteGeoProperties> | null>(null);
   const [historial, setHistorial] = useState<HistorialReporte[]>([]);
+  const [asignaciones, setAsignaciones] = useState<AsignacionReporte[]>([]);
   const [cargando, setCargando] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [nuevoEstado, setNuevoEstado] = useState<EstadoReporte>("PENDIENTE");
@@ -68,6 +70,7 @@ export function ReportDetailPage() {
   const [motivoReapertura, setMotivoReapertura] = useState("");
   const [confirmarReapertura, setConfirmarReapertura] = useState(false);
   const [entidadSeleccionada, setEntidadSeleccionada] = useState("");
+  const [motivoAsignacion, setMotivoAsignacion] = useState("");
   const [guardando, setGuardando] = useState(false);
   const [mensaje, setMensaje] = useState<string | null>(null);
   const [errorAccion, setErrorAccion] = useState<string | null>(null);
@@ -84,18 +87,21 @@ export function ReportDetailPage() {
     setCargando(true);
     setError(null);
     try {
-      const [data, historialData] = await Promise.all([
+      const [data, historialData, asignacionesData] = await Promise.all([
         apiFetch<ReporteResponse>(`/api/reportes/${id}`),
         apiFetch<HistorialReporte[]>(`/api/reportes/${id}/historial`).catch(() => []),
+        apiFetch<AsignacionReporte[]>(`/api/reportes/${id}/asignaciones`).catch(() => []),
       ]);
       setReporte(data);
       setHistorial(historialData);
+      setAsignaciones(asignacionesData);
       setNuevoEstado(
         estadoSugerido(data.estado, esAdministrador, Boolean(data.entidadAsignadaId))
       );
       setMotivoRechazo(data.motivoRechazo ?? "");
       setDetalleRechazo(data.detalleRechazo ?? "");
       setMotivoReapertura("");
+      setMotivoAsignacion("");
       setConfirmarReapertura(false);
       setEntidadSeleccionada(data.entidadAsignadaId ? String(data.entidadAsignadaId) : "");
       const geo = await apiFetch<FeatureCollection<ReporteGeoProperties>>("/api/reportes/geojson");
@@ -222,12 +228,20 @@ export function ReportDetailPage() {
     try {
       const actualizado = await apiFetch<ReporteResponse>(`/api/reportes/${reporte.id}/asignacion`, {
         method: "PATCH",
-        body: JSON.stringify({ entidadId: Number(entidadSeleccionada) }),
+        body: JSON.stringify({
+          entidadId: Number(entidadSeleccionada),
+          motivo: motivoAsignacion.trim() || null,
+        }),
       });
       setReporte(actualizado);
       setNuevoEstado(
         estadoSugerido(actualizado.estado, esAdministrador, Boolean(actualizado.entidadAsignadaId))
       );
+      setMotivoAsignacion("");
+      const asignacionesActualizadas = await apiFetch<AsignacionReporte[]>(
+        `/api/reportes/${reporte.id}/asignaciones`
+      ).catch(() => asignaciones);
+      setAsignaciones(asignacionesActualizadas);
       setMensaje("Entidad asignada correctamente.");
     } catch (err) {
       setErrorAccion(err instanceof Error ? err.message : "No se pudo asignar la entidad.");
@@ -516,6 +530,16 @@ export function ReportDetailPage() {
                     ))}
                   </select>
                 </label>
+                <label className="field">
+                  <span>Motivo del cambio (opcional)</span>
+                  <textarea
+                    value={motivoAsignacion}
+                    maxLength={500}
+                    rows={2}
+                    placeholder="Explica por qué se cambia la entidad responsable."
+                    onChange={(event) => setMotivoAsignacion(event.target.value)}
+                  />
+                </label>
                 <button
                   className="button button-secondary button-block"
                   onClick={asignarEntidad}
@@ -577,6 +601,55 @@ export function ReportDetailPage() {
             ) : (
               <p className="read-only-note">
                 Este reporte no tiene movimientos de estado registrados.
+              </p>
+            )}
+          </article>
+
+          <article className="panel">
+            <div className="panel-header">
+              <div>
+                <span className="eyebrow">Trazabilidad</span>
+                <h2>Historial de asignaciones</h2>
+              </div>
+              <Building2 size={18} />
+            </div>
+            {asignaciones.length > 0 ? (
+              <ol className="history-list">
+                {asignaciones.map((asignacion) => (
+                  <li className="history-item" key={asignacion.id}>
+                    <span
+                      className={`history-dot ${
+                        asignacion.origen === "JENA" ? "history-dot-jena" : "history-dot-admin"
+                      }`}
+                    />
+                    <div className="history-content">
+                      <div className="history-heading">
+                        <strong>
+                          {asignacion.origen === "JENA"
+                            ? "Asignación automática"
+                            : "Reasignación manual"}
+                        </strong>
+                        <span>{formatearFechaHora(asignacion.fecha)}</span>
+                      </div>
+                      <span className="history-actor">
+                        por {asignacion.usuarioNombre ?? "Sistema (Jena)"}
+                      </span>
+                      <span className="history-assignment">
+                        {asignacion.entidadAnteriorNombre ?? "Sin entidad"} →{" "}
+                        {asignacion.entidadNuevaNombre}
+                      </span>
+                      {asignacion.motivo && (
+                        <span className="history-assignment-motive">
+                          Motivo: {asignacion.motivo}
+                        </span>
+                      )}
+                    </div>
+                  </li>
+                ))}
+              </ol>
+            ) : (
+              <p className="read-only-note">
+                Este reporte no tiene cambios de entidad registrados.
               </p>
             )}
           </article>

@@ -16,6 +16,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.gestion.backend.dto.AsignacionReporteResponse;
 import com.gestion.backend.dto.CambioAsignacionRequest;
 import com.gestion.backend.dto.CambioEstadoRequest;
 import com.gestion.backend.dto.FeatureCollection;
@@ -108,9 +109,14 @@ public class ReporteController {
 		return reporteService.obtenerHistorial(id);
 	}
 
+	@GetMapping("/{id}/asignaciones")
+	public List<AsignacionReporteResponse> asignaciones(@PathVariable Long id) {
+		return reporteService.obtenerAsignaciones(id);
+	}
+
 	@PatchMapping("/{id}/asignacion")
 	@PreAuthorize("hasRole('ADMINISTRADOR')")
 	public ReporteResponse asignar(@PathVariable Long id, @Valid @RequestBody CambioAsignacionRequest solicitud) {
-		return reporteService.asignar(id, solicitud.entidadId());
+		return reporteService.asignar(id, solicitud.entidadId(), solicitud.motivo());
 	}
 }

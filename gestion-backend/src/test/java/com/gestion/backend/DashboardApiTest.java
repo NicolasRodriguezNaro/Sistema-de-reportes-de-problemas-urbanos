@@ -737,10 +737,26 @@ class DashboardApiTest {
 		mockMvc.perform(patch("/api/reportes/" + reporte.getId() + "/asignacion")
 				.header(HttpHeaders.AUTHORIZATION, autorizacion(admin))
 				.contentType(MediaType.APPLICATION_JSON)
-				.content("{\"entidadId\":" + entidadB.getId() + "}"))
+				.content("{\"entidadId\":" + entidadB.getId() + ",\"motivo\":\"Cambio operativo\"}"))
 				.andExpect(status().isOk())
 				.andExpect(jsonPath("$.entidadAsignadaId").value(entidadB.getId()))
 				.andExpect(jsonPath("$.estado").value("PENDIENTE"));
+
+		mockMvc.perform(patch("/api/reportes/" + reporte.getId() + "/asignacion")
+				.header(HttpHeaders.AUTHORIZATION, autorizacion(admin))
+				.contentType(MediaType.APPLICATION_JSON)
+				.content("{\"entidadId\":" + entidadB.getId() + ",\"motivo\":\"Sin cambio real\"}"))
+				.andExpect(status().isOk());
+
+		mockMvc.perform(get("/api/reportes/" + reporte.getId() + "/asignaciones")
+				.header(HttpHeaders.AUTHORIZATION, autorizacion(admin)))
+				.andExpect(status().isOk())
+				.andExpect(jsonPath("$.length()").value(1))
+				.andExpect(jsonPath("$[0].origen").value("ADMINISTRADOR"))
+				.andExpect(jsonPath("$[0].entidadAnteriorId").value(entidadA.getId()))
+				.andExpect(jsonPath("$[0].entidadNuevaId").value(entidadB.getId()))
+				.andExpect(jsonPath("$[0].usuarioId").value(admin.getId().intValue()))
+				.andExpect(jsonPath("$[0].motivo").value("Cambio operativo"));
 
 		mockMvc.perform(patch("/api/reportes/" + reporte.getId() + "/asignacion")
 				.header(HttpHeaders.AUTHORIZATION, autorizacion(funcionario))

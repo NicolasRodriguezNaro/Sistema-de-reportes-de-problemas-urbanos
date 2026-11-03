@@ -43,8 +43,9 @@ Reglas concretas:
   `ASIGNADO → RESUELTO|EN_REVISION|RECHAZADO`, `RESUELTO → EN_REVISION`,
   `RECHAZADO → EN_REVISION`. Para `ASIGNADO` debe existir entidad responsable.
 - `GET /api/reportes/{id}/historial`: mismo alcance que el detalle del reporte.
+- `GET /api/reportes/{id}/asignaciones`: mismo alcance que el detalle del reporte.
 - `PATCH /api/reportes/{id}/asignacion`: solo `ADMINISTRADOR`; no aplica a reportes
-  rechazados hasta que se reabran.
+  rechazados o resueltos hasta que se reabran.
 
 Los catálogos (`barrios`, `sitios-interes`, `entidades`) son de consulta para los roles
 del dashboard.
@@ -259,12 +260,14 @@ Solo `ADMINISTRADOR`.
 
 ```json
 {
-  "entidadId": 2
+  "entidadId": 2,
+  "motivo": "La entidad calculada por Jena no corresponde."
 }
 ```
 
-Respuesta `200`: el reporte completo (`ReporteResponse`) con la nueva
-`entidadAsignadaId`. La asignación **no cambia el estado**; para eso se usa
+El motivo es opcional. Cada cambio de entidad queda en
+`GET /api/reportes/{id}/asignaciones`, incluyendo la asignación automática inicial
+de Jena. La asignación **no cambia el estado**; para eso se usa
 `PATCH /api/reportes/{id}/estado`.
 
 ---
@@ -328,7 +331,7 @@ Ambas rutas son públicas; el resto de `/api/**` exige token.
 - Preflight CORS para el origen del dashboard.
 - OpenAPI disponible sin token.
 
-Resultado de la suite: **67/67 pruebas en verde** con `./mvnw test`.
+Resultado de la suite: **68/68 pruebas en verde** con `./mvnw test`.
 
 ---
 

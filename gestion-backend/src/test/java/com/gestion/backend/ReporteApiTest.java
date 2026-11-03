@@ -181,6 +181,30 @@ class ReporteApiTest {
 	}
 
 	@Test
+	void crearReporteRegistraLaAsignacionAutomaticaDeJena() throws Exception {
+		Usuario usuario = crearUsuarioDePrueba();
+		String autorizacion = autorizacion(usuario);
+
+		MvcResult creacion = mockMvc.perform(post("/api/reportes")
+				.header("Authorization", autorizacion)
+				.contentType(MediaType.APPLICATION_JSON)
+				.content(solicitudValida()))
+				.andExpect(status().isCreated())
+				.andReturn();
+		Number id = leerCampo(creacion, "$.id");
+
+		mockMvc.perform(get("/api/reportes/" + id.longValue() + "/asignaciones")
+				.header("Authorization", autorizacion))
+				.andExpect(status().isOk())
+				.andExpect(jsonPath("$.length()").value(1))
+				.andExpect(jsonPath("$[0].origen").value("JENA"))
+				.andExpect(jsonPath("$[0].entidadAnteriorId").doesNotExist())
+				.andExpect(jsonPath("$[0].usuarioId").doesNotExist())
+				.andExpect(jsonPath("$[0].entidadNuevaNombre").isNotEmpty())
+				.andExpect(jsonPath("$[0].motivo").isNotEmpty());
+	}
+
+	@Test
 	void deduplicacionAgrupaReportesDentroDe5MetrosBajoElPadre() throws Exception {
 		Usuario usuario = crearUsuarioDePrueba();
 		String autorizacion = autorizacion(usuario);

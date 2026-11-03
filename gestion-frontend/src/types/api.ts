@@ -17,6 +17,8 @@ export type MotivoRechazo =
   | "SPAM"
   | "OTRO";
 
+export type OrigenAsignacion = "JENA" | "ADMINISTRADOR";
+
 export type TipoEntidad =
   | "SECRETARIA_OBRAS_PUBLICAS"
   | "EMPRESA_SERVICIOS_PUBLICOS"
@@ -83,6 +85,19 @@ export interface HistorialReporte {
   motivo: MotivoRechazo | null;
   detalle: string | null;
   motivoReapertura: string | null;
+  fecha: string;
+}
+
+export interface AsignacionReporte {
+  id: number;
+  entidadAnteriorId: number | null;
+  entidadAnteriorNombre: string | null;
+  entidadNuevaId: number;
+  entidadNuevaNombre: string;
+  usuarioId: number | null;
+  usuarioNombre: string | null;
+  origen: OrigenAsignacion;
+  motivo: string | null;
   fecha: string;
 }
 

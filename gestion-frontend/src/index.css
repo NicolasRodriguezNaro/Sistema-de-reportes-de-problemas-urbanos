@@ -1669,6 +1669,14 @@ strong {
   background: var(--warning, #d97706);
 }
 
+.history-dot-jena {
+  background: var(--info);
+}
+
+.history-dot-admin {
+  background: var(--violet);
+}
+
 .history-content {
   min-width: 0;
   display: flex;
@@ -1705,6 +1713,19 @@ strong {
 .history-reopen {
   margin-top: 2px;
   color: #166534;
+  font-size: 9px;
+  line-height: 1.45;
+}
+
+.history-assignment {
+  margin-top: 2px;
+  color: var(--text);
+  font-size: 9px;
+  line-height: 1.45;
+}
+
+.history-assignment-motive {
+  color: var(--soft);
   font-size: 9px;
   line-height: 1.45;
 }
