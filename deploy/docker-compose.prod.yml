@@ -1,0 +1,114 @@
+name: gestion-produccion
+
+services:
+  postgres:
+    image: postgis/postgis:17-3.5
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: ${DB_NAME:-gestion_db}
+      POSTGRES_USER: ${DB_USER:-gestion}
+      POSTGRES_PASSWORD: ${DB_PASSWORD:?Debes definir DB_PASSWORD}
+    volumes:
+      - postgres-data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U $${POSTGRES_USER} -d $${POSTGRES_DB}"]
+      interval: 5s
+      timeout: 5s
+      retries: 20
+    networks:
+      - interna
+
+  silo:
+    image: pgsty/silo:latest
+    restart: unless-stopped
+    command: server /data --console-address ":9001"
+    environment:
+      MINIO_ROOT_USER: ${MINIO_ROOT_USER:?Debes definir MINIO_ROOT_USER}
+      MINIO_ROOT_PASSWORD: ${MINIO_ROOT_PASSWORD:?Debes definir MINIO_ROOT_PASSWORD}
+    volumes:
+      - silo-data:/data
+    expose:
+      - "9000"
+    networks:
+      - interna
+
+  s3-init:
+    image: amazon/aws-cli:latest
+    depends_on:
+      silo:
+        condition: service_started
+    environment:
+      AWS_ACCESS_KEY_ID: ${MINIO_ROOT_USER}
+      AWS_SECRET_ACCESS_KEY: ${MINIO_ROOT_PASSWORD}
+      AWS_DEFAULT_REGION: us-east-1
+      AWS_EC2_METADATA_DISABLED: "true"
+    entrypoint: >
+      /bin/sh -c "
+      until aws --endpoint-url http://silo:9000 s3api list-buckets >/dev/null 2>&1; do
+        echo 'Esperando Silo...';
+        sleep 2;
+      done;
+      aws --endpoint-url http://silo:9000 s3api create-bucket --bucket reportes >/dev/null 2>&1 || true;
+      echo 'Bucket reportes listo';
+      "
+    networks:
+      - interna
+    restart: "no"
+
+  backend:
+    build:
+      context: ../gestion-backend
+      dockerfile: Dockerfile
+    restart: unless-stopped
+    env_file:
+      - .env
+    environment:
+      SPRING_PROFILES_ACTIVE: prod,minio
+      SPRING_DATASOURCE_URL: jdbc:postgresql://postgres:5432/${DB_NAME:-gestion_db}
+      SPRING_DATASOURCE_USERNAME: ${DB_USER:-gestion}
+      SPRING_DATASOURCE_PASSWORD: ${DB_PASSWORD}
+      GESTION_SEMANTICA_RUTA_TDB: /data/jena
+      TZ: America/Bogota
+    volumes:
+      - jena-data:/data/jena
+    expose:
+      - "8080"
+    depends_on:
+      postgres:
+        condition: service_healthy
+      s3-init:
+        condition: service_completed_successfully
+    networks:
+      - interna
+
+  frontend:
+    build:
+      context: ../gestion-frontend
+      dockerfile: Dockerfile
+      args:
+        VITE_API_URL: ${APP_URL:-https://reportes.mosqueteros.cloud}
+    restart: unless-stopped
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - caddy-data:/data
+      - caddy-config:/config
+    depends_on:
+      backend:
+        condition: service_started
+      silo:
+        condition: service_started
+    networks:
+      - interna
+
+volumes:
+  postgres-data:
+  silo-data:
+  jena-data:
+  caddy-data:
+  caddy-config:
+
+networks:
+  interna:
+    driver: bridge

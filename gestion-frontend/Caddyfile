@@ -1,0 +1,19 @@
+reportes.mosqueteros.cloud {
+	encode zstd gzip
+	root * /srv
+
+	handle /api/* {
+		reverse_proxy backend:8080
+	}
+
+	handle {
+		try_files {path} /index.html
+		file_server
+	}
+}
+
+s3.mosqueteros.cloud {
+	reverse_proxy silo:9000 {
+		header_up Host {http.request.host}
+	}
+}

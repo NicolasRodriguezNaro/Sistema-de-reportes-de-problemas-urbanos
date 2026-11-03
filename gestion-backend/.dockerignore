@@ -1,0 +1,9 @@
+target/
+uploads/
+data/
+ia-evaluation/imagenes/
+ia-evaluation/resultados.csv
+ia-evaluation/metricas.md
+.git/
+.env
+*.log
