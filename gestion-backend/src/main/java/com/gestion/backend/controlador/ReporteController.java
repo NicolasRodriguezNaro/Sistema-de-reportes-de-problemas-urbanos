@@ -110,6 +110,7 @@ public class ReporteController {
 	}
 
 	@GetMapping("/{id}/asignaciones")
+	@PreAuthorize("hasRole('ADMINISTRADOR')")
 	public List<AsignacionReporteResponse> asignaciones(@PathVariable Long id) {
 		return reporteService.obtenerAsignaciones(id);
 	}

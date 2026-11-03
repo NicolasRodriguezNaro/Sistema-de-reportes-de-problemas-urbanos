@@ -90,7 +90,9 @@ export function ReportDetailPage() {
       const [data, historialData, asignacionesData] = await Promise.all([
         apiFetch<ReporteResponse>(`/api/reportes/${id}`),
         apiFetch<HistorialReporte[]>(`/api/reportes/${id}/historial`).catch(() => []),
-        apiFetch<AsignacionReporte[]>(`/api/reportes/${id}/asignaciones`).catch(() => []),
+        esAdministrador
+          ? apiFetch<AsignacionReporte[]>(`/api/reportes/${id}/asignaciones`).catch(() => [])
+          : Promise.resolve([] as AsignacionReporte[]),
       ]);
       setReporte(data);
       setHistorial(historialData);
@@ -605,15 +607,16 @@ export function ReportDetailPage() {
             )}
           </article>
 
-          <article className="panel">
-            <div className="panel-header">
-              <div>
-                <span className="eyebrow">Trazabilidad</span>
-                <h2>Historial de asignaciones</h2>
+          {esAdministrador && (
+            <article className="panel">
+              <div className="panel-header">
+                <div>
+                  <span className="eyebrow">Trazabilidad</span>
+                  <h2>Historial de asignaciones</h2>
+                </div>
+                <Building2 size={18} />
               </div>
-              <Building2 size={18} />
-            </div>
-            {asignaciones.length > 0 ? (
+              {asignaciones.length > 0 ? (
               <ol className="history-list">
                 {asignaciones.map((asignacion) => (
                   <li className="history-item" key={asignacion.id}>
@@ -652,7 +655,8 @@ export function ReportDetailPage() {
                 Este reporte no tiene cambios de entidad registrados.
               </p>
             )}
-          </article>
+            </article>
+          )}
 
           {geoReporte && geoReporte.features.length > 0 && (
             <article className="panel">

@@ -184,6 +184,13 @@ class ReporteApiTest {
 	void crearReporteRegistraLaAsignacionAutomaticaDeJena() throws Exception {
 		Usuario usuario = crearUsuarioDePrueba();
 		String autorizacion = autorizacion(usuario);
+		Usuario admin = new Usuario();
+		admin.setNombre("Admin API");
+		admin.setEmail("prueba.admin.asignaciones@test.local");
+		admin.setPasswordHash("no-aplica");
+		admin.setRol(RolUsuario.ADMINISTRADOR);
+		admin = usuarioRepository.save(admin);
+		String autorizacionAdmin = autorizacion(admin);
 
 		MvcResult creacion = mockMvc.perform(post("/api/reportes")
 				.header("Authorization", autorizacion)
@@ -194,7 +201,7 @@ class ReporteApiTest {
 		Number id = leerCampo(creacion, "$.id");
 
 		mockMvc.perform(get("/api/reportes/" + id.longValue() + "/asignaciones")
-				.header("Authorization", autorizacion))
+				.header("Authorization", autorizacionAdmin))
 				.andExpect(status().isOk())
 				.andExpect(jsonPath("$.length()").value(1))
 				.andExpect(jsonPath("$[0].origen").value("JENA"))

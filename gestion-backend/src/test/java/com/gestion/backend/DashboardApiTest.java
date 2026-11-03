@@ -603,6 +603,28 @@ class DashboardApiTest {
 	}
 
 	@Test
+	void soloAdministradorPuedeConsultarElHistorialDeAsignaciones() throws Exception {
+		Entidad entidad = entidades().get(0);
+		Usuario admin = crearUsuario(RolUsuario.ADMINISTRADOR, null);
+		Usuario funcionario = crearUsuario(RolUsuario.FUNCIONARIO, entidad);
+		Usuario empresa = crearUsuario(RolUsuario.EMPRESA, entidad);
+		Usuario ciudadano = crearUsuario(RolUsuario.CIUDADANO, null);
+		Reporte reporte = crearReporte(ciudadano, entidad, TipoIncidencia.HUECO_VIA,
+				PrioridadCalculada.MEDIA);
+
+		for (Usuario usuarioConAccesoAlReporte : List.of(funcionario, empresa, ciudadano)) {
+			mockMvc.perform(get("/api/reportes/" + reporte.getId() + "/asignaciones")
+					.header(HttpHeaders.AUTHORIZATION, autorizacion(usuarioConAccesoAlReporte)))
+					.andExpect(status().isForbidden());
+		}
+
+		mockMvc.perform(get("/api/reportes/" + reporte.getId() + "/asignaciones")
+				.header(HttpHeaders.AUTHORIZATION, autorizacion(admin)))
+				.andExpect(status().isOk())
+				.andExpect(jsonPath("$").isArray());
+	}
+
+	@Test
 	void noSePuedeAsignarEntidadAReporteRechazado() throws Exception {
 		List<Entidad> entidades = entidades();
 		Entidad entidadA = entidades.get(0);

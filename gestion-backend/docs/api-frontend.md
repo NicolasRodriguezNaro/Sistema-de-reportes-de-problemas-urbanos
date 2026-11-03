@@ -28,7 +28,7 @@ Esta guía explica **qué endpoints puede consumir el frontend, qué recibe, qu�
 | `PATCH` | `/api/reportes/{id}/estado` | Funcionario/Admin/Empresa | Cambiar el estado; exige motivo si es `RECHAZADO` |
 | `GET` | `/api/reportes/{id}/historial` | Según alcance del reporte | Consultar el historial de estados |
 | `PATCH` | `/api/reportes/{id}/asignacion` | Administrador | Reasignar la entidad responsable |
-| `GET` | `/api/reportes/{id}/asignaciones` | Según alcance del reporte | Consultar el historial de asignaciones |
+| `GET` | `/api/reportes/{id}/asignaciones` | Administrador | Consultar el historial completo de asignaciones |
 | `GET` | `/api/dashboard/resumen` | Funcionario/Admin/Empresa | Métricas y tarjetas del dashboard |
 | `GET` | `/api/barrios/geojson` | Funcionario/Admin/Empresa | Capa GeoJSON de barrios |
 | `GET` | `/api/sitios-interes/geojson` | Funcionario/Admin/Empresa | Capa GeoJSON de sitios de interés |
@@ -1012,9 +1012,10 @@ GET /api/reportes/{id}/asignaciones
 Authorization: Bearer <token>
 ```
 
-Devuelve la asignación automática inicial de Jena y las reasignaciones manuales.
-Tiene el mismo alcance que el detalle del reporte. Los reportes creados antes de la
-migración V7 no tienen eventos retroactivos.
+Solo `ADMINISTRADOR`. Devuelve la asignación automática inicial de Jena y las
+reasignaciones manuales. Funcionarios, empresas y ciudadanos reciben `403`, incluso
+si el reporte está asignado a su entidad o les pertenece. Los reportes creados antes
+de la migración V7 no tienen eventos retroactivos.
 
 Respuesta `200`:
 

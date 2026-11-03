@@ -225,8 +225,8 @@ public class ReporteService {
 
 	@Transactional(readOnly = true)
 	public List<AsignacionReporteResponse> obtenerAsignaciones(Long id) {
-		Reporte reporte = buscar(id);
-		alcanceReportes.verificarPuedeVer(alcanceReportes.usuarioActual(), reporte);
+		alcanceReportes.verificarPuedeAsignar(alcanceReportes.usuarioActual());
+		buscar(id);
 		return reporteAsignacionHistorialRepository.findByReporteIdOrderByFechaAscIdAsc(id).stream()
 				.map(AsignacionReporteResponse::desde)
 				.toList();
