@@ -64,6 +64,22 @@ EXPO_PUBLIC_API_URL=http://localhost:8080
 
 Para emulador Android usa `http://10.0.2.2:8080`; para un dispositivo físico usa la IP LAN del computador.
 
+## Despliegue en producción
+
+La plataforma está desplegada en un VPS con Docker Compose:
+
+```text
+Dashboard: https://reportes.mosqueteros.cloud
+API:       https://reportes.mosqueteros.cloud/api
+Imágenes:  https://s3.mosqueteros.cloud
+```
+
+La configuración, los Dockerfiles, el `Caddyfile` y el procedimiento de
+actualización están en [`deploy/`](deploy/README.md).
+
+El servidor usa PostgreSQL/PostGIS, Silo, Spring Boot, React y Caddy. Caddy
+gestiona HTTPS con certificados Let's Encrypt.
+
 ## Usuarios de prueba
 
 Los usuarios de smoke test se crean desde el backend. Ejemplo:

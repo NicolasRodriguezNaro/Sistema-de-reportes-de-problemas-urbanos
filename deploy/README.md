@@ -170,6 +170,30 @@ También verificar:
 
 ## Actualizaciones
 
+En este VPS el código se copió inicialmente mediante un archivo tar porque el
+repositorio de GitHub es privado. Para actualizar hay dos opciones:
+
+### Opción rápida: transferir un nuevo tar
+
+Desde el PC local, crear un nuevo archivo y copiarlo al VPS. Después:
+
+```bash
+cd /home/nicolas/gestion/deploy
+docker compose -f docker-compose.prod.yml up -d --build
+```
+
+### Opción recomendada: configurar una deploy key de GitHub
+
+Crear una clave en el VPS:
+
+```bash
+ssh-keygen -t ed25519 -f ~/.ssh/github_gestion -N ""
+cat ~/.ssh/github_gestion.pub
+```
+
+Agregar la clave pública como **Deploy Key** de solo lectura en GitHub. Luego,
+si el repositorio se clona con git en `/home/nicolas/gestion`, se puede usar:
+
 ```bash
 cd /home/nicolas/gestion
 git pull
@@ -198,3 +222,9 @@ También se debe respaldar el volumen de Silo y el volumen de Jena.
 - No hay recuperación de contraseña por correo; queda para una fase posterior.
 - No hay alta disponibilidad; el despliegue es de una sola instancia.
 - El certificado HTTPS depende de que DNS y puertos 80/443 estén correctos.
+- El repositorio de GitHub es privado y el VPS no tiene una deploy key configurada;
+  las actualizaciones actuales se hacen por transferencia de archivos.
+- El usuario `admin@mosqueteros.cloud` no tiene un buzón de correo real; si se
+  habilita recuperación, habrá que cambiarlo o configurar correo del dominio.
+- El login por contraseña SSH sigue disponible; se recomienda desactivarlo cuando
+  se confirme que la clave SSH funciona correctamente.
