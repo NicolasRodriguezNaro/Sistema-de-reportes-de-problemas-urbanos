@@ -53,13 +53,17 @@ export function NewReportScreen() {
   }, []);
 
   // Las pestañas conservan el estado de la pantalla al cambiar de sección.
-  // Si ya se envió un reporte, al volver a esta pestaña se inicia un flujo nuevo.
+  // Si ya se envió un reporte, se reinicia al perder el foco: al abrir el
+  // detalle o al cambiar de pestaña. Así no se ve el formulario de foto
+  // durante la transición y, al volver, ya está listo para otro reporte.
   // Si el usuario solo cambió de pestaña durante el borrador, el estado se conserva.
   useFocusEffect(
     useCallback(() => {
-      if (reporteCreadoRef.current) {
-        reiniciar();
-      }
+      return () => {
+        if (reporteCreadoRef.current) {
+          reiniciar();
+        }
+      };
     }, [reiniciar])
   );
 
@@ -180,11 +184,7 @@ export function NewReportScreen() {
     return (
       <SuccessView
         reporte={reporteCreado}
-        onVerReporte={() => {
-          const reporteId = reporteCreado.id;
-          reiniciar();
-          router.push(`/reporte/${reporteId}`);
-        }}
+        onVerReporte={() => router.push(`/reporte/${reporteCreado.id}`)}
         onInicio={() => {
           reiniciar();
           router.replace("/");
