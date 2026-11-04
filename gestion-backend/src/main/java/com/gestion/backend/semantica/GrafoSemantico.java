@@ -33,6 +33,7 @@ import org.apache.jena.vocabulary.RDFS;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.stereotype.Component;
 
 import com.gestion.backend.modelo.PrioridadCalculada;
@@ -43,7 +44,8 @@ import com.gestion.backend.modelo.TipoIncidencia;
 import jakarta.annotation.PreDestroy;
 
 @Component
-public class GrafoSemantico {
+@ConditionalOnProperty(name = "gestion.semantica.modo", havingValue = "tdb2", matchIfMissing = true)
+public class GrafoSemantico implements SemanticaGateway {
 
 	private static final Logger log = LoggerFactory.getLogger(GrafoSemantico.class);
 

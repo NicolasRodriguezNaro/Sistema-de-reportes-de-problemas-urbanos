@@ -1,0 +1,26 @@
+@prefix :        <#> .
+@prefix fuseki:  <http://jena.apache.org/fuseki#> .
+@prefix rdf:     <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix tdb2:    <http://jena.apache.org/2016/tdb#> .
+@prefix ja:      <http://jena.hpl.hp.com/2005/11/Assembler#> .
+
+<#service> a fuseki:Service ;
+    fuseki:name "gestion" ;
+    fuseki:endpoint [ fuseki:operation fuseki:query ; fuseki:name "sparql" ] ;
+    fuseki:endpoint [ fuseki:operation fuseki:query ; fuseki:name "query" ] ;
+    fuseki:endpoint [ fuseki:operation fuseki:update ; fuseki:name "update" ] ;
+    fuseki:endpoint [ fuseki:operation fuseki:gsp-rw ; fuseki:name "data" ] ;
+    fuseki:dataset <#dataset> .
+
+<#dataset> a ja:RDFDataset ;
+    ja:defaultGraph <#inference> .
+
+<#inference> a ja:InfModel ;
+    ja:baseModel <#base> ;
+    ja:reasoner [
+        ja:reasonerURL <http://jena.hpl.hp.com/2003/GenericRuleReasoner> ;
+        ja:rulesFrom <file:///fuseki/reglas.rules>
+    ] .
+
+<#base> a tdb2:GraphTDB2 ;
+    tdb2:location "/fuseki-base/databases/gestion" .

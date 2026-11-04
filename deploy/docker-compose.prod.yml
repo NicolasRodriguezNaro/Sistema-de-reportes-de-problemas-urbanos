@@ -32,6 +32,25 @@ services:
     networks:
       - interna
 
+  fuseki:
+    image: secoresearch/fuseki:5.6.0
+    restart: unless-stopped
+    environment:
+      ADMIN_PASSWORD: ${FUSEKI_ADMIN_PASSWORD:?Debes definir FUSEKI_ADMIN_PASSWORD}
+    volumes:
+      - fuseki-data:/fuseki-base/databases
+      - ./fuseki/config.ttl:/fuseki-base/configuration/assembler.ttl:ro
+      - ../gestion-backend/src/main/resources/semantica/reglas.rules:/fuseki/reglas.rules:ro
+    expose:
+      - "3030"
+    healthcheck:
+      test: ["CMD-SHELL", "wget -q -O /dev/null http://localhost:3030/ || exit 1"]
+      interval: 10s
+      timeout: 5s
+      retries: 20
+    networks:
+      - interna
+
   s3-init:
     image: amazon/aws-cli:latest
     depends_on:
@@ -67,10 +86,9 @@ services:
       SPRING_DATASOURCE_URL: jdbc:postgresql://postgres:5432/${DB_NAME:-gestion_db}
       SPRING_DATASOURCE_USERNAME: ${DB_USER:-gestion}
       SPRING_DATASOURCE_PASSWORD: ${DB_PASSWORD}
-      GESTION_SEMANTICA_RUTA_TDB: /data/jena
+      GESTION_SEMANTICA_MODO: fuseki
+      GESTION_SEMANTICA_FUSEKI_URL: http://fuseki:3030/gestion
       TZ: America/Bogota
-    volumes:
-      - jena-data:/data/jena
     expose:
       - "8080"
     depends_on:
@@ -78,6 +96,8 @@ services:
         condition: service_healthy
       s3-init:
         condition: service_completed_successfully
+      fuseki:
+        condition: service_healthy
     networks:
       - interna
 
@@ -105,7 +125,7 @@ services:
 volumes:
   postgres-data:
   silo-data:
-  jena-data:
+  fuseki-data:
   caddy-data:
   caddy-config:
 

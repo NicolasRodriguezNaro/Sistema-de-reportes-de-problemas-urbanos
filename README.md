@@ -6,7 +6,7 @@ Proyecto académico para reportar, clasificar y gestionar incidencias urbanas en
 
 | Carpeta | Descripción | Stack |
 |---|---|---|
-| `gestion-backend` | API, seguridad, IA, semántica y almacenamiento | Spring Boot, PostgreSQL/PostGIS, Jena |
+| `gestion-backend` | API, seguridad, IA, semántica y almacenamiento | Spring Boot, PostgreSQL/PostGIS, Fuseki/Jena |
 | `gestion-frontend` | Panel operativo para funcionarios, empresas y administradores | React, Vite, TypeScript, Leaflet |
 | `gestion-mobile` | App ciudadana para crear y consultar reportes | Expo, React Native, Expo Router |
 
@@ -17,6 +17,8 @@ Proyecto académico para reportar, clasificar y gestionar incidencias urbanas en
 - Guía de diseño e implementación: `gestion-backend/docs/diseno-frontend.md`
 - Seguridad: `gestion-backend/docs/seguridad.md`
 - Clasificación con Gemini: `gestion-backend/docs/ia-gemini.md`
+- Módulo semántico y Fuseki: `gestion-backend/docs/modulo-semantico.md`
+- Despliegue y operación: `deploy/README.md`
 
 ## Ejecutar el backend
 

@@ -17,7 +17,12 @@ s3.mosqueteros.cloud
 backend → PostgreSQL/PostGIS
 backend → Silo
 backend → Gemini
+backend → Fuseki (red interna, sin publicación)
 ```
+
+Fuseki es la base semántica separada. Escucha en `3030` únicamente dentro
+de la red Docker `interna`; no se agrega a Caddy y no se publica en el host.
+
 
 ## DNS
 
@@ -45,7 +50,8 @@ En el firewall del VPS y del proveedor:
 443/tcp
 ```
 
-No se exponen PostgreSQL ni la consola de Silo.
+No se exponen PostgreSQL, la consola de Silo ni Fuseki. El puerto `3030`
+de Fuseki queda solo en la red interna de Docker.
 
 ## Preparar el servidor
 
@@ -76,6 +82,18 @@ openssl rand -hex 32
 
 No usar los valores de ejemplo en producción.
 
+Variables relevantes para la base semántica:
+
+| Variable | Uso |
+|---|---|
+| `FUSEKI_ADMIN_PASSWORD` | Contraseña del administrador de Fuseki; no se usa en la API |
+| `GESTION_SEMANTICA_FUSEKI_URL` | Endpoint interno; por defecto `http://fuseki:3030/gestion` |
+
+Fuseki no recibe tráfico público. La ontología se envía desde el backend por
+Graph Store Protocol al arrancar; las reglas se montan desde
+`gestion-backend/src/main/resources/semantica/reglas.rules` y la configuración
+del dataset está en `deploy/fuseki/config.ttl`.
+
 ## Desplegar
 
 Desde la raíz del repositorio:
@@ -92,9 +110,11 @@ La primera ejecución:
 1. descarga las imágenes;
 2. construye backend y frontend;
 3. levanta PostgreSQL/PostGIS;
-4. crea el bucket de Silo;
-5. ejecuta las migraciones Flyway;
-6. levanta Caddy y solicita los certificados HTTPS.
+4. levanta Fuseki con TDB2 y el razonador;
+5. crea el bucket de Silo;
+6. ejecuta las migraciones Flyway;
+7. sincroniza ontología, entidades y sitios hacia Fuseki;
+8. levanta Caddy y solicita los certificados HTTPS.
 
 ## Importar las capas geográficas
 
@@ -126,7 +146,7 @@ docker compose -f /home/nicolas/gestion/deploy/docker-compose.prod.yml \
   exec -T postgres psql -U gestion -d gestion_db < geodata.sql
 ```
 
-Reiniciar el backend para que Jena sincronice las capas reales:
+Reiniciar el backend para que Fuseki reciba la ontología y la referencia real:
 
 ```bash
 cd /home/nicolas/gestion/deploy
@@ -168,6 +188,17 @@ También verificar:
 - visualización de imagen HD y miniatura;
 - app móvil apuntando a `https://reportes.mosqueteros.cloud`.
 
+Comprobar que Fuseki tiene los sitios sincronizados, sin exponerlo:
+
+```bash
+cd /home/nicolas/gestion/deploy
+docker compose -f docker-compose.prod.yml exec -T fuseki \
+  wget -qO- 'http://localhost:3030/gestion/sparql?query=SELECT%20%28COUNT%28DISTINCT%20%3Fs%29%20AS%20%3Fsitios%29%20WHERE%20%7B%3Fs%20%3Fp%20%3Fo%20FILTER%28STRSTARTS%28STR%28%3Fs%29%2C%20%22http%3A%2F%2Finfraestructura.org%2Fontologia%23Sitio_%22%29%29%7D'
+```
+
+El backend debe registrar en sus logs `Ontologia enviada a Fuseki` y no debe
+haber errores de sincronización semántica.
+
 ## Actualizaciones
 
 En este VPS el código se copió inicialmente mediante un archivo tar porque el
@@ -202,7 +233,8 @@ docker compose -f docker-compose.prod.yml up -d --build
 ```
 
 Antes de una migración de base de datos, hacer backup. No ejecutar
-`docker compose down -v` porque elimina los volúmenes de PostgreSQL, Silo y Jena.
+`docker compose down -v` porque elimina los volúmenes de PostgreSQL, Silo y
+Fuseki.
 
 ## Backup
 
@@ -215,7 +247,21 @@ docker compose -f docker-compose.prod.yml exec -T postgres \
   > /home/nicolas/backups/gestion-$(date +%Y%m%d-%H%M).dump
 ```
 
-También se debe respaldar el volumen de Silo y el volumen de Jena.
+También se debe respaldar el volumen de Silo y el volumen de Fuseki. Para un
+backup consistente de TDB2, detener Fuseki antes de copiar el volumen y
+volver a levantarlo después:
+
+```bash
+cd /home/nicolas/gestion/deploy
+docker compose -f docker-compose.prod.yml stop fuseki
+docker run --rm -v gestion-produccion_fuseki-data:/data:ro \
+  -v /home/nicolas/backups:/backup alpine \
+  tar -czf /backup/fuseki-$(date +%Y%m%d-%H%M).tgz -C /data .
+docker compose -f docker-compose.prod.yml start fuseki
+```
+
+El grafo también es reconstruible: si se pierde el volumen, el backend vuelve
+a cargar la ontología y a sincronizar entidades y sitios desde PostgreSQL.
 
 ## Limitaciones actuales
 

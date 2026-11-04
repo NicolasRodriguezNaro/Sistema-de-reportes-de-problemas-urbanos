@@ -80,8 +80,11 @@ participan del razonamiento semantico; el resto se conserva para el dashboard/ma
 El espejo de `entidades` y `sitios_interes` se reconstruye **al arrancar la aplicacion**
 (`ApplicationReadyEvent`). Despues de importar o modificar capas, reinicia el backend.
 
-- Grafo persistente TDB2: `data/jena` (ignorado por git).
-- Tests: `target/jena-test-*` (no ejecutar tests y app a la vez: TDB2 bloquea la carpeta).
+- Produccion: el grafo vive en el servicio `fuseki` (volumen `fuseki-data`), configurado
+  en `deploy/fuseki/config.ttl`; se accede solo por la red interna.
+- Desarrollo local/tests: `gestion.semantica.modo=tdb2` usa `data/jena` y
+  `target/jena-test-*`. No ejecutar tests y app a la vez: TDB2 bloquea la carpeta.
+- La inferencia de produccion se ejecuta en Fuseki; el backend no carga reglas en ese modo.
 
 ## Verificacion rapida
 

@@ -25,9 +25,9 @@ public class ServicioSemantico {
 	private static final Logger log = LoggerFactory.getLogger(ServicioSemantico.class);
 
 	private final EntityManager entityManager;
-	private final GrafoSemantico grafo;
+	private final SemanticaGateway grafo;
 
-	public ServicioSemantico(EntityManager entityManager, GrafoSemantico grafo) {
+	public ServicioSemantico(EntityManager entityManager, SemanticaGateway grafo) {
 		this.entityManager = entityManager;
 		this.grafo = grafo;
 	}
