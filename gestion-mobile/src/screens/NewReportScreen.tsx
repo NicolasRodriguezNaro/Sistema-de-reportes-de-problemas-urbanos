@@ -53,17 +53,15 @@ export function NewReportScreen() {
   }, []);
 
   // Las pestañas conservan el estado de la pantalla al cambiar de sección.
-  // Si ya se envió un reporte, se reinicia al perder el foco: al abrir el
-  // detalle o al cambiar de pestaña. Así no se ve el formulario de foto
-  // durante la transición y, al volver, ya está listo para otro reporte.
-  // Si el usuario solo cambió de pestaña durante el borrador, el estado se conserva.
+  // Si ya se envió un reporte, se reinicia únicamente al recuperar el foco:
+  // así el detalle entra sin mostrar el formulario de foto debajo y, al
+  // volver, la pantalla ya está lista para otro reporte. Si el usuario solo
+  // cambió de pestaña durante el borrador, el estado se conserva.
   useFocusEffect(
     useCallback(() => {
-      return () => {
-        if (reporteCreadoRef.current) {
-          reiniciar();
-        }
-      };
+      if (reporteCreadoRef.current) {
+        reiniciar();
+      }
     }, [reiniciar])
   );
 
