@@ -1,9 +1,9 @@
 import { Ionicons } from "@expo/vector-icons";
-import { useRouter } from "expo-router";
+import { useFocusEffect, useRouter } from "expo-router";
 import * as ImagePicker from "expo-image-picker";
 import * as Location from "expo-location";
 import { LinearGradient } from "expo-linear-gradient";
-import { useState } from "react";
+import { useCallback, useRef, useState } from "react";
 import { SafeAreaView } from "react-native-safe-area-context";
 import {
   Alert,
@@ -40,15 +40,28 @@ export function NewReportScreen() {
   const [enviando, setEnviando] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [reporteCreado, setReporteCreado] = useState<ReporteDetalle | null>(null);
+  const reporteCreadoRef = useRef<ReporteDetalle | null>(null);
 
-  const reiniciar = () => {
+  const reiniciar = useCallback(() => {
+    reporteCreadoRef.current = null;
     setPaso(1);
     setFoto(null);
     setUbicacion(null);
     setDescripcion("");
     setError(null);
     setReporteCreado(null);
-  };
+  }, []);
+
+  // Las pestañas conservan el estado de la pantalla al cambiar de sección.
+  // Si ya se envió un reporte, al volver a esta pestaña se inicia un flujo nuevo.
+  // Si el usuario solo cambió de pestaña durante el borrador, el estado se conserva.
+  useFocusEffect(
+    useCallback(() => {
+      if (reporteCreadoRef.current) {
+        reiniciar();
+      }
+    }, [reiniciar])
+  );
 
   const volver = () => {
     if (paso > 1) {
@@ -154,6 +167,7 @@ export function NewReportScreen() {
         }),
       });
 
+      reporteCreadoRef.current = reporte;
       setReporteCreado(reporte);
     } catch (err) {
       setError(err instanceof Error ? err.message : "No se pudo enviar el reporte.");
@@ -166,7 +180,11 @@ export function NewReportScreen() {
     return (
       <SuccessView
         reporte={reporteCreado}
-        onVerReporte={() => router.push(`/reporte/${reporteCreado.id}`)}
+        onVerReporte={() => {
+          const reporteId = reporteCreado.id;
+          reiniciar();
+          router.push(`/reporte/${reporteId}`);
+        }}
         onInicio={() => {
           reiniciar();
           router.replace("/");
