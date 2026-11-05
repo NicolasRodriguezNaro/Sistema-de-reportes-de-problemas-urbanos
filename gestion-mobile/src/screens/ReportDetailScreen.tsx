@@ -117,31 +117,33 @@ export function ReportDetailScreen({ id }: { id: number }) {
         showsVerticalScrollIndicator={false}
       >
         <View style={[styles.imageWrap, { paddingTop: insets.top + 10 }]}>
-          {mostrarMiniatura && (
-            <Image
-              source={{ uri: reporte.urlImagenThumb! }}
-              style={styles.image}
-              onError={() => setErrorMiniatura(true)}
-            />
-          )}
-          {mostrarHd && (
-            <Image
-              source={{ uri: reporte.urlImagenHd! }}
-              style={[
-                styles.image,
-                mostrarMiniatura && styles.imageOverlay,
-                mostrarMiniatura && !imagenHdVisible && styles.imageOculta,
-              ]}
-              onLoad={() => setImagenHdVisible(true)}
-              onError={() => setErrorHd(true)}
-            />
-          )}
-          {sinImagen && (
-            <View style={[styles.image, styles.imageEmpty]}>
-              <Ionicons name="image-outline" size={36} color={colors.soft} />
-              <Text style={styles.imageEmptyText}>Imagen no disponible</Text>
-            </View>
-          )}
+          <View style={styles.imageStack}>
+            {mostrarMiniatura && (
+              <Image
+                source={{ uri: reporte.urlImagenThumb! }}
+                style={styles.image}
+                onError={() => setErrorMiniatura(true)}
+              />
+            )}
+            {mostrarHd && (
+              <Image
+                source={{ uri: reporte.urlImagenHd! }}
+                style={[
+                  styles.image,
+                  mostrarMiniatura && styles.imageOverlay,
+                  mostrarMiniatura && !imagenHdVisible && styles.imageOculta,
+                ]}
+                onLoad={() => setImagenHdVisible(true)}
+                onError={() => setErrorHd(true)}
+              />
+            )}
+            {sinImagen && (
+              <View style={[styles.image, styles.imageEmpty]}>
+                <Ionicons name="image-outline" size={36} color={colors.soft} />
+                <Text style={styles.imageEmptyText}>Imagen no disponible</Text>
+              </View>
+            )}
+          </View>
           <Pressable
             accessibilityRole="button"
             accessibilityLabel="Volver"
@@ -322,6 +324,9 @@ const styles = StyleSheet.create({
   },
   imageWrap: {
     marginHorizontal: -spacing.lg,
+    position: "relative",
+  },
+  imageStack: {
     position: "relative",
   },
   image: {
