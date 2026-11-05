@@ -43,11 +43,16 @@ export function ReportDetailScreen({ id }: { id: number }) {
   const [historial, setHistorial] = useState<HistorialReporte[]>([]);
   const [cargando, setCargando] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const [imageError, setImageError] = useState(false);
+  const [imagenHdVisible, setImagenHdVisible] = useState(false);
+  const [errorMiniatura, setErrorMiniatura] = useState(false);
+  const [errorHd, setErrorHd] = useState(false);
 
   const reintentar = useCallback(() => {
     setCargando(true);
     setError(null);
+    setImagenHdVisible(false);
+    setErrorMiniatura(false);
+    setErrorHd(false);
     obtenerReporte(id)
       .then(([data, historialData]) => {
         setReporte(data);
@@ -67,6 +72,9 @@ export function ReportDetailScreen({ id }: { id: number }) {
         if (!activo) return;
         setReporte(data);
         setHistorial(historialData);
+        setImagenHdVisible(false);
+        setErrorMiniatura(false);
+        setErrorHd(false);
       })
       .catch((err: unknown) => {
         if (activo) setError(err instanceof Error ? err.message : "No se pudo cargar el reporte.");
@@ -98,7 +106,9 @@ export function ReportDetailScreen({ id }: { id: number }) {
     );
   }
 
-  const imagen = reporte.urlImagenHd || reporte.urlImagenThumb;
+  const mostrarMiniatura = Boolean(reporte.urlImagenThumb) && !errorMiniatura;
+  const mostrarHd = Boolean(reporte.urlImagenHd) && !errorHd;
+  const sinImagen = !mostrarMiniatura && !mostrarHd;
 
   return (
     <View style={styles.screen}>
@@ -107,9 +117,26 @@ export function ReportDetailScreen({ id }: { id: number }) {
         showsVerticalScrollIndicator={false}
       >
         <View style={[styles.imageWrap, { paddingTop: insets.top + 10 }]}>
-          {imagen && !imageError ? (
-            <Image source={{ uri: imagen }} style={styles.image} onError={() => setImageError(true)} />
-          ) : (
+          {mostrarMiniatura && (
+            <Image
+              source={{ uri: reporte.urlImagenThumb! }}
+              style={styles.image}
+              onError={() => setErrorMiniatura(true)}
+            />
+          )}
+          {mostrarHd && (
+            <Image
+              source={{ uri: reporte.urlImagenHd! }}
+              style={[
+                styles.image,
+                mostrarMiniatura && styles.imageOverlay,
+                mostrarMiniatura && !imagenHdVisible && styles.imageOculta,
+              ]}
+              onLoad={() => setImagenHdVisible(true)}
+              onError={() => setErrorHd(true)}
+            />
+          )}
+          {sinImagen && (
             <View style={[styles.image, styles.imageEmpty]}>
               <Ionicons name="image-outline" size={36} color={colors.soft} />
               <Text style={styles.imageEmptyText}>Imagen no disponible</Text>
@@ -301,6 +328,14 @@ const styles = StyleSheet.create({
     width: "100%",
     height: 290,
     backgroundColor: colors.surfaceMuted,
+  },
+  imageOverlay: {
+    position: "absolute",
+    top: 0,
+    left: 0,
+  },
+  imageOculta: {
+    opacity: 0,
   },
   imageEmpty: {
     alignItems: "center",

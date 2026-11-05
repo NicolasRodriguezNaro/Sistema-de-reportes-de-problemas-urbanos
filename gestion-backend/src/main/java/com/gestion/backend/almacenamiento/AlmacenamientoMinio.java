@@ -89,6 +89,7 @@ public class AlmacenamientoMinio implements AlmacenamientoArchivos {
 					.bucket(bucket)
 					.key(clave)
 					.contentType(tipoContenido)
+					.cacheControl("private, max-age=900")
 					.contentLength(tamanio)
 					.build();
 			cliente.putObject(solicitud, RequestBody.fromInputStream(contenido, tamanio));
