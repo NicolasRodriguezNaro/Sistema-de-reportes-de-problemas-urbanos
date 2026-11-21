@@ -1,4 +1,4 @@
-import { Building2, LogOut, Mail, Moon, ShieldCheck, Sun, UserRound } from "lucide-react";
+import { Building2, LogOut, Mail, Moon, RotateCcw, ShieldCheck, Sun, Type, UserRound } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 
 import { useAuth } from "../auth/AuthContext";
@@ -8,7 +8,14 @@ import { ETIQUETAS_ROL, iniciales } from "../utils/format";
 
 export function ProfilePage() {
   const { usuario, cerrarSesion } = useAuth();
-  const { esOscuro, alternarTema } = useTheme();
+  const {
+    esOscuro,
+    alternarTema,
+    escalaTexto,
+    aumentarTexto,
+    disminuirTexto,
+    restablecerTexto,
+  } = useTheme();
   const navigate = useNavigate();
 
   if (!usuario) return null;
@@ -90,6 +97,51 @@ export function ProfilePage() {
             >
               <span className="theme-switch-thumb" />
             </button>
+          </div>
+        </div>
+
+        <div className="theme-setting-divider" />
+
+        <div className="theme-setting-row">
+          <div className="theme-setting-icon">
+            <Type size={20} />
+          </div>
+          <div className="theme-setting-copy">
+            <span className="eyebrow">Lectura</span>
+            <h2>Tamaño de letra</h2>
+            <p>
+              {Math.round(escalaTexto * 100)}% · Ajusta el texto de todo el panel.
+            </p>
+          </div>
+          <div className="theme-setting-action">
+            <div className="font-size-actions">
+              <button
+                type="button"
+                className="font-size-button"
+                onClick={disminuirTexto}
+                disabled={escalaTexto <= 0.85}
+                aria-label="Disminuir tamaño de letra"
+              >
+                A−
+              </button>
+              <button
+                type="button"
+                className="font-size-reset"
+                onClick={restablecerTexto}
+                aria-label="Restablecer tamaño de letra"
+              >
+                <RotateCcw size={14} />
+              </button>
+              <button
+                type="button"
+                className="font-size-button"
+                onClick={aumentarTexto}
+                disabled={escalaTexto >= 1.3}
+                aria-label="Aumentar tamaño de letra"
+              >
+                A+
+              </button>
+            </div>
           </div>
         </div>
       </section>

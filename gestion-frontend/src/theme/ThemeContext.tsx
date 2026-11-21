@@ -9,6 +9,10 @@ import {
 } from "react";
 
 const TEMA_KEY = "reporte-urbano-tema";
+const ESCALA_TEXTO_KEY = "reporte-urbano-escala-texto";
+const ESCALA_MINIMA = 0.85;
+const ESCALA_MAXIMA = 1.3;
+const ESCALA_PASO = 0.15;
 
 export type ThemeMode = "light" | "dark";
 
@@ -16,6 +20,10 @@ interface ThemeContextValue {
   modo: ThemeMode;
   esOscuro: boolean;
   alternarTema: () => void;
+  escalaTexto: number;
+  aumentarTexto: () => void;
+  disminuirTexto: () => void;
+  restablecerTexto: () => void;
 }
 
 const ThemeContext = createContext<ThemeContextValue | null>(null);
@@ -41,15 +49,53 @@ function aplicarTema(modo: ThemeMode) {
   }
 }
 
+function leerEscalaInicial(): number {
+  if (typeof document === "undefined") return 1;
+  try {
+    const guardada = localStorage.getItem(ESCALA_TEXTO_KEY);
+    const valor = guardada ? Number.parseFloat(guardada) : 1;
+    if (!Number.isFinite(valor)) return 1;
+    return Math.min(Math.max(valor, ESCALA_MINIMA), ESCALA_MAXIMA);
+  } catch {
+    return 1;
+  }
+}
+
+function normalizarEscala(valor: number) {
+  return Math.round(Math.min(Math.max(valor, ESCALA_MINIMA), ESCALA_MAXIMA) * 100) / 100;
+}
+
 export function ThemeProvider({ children }: { children: ReactNode }) {
   const [modo, setModo] = useState<ThemeMode>(leerTemaInicial);
+  const [escalaTexto, setEscalaTexto] = useState(leerEscalaInicial);
 
   useEffect(() => {
     aplicarTema(modo);
   }, [modo]);
 
+  useEffect(() => {
+    document.documentElement.style.setProperty("--font-scale", String(escalaTexto));
+    try {
+      localStorage.setItem(ESCALA_TEXTO_KEY, String(escalaTexto));
+    } catch {
+      // La escala sigue funcionando durante la sesión.
+    }
+  }, [escalaTexto]);
+
   const alternarTema = useCallback(() => {
     setModo((actual) => (actual === "light" ? "dark" : "light"));
+  }, []);
+
+  const aumentarTexto = useCallback(() => {
+    setEscalaTexto((actual) => normalizarEscala(actual + ESCALA_PASO));
+  }, []);
+
+  const disminuirTexto = useCallback(() => {
+    setEscalaTexto((actual) => normalizarEscala(actual - ESCALA_PASO));
+  }, []);
+
+  const restablecerTexto = useCallback(() => {
+    setEscalaTexto(1);
   }, []);
 
   const valor = useMemo<ThemeContextValue>(
@@ -57,8 +103,19 @@ export function ThemeProvider({ children }: { children: ReactNode }) {
       modo,
       esOscuro: modo === "dark",
       alternarTema,
+      escalaTexto,
+      aumentarTexto,
+      disminuirTexto,
+      restablecerTexto,
     }),
-    [alternarTema, modo]
+    [
+      alternarTema,
+      aumentarTexto,
+      disminuirTexto,
+      escalaTexto,
+      modo,
+      restablecerTexto,
+    ]
   );
 
   return <ThemeContext.Provider value={valor}>{children}</ThemeContext.Provider>;

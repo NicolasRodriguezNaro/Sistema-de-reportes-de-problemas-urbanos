@@ -16,6 +16,10 @@
           if (localStorage.getItem("reporte-urbano-tema") === "dark") {
             document.documentElement.dataset.theme = "dark";
           }
+          const escala = Number.parseFloat(localStorage.getItem("reporte-urbano-escala-texto") ?? "1");
+          if (Number.isFinite(escala)) {
+            document.documentElement.style.setProperty("--font-scale", String(escala));
+          }
         } catch {
           // La aplicación usará el tema claro si localStorage no está disponible.
         }
