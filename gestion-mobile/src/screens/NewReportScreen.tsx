@@ -20,7 +20,8 @@ import {
 
 import { apiFetch, subirImagen } from "../api";
 import { AppButton, StatusBadge, TextField } from "../components/ui";
-import { colors, fonts, radius, shadows, spacing } from "../theme";
+import { fonts, radius, shadows, spacing } from "../theme";
+import { useTheme, useThemedStyles, type ThemeColors } from "../theme-context";
 import type { ReporteDetalle } from "../types";
 
 type Paso = 1 | 2 | 3;
@@ -32,6 +33,8 @@ interface Ubicacion {
 
 export function NewReportScreen() {
   const router = useRouter();
+  const { colores: colors } = useTheme();
+  const styles = useThemedStyles(crearEstilos);
   const [paso, setPaso] = useState<Paso>(1);
   const [foto, setFoto] = useState<ImagePicker.ImagePickerAsset | null>(null);
   const [ubicacion, setUbicacion] = useState<Ubicacion | null>(null);
@@ -369,6 +372,9 @@ export function NewReportScreen() {
 }
 
 function StepIndicator({ paso }: { paso: Paso }) {
+  const { colores: colors } = useTheme();
+  const styles = useThemedStyles(crearEstilos);
+
   return (
     <View style={styles.indicator}>
       {[1, 2, 3].map((numero) => (
@@ -390,6 +396,9 @@ function StepIndicator({ paso }: { paso: Paso }) {
 }
 
 function ErrorMessage({ text }: { text: string }) {
+  const { colores: colors } = useTheme();
+  const styles = useThemedStyles(crearEstilos);
+
   return (
     <View style={styles.errorBox}>
       <Ionicons name="alert-circle-outline" size={18} color={colors.danger} />
@@ -407,6 +416,9 @@ function SuccessView({
   onVerReporte: () => void;
   onInicio: () => void;
 }) {
+  const { colores: colors } = useTheme();
+  const styles = useThemedStyles(crearEstilos);
+
   return (
     <SafeAreaView style={styles.successSafe} edges={["top", "left", "right", "bottom"]}>
       <ScrollView contentContainerStyle={styles.successContent}>
@@ -446,7 +458,8 @@ function SuccessView({
   );
 }
 
-const styles = StyleSheet.create({
+function crearEstilos(colors: ThemeColors) {
+  return StyleSheet.create({
   flex: {
     flex: 1,
     backgroundColor: colors.bg,
@@ -804,4 +817,5 @@ const styles = StyleSheet.create({
     fontFamily: fonts.bold,
     fontSize: 11,
   },
-});
+  });
+}

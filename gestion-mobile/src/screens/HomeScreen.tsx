@@ -15,12 +15,15 @@ import {
 import { apiFetch } from "../api";
 import { useAuth } from "../auth";
 import { EmptyView, ReportCard, Screen } from "../components/ui";
-import { colors, fonts, radius, shadows, spacing } from "../theme";
+import { fonts, radius, shadows, spacing } from "../theme";
+import { useTheme, useThemedStyles, type ThemeColors } from "../theme-context";
 import type { PaginaResponse, ReporteResumen } from "../types";
 
 export function HomeScreen() {
   const { usuario } = useAuth();
   const router = useRouter();
+  const { colores: colors } = useTheme();
+  const styles = useThemedStyles(crearEstilos);
   const [reportes, setReportes] = useState<ReporteResumen[]>([]);
   const [cargando, setCargando] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -89,7 +92,7 @@ export function HomeScreen() {
         </View>
 
         <LinearGradient
-          colors={[colors.brandDeep, colors.brand, "#0b3d4b"]}
+          colors={[colors.brandDeep, colors.brand, colors.brandMid]}
           style={styles.hero}
         >
           <View style={styles.heroIcon}>
@@ -175,7 +178,8 @@ export function HomeScreen() {
   );
 }
 
-const styles = StyleSheet.create({
+function crearEstilos(colors: ThemeColors) {
+  return StyleSheet.create({
   content: {
     paddingHorizontal: spacing.lg,
     paddingTop: spacing.sm,
@@ -373,9 +377,9 @@ const styles = StyleSheet.create({
     gap: spacing.sm,
     padding: spacing.lg,
     borderRadius: radius.lg,
-    backgroundColor: "#fffaf5",
+    backgroundColor: colors.dangerSurface,
     borderWidth: 1,
-    borderColor: "#fdba74",
+    borderColor: colors.dangerBorder,
   },
   errorCopy: {
     flex: 1,
@@ -401,4 +405,5 @@ const styles = StyleSheet.create({
   pressed: {
     opacity: 0.85,
   },
-});
+  });
+}

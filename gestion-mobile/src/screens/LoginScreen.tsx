@@ -18,7 +18,8 @@ import { SafeAreaView } from "react-native-safe-area-context";
 import { apiFetch, ApiError } from "../api";
 import { useAuth } from "../auth";
 import { AppButton, Brand, TextField } from "../components/ui";
-import { colors, fonts, radius, spacing } from "../theme";
+import { fonts, radius, spacing } from "../theme";
+import { useTheme, useThemedStyles, type ThemeColors } from "../theme-context";
 import type { CaptchaResponse } from "../types";
 
 async function solicitarCaptcha() {
@@ -28,6 +29,8 @@ async function solicitarCaptcha() {
 export function LoginScreen() {
   const router = useRouter();
   const { iniciarSesion } = useAuth();
+  const { colores: colors } = useTheme();
+  const styles = useThemedStyles(crearEstilos);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [captcha, setCaptcha] = useState<CaptchaResponse | null>(null);
@@ -103,7 +106,7 @@ export function LoginScreen() {
           keyboardShouldPersistTaps="handled"
         >
           <LinearGradient
-            colors={[colors.brandDeep, colors.brand, "#0b3440"]}
+            colors={[colors.brandDeep, colors.brand, colors.brandMid]}
             style={styles.hero}
           >
             <View style={styles.heroTop}>
@@ -215,7 +218,8 @@ export function LoginScreen() {
   );
 }
 
-const styles = StyleSheet.create({
+function crearEstilos(colors: ThemeColors) {
+  return StyleSheet.create({
   safe: {
     flex: 1,
     backgroundColor: colors.bg,
@@ -401,4 +405,5 @@ const styles = StyleSheet.create({
     fontSize: 9,
     marginTop: spacing.xl,
   },
-});
+  });
+}

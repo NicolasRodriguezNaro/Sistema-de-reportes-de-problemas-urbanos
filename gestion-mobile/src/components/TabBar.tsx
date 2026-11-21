@@ -2,7 +2,8 @@ import { Ionicons } from "@expo/vector-icons";
 import { Pressable, StyleSheet, Text, View } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
-import { colors, fonts } from "../theme";
+import { fonts } from "../theme";
+import { useTheme, useThemedStyles, type ThemeColors } from "../theme-context";
 
 type TabRoute = {
   key: string;
@@ -44,6 +45,8 @@ const ICONOS: Record<
 
 export function TabBar({ state, emitter, navigateToTab }: TabBarProps) {
   const insets = useSafeAreaInsets();
+  const { colores: colors } = useTheme();
+  const styles = useThemedStyles(crearEstilos);
 
   return (
     <View style={[styles.tabBar, { paddingBottom: Math.max(insets.bottom, 8) }]}>
@@ -86,7 +89,8 @@ export function TabBar({ state, emitter, navigateToTab }: TabBarProps) {
   );
 }
 
-const styles = StyleSheet.create({
+function crearEstilos(colors: ThemeColors) {
+  return StyleSheet.create({
   tabBar: {
     flexDirection: "row",
     alignItems: "flex-start",
@@ -118,4 +122,5 @@ const styles = StyleSheet.create({
     fontSize: 10,
     lineHeight: 13,
   },
-});
+  });
+}

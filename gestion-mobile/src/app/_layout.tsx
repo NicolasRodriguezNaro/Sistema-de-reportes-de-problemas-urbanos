@@ -12,6 +12,7 @@ import { ActivityIndicator, StyleSheet, View } from "react-native";
 import { SafeAreaProvider } from "react-native-safe-area-context";
 
 import { AuthProvider } from "../auth";
+import { ThemeProvider, useTheme } from "../theme-context";
 import { colors } from "../theme";
 
 export default function RootLayout() {
@@ -33,11 +34,21 @@ export default function RootLayout() {
 
   return (
     <SafeAreaProvider>
-      <AuthProvider>
-        <StatusBar style="dark" />
-        <Stack screenOptions={{ headerShown: false }} />
-      </AuthProvider>
+      <ThemeProvider>
+        <ContenidoApp />
+      </ThemeProvider>
     </SafeAreaProvider>
+  );
+}
+
+function ContenidoApp() {
+  const { esOscuro } = useTheme();
+
+  return (
+    <AuthProvider>
+      <StatusBar style={esOscuro ? "light" : "dark"} />
+      <Stack screenOptions={{ headerShown: false }} />
+    </AuthProvider>
   );
 }
 

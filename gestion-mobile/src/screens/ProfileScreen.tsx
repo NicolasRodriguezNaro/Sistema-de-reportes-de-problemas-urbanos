@@ -1,12 +1,15 @@
 import { Ionicons } from "@expo/vector-icons";
-import { ScrollView, StyleSheet, Text, View } from "react-native";
+import { ScrollView, StyleSheet, Switch, Text, View } from "react-native";
 
 import { useAuth } from "../auth";
 import { AppButton, Brand, Screen } from "../components/ui";
-import { colors, fonts, radius, spacing } from "../theme";
+import { fonts, radius, spacing } from "../theme";
+import { useTheme, useThemedStyles, type ThemeColors } from "../theme-context";
 
 export function ProfileScreen() {
   const { usuario, cerrarSesion } = useAuth();
+  const { colores: colors, esOscuro, alternarTema } = useTheme();
+  const styles = useThemedStyles(crearEstilos);
 
   if (!usuario) return null;
 
@@ -58,6 +61,32 @@ export function ProfileScreen() {
           </View>
         </View>
 
+        <View style={styles.card}>
+          <View style={styles.settingRow}>
+            <View style={styles.settingIcon}>
+              <Ionicons
+                name={esOscuro ? "moon-outline" : "sunny-outline"}
+                size={19}
+                color={colors.brand}
+              />
+            </View>
+            <View style={styles.settingCopy}>
+              <Text style={styles.settingTitle}>Tema oscuro</Text>
+              <Text style={styles.settingText}>
+                Cambia la apariencia de Reporte Urbano.
+              </Text>
+            </View>
+            <Switch
+              accessibilityLabel="Cambiar tema de la aplicación"
+              value={esOscuro}
+              onValueChange={alternarTema}
+              trackColor={{ false: colors.border, true: colors.brand }}
+              thumbColor={colors.white}
+              ios_backgroundColor={colors.border}
+            />
+          </View>
+        </View>
+
         <AppButton
           title="Cerrar sesión"
           variant="secondary"
@@ -80,6 +109,9 @@ function InfoRow({
   label: string;
   value: string;
 }) {
+  const { colores: colors } = useTheme();
+  const styles = useThemedStyles(crearEstilos);
+
   return (
     <View style={styles.infoRow}>
       <View style={styles.infoIcon}>
@@ -93,7 +125,8 @@ function InfoRow({
   );
 }
 
-const styles = StyleSheet.create({
+function crearEstilos(colors: ThemeColors) {
+  return StyleSheet.create({
   content: {
     padding: spacing.lg,
     paddingBottom: spacing.xxxl,
@@ -158,6 +191,34 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: colors.border,
   },
+  settingRow: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: spacing.md,
+  },
+  settingIcon: {
+    width: 38,
+    height: 38,
+    borderRadius: radius.sm,
+    alignItems: "center",
+    justifyContent: "center",
+    backgroundColor: colors.mintSoft,
+  },
+  settingCopy: {
+    flex: 1,
+  },
+  settingTitle: {
+    color: colors.text,
+    fontFamily: fonts.bold,
+    fontSize: 12,
+  },
+  settingText: {
+    color: colors.muted,
+    fontFamily: fonts.regular,
+    fontSize: 10,
+    lineHeight: 15,
+    marginTop: 2,
+  },
   infoRow: {
     flexDirection: "row",
     alignItems: "center",
@@ -219,4 +280,5 @@ const styles = StyleSheet.create({
     fontFamily: fonts.regular,
     fontSize: 9,
   },
-});
+  });
+}

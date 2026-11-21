@@ -13,13 +13,16 @@ import {
 
 import { apiFetch } from "../api";
 import { EmptyView, ReportCard, Screen } from "../components/ui";
-import { colors, fonts, spacing } from "../theme";
+import { fonts, spacing } from "../theme";
+import { useTheme, useThemedStyles, type ThemeColors } from "../theme-context";
 import type { PaginaResponse, ReporteResumen } from "../types";
 
 const TAMANO_PAGINA = 12;
 
 export function MyReportsScreen() {
   const router = useRouter();
+  const { colores: colors } = useTheme();
+  const styles = useThemedStyles(crearEstilos);
   const [reportes, setReportes] = useState<ReporteResumen[]>([]);
   const [total, setTotal] = useState(0);
   const [pagina, setPagina] = useState(0);
@@ -146,10 +149,15 @@ export function MyReportsScreen() {
 }
 
 function Separador() {
+  const styles = useThemedStyles(crearEstilos);
+
   return <View style={styles.separator} />;
 }
 
 function ListError({ mensaje, onRetry }: { mensaje: string; onRetry: () => void }) {
+  const { colores: colors } = useTheme();
+  const styles = useThemedStyles(crearEstilos);
+
   return (
     <View style={styles.errorBox}>
       <Ionicons name="alert-circle-outline" size={20} color={colors.danger} />
@@ -161,7 +169,8 @@ function ListError({ mensaje, onRetry }: { mensaje: string; onRetry: () => void 
   );
 }
 
-const styles = StyleSheet.create({
+function crearEstilos(colors: ThemeColors) {
+  return StyleSheet.create({
   content: {
     padding: spacing.lg,
     paddingBottom: spacing.xxxl,
@@ -214,9 +223,9 @@ const styles = StyleSheet.create({
     gap: spacing.sm,
     padding: spacing.lg,
     borderRadius: 16,
-    backgroundColor: "#fffaf5",
+    backgroundColor: colors.dangerSurface,
     borderWidth: 1,
-    borderColor: "#fdba74",
+    borderColor: colors.dangerBorder,
   },
   errorText: {
     flex: 1,
@@ -230,4 +239,5 @@ const styles = StyleSheet.create({
     fontFamily: fonts.bold,
     fontSize: 10,
   },
-});
+  });
+}

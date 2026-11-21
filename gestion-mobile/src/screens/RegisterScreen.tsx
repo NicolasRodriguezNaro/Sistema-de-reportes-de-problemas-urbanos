@@ -15,11 +15,14 @@ import { SafeAreaView } from "react-native-safe-area-context";
 import { ApiError } from "../api";
 import { useAuth } from "../auth";
 import { AppButton, Brand, TextField } from "../components/ui";
-import { colors, fonts, radius, spacing } from "../theme";
+import { fonts, radius, spacing } from "../theme";
+import { useTheme, useThemedStyles, type ThemeColors } from "../theme-context";
 
 export function RegisterScreen() {
   const router = useRouter();
   const { registrar } = useAuth();
+  const { colores: colors } = useTheme();
+  const styles = useThemedStyles(crearEstilos);
   const [nombre, setNombre] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -129,7 +132,8 @@ export function RegisterScreen() {
   );
 }
 
-const styles = StyleSheet.create({
+function crearEstilos(colors: ThemeColors) {
+  return StyleSheet.create({
   safe: {
     flex: 1,
     backgroundColor: colors.bg,
@@ -225,4 +229,5 @@ const styles = StyleSheet.create({
     color: colors.brand,
     fontFamily: fonts.bold,
   },
-});
+  });
+}

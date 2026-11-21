@@ -18,7 +18,8 @@ import {
   PriorityBadge,
   StatusBadge,
 } from "../components/ui";
-import { colors, fonts, radius, spacing } from "../theme";
+import { fonts, radius, spacing } from "../theme";
+import { useTheme, useThemedStyles, type ThemeColors } from "../theme-context";
 import type { HistorialReporte, ReporteDetalle } from "../types";
 import {
   ETIQUETAS_CATEGORIA,
@@ -39,6 +40,8 @@ async function obtenerReporte(id: number) {
 export function ReportDetailScreen({ id }: { id: number }) {
   const router = useRouter();
   const insets = useSafeAreaInsets();
+  const { colores: colors } = useTheme();
+  const styles = useThemedStyles(crearEstilos);
   const [reporte, setReporte] = useState<ReporteDetalle | null>(null);
   const [historial, setHistorial] = useState<HistorialReporte[]>([]);
   const [cargando, setCargando] = useState(true);
@@ -300,6 +303,9 @@ export function ReportDetailScreen({ id }: { id: number }) {
 }
 
 function BackButton({ onPress }: { onPress: () => void }) {
+  const { colores: colors } = useTheme();
+  const styles = useThemedStyles(crearEstilos);
+
   return (
     <Pressable accessibilityRole="button" accessibilityLabel="Volver" onPress={onPress} style={styles.backButtonDark}>
       <Ionicons name="arrow-back" size={21} color={colors.brand} />
@@ -308,6 +314,8 @@ function BackButton({ onPress }: { onPress: () => void }) {
 }
 
 function MetaRow({ label, value }: { label: string; value: string }) {
+  const styles = useThemedStyles(crearEstilos);
+
   return (
     <View style={styles.metaRow}>
       <Text style={styles.metaLabel}>{label}</Text>
@@ -316,7 +324,8 @@ function MetaRow({ label, value }: { label: string; value: string }) {
   );
 }
 
-const styles = StyleSheet.create({
+function crearEstilos(colors: ThemeColors) {
+  return StyleSheet.create({
   screen: {
     flex: 1,
     backgroundColor: colors.bg,
@@ -488,7 +497,7 @@ const styles = StyleSheet.create({
     gap: spacing.xs,
     padding: spacing.md,
     borderWidth: 1,
-    borderColor: "#fdba74",
+    borderColor: colors.dangerBorder,
     borderRadius: radius.md,
     backgroundColor: colors.dangerSoft,
   },
@@ -573,4 +582,5 @@ const styles = StyleSheet.create({
     fontSize: 10,
     lineHeight: 16,
   },
-});
+  });
+}

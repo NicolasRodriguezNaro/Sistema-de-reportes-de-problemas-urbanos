@@ -15,7 +15,8 @@ import {
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
-import { colors, fonts, radius, shadows, spacing } from "../theme";
+import { fonts, radius, shadows, spacing } from "../theme";
+import { useTheme, useThemedStyles, type ThemeColors } from "../theme-context";
 import type {
   EstadoReporte,
   PrioridadCalculada,
@@ -24,7 +25,15 @@ import type {
 } from "../types";
 import { ETIQUETAS_CATEGORIA, ETIQUETAS_ESTADO, ETIQUETAS_PRIORIDAD } from "../types";
 
+function useStyles() {
+  const { colores: colors } = useTheme();
+  const styles = useThemedStyles(crearEstilos);
+  return { colors, styles };
+}
+
 export function Screen({ children, style }: { children: ReactNode; style?: StyleProp<ViewStyle> }) {
+  const { styles } = useStyles();
+
   return (
     <SafeAreaView style={[styles.screen, style]} edges={["top", "left", "right"]}>
       {children}
@@ -33,6 +42,8 @@ export function Screen({ children, style }: { children: ReactNode; style?: Style
 }
 
 export function BrandMark({ small = false }: { small?: boolean }) {
+  const { colors, styles } = useStyles();
+
   return (
     <View style={[styles.brandMark, small && styles.brandMarkSmall]}>
       <Ionicons name="shield-checkmark" size={small ? 20 : 25} color={colors.brandDeep} />
@@ -41,6 +52,8 @@ export function BrandMark({ small = false }: { small?: boolean }) {
 }
 
 export function Brand({ light = false }: { light?: boolean }) {
+  const { colors, styles } = useStyles();
+
   return (
     <View style={styles.brandRow}>
       <BrandMark small />
@@ -71,6 +84,7 @@ export function AppButton({
   icon?: keyof typeof Ionicons.glyphMap;
   style?: StyleProp<ViewStyle>;
 }) {
+  const { colors, styles } = useStyles();
   const deshabilitado = disabled || loading;
 
   return (
@@ -137,6 +151,7 @@ export function TextField({
   error?: string;
   autoCapitalize?: "none" | "sentences" | "words" | "characters";
 }) {
+  const { colors, styles } = useStyles();
   const [visible, setVisible] = useState(false);
   const [enfocado, setEnfocado] = useState(false);
 
@@ -174,9 +189,10 @@ export function TextField({
 }
 
 export function StatusBadge({ estado }: { estado: EstadoReporte }) {
+  const { colors, styles } = useStyles();
   const estilos: Record<EstadoReporte, { bg: string; text: string; dot: string }> = {
-    PENDIENTE: { bg: colors.accentSoft, text: "#9a5d00", dot: colors.accent },
-    EN_REVISION: { bg: colors.infoSoft, text: "#1d4ed8", dot: colors.info },
+    PENDIENTE: { bg: colors.accentSoft, text: colors.accentText, dot: colors.accent },
+    EN_REVISION: { bg: colors.infoSoft, text: colors.infoText, dot: colors.info },
     ASIGNADO: { bg: colors.violetSoft, text: colors.violet, dot: colors.violet },
     RESUELTO: { bg: colors.successSoft, text: colors.success, dot: colors.success },
     RECHAZADO: { bg: colors.dangerSoft, text: colors.danger, dot: colors.danger },
@@ -192,6 +208,7 @@ export function StatusBadge({ estado }: { estado: EstadoReporte }) {
 }
 
 export function PriorityBadge({ prioridad }: { prioridad: PrioridadCalculada | null }) {
+  const { colors, styles } = useStyles();
   if (!prioridad) {
     return (
       <View style={[styles.badge, { backgroundColor: colors.surfaceMuted }]}>
@@ -203,7 +220,7 @@ export function PriorityBadge({ prioridad }: { prioridad: PrioridadCalculada | n
   const estilos: Record<PrioridadCalculada, { bg: string; text: string }> = {
     BAJA: { bg: colors.successSoft, text: colors.success },
     MEDIA: { bg: colors.infoSoft, text: colors.info },
-    ALTA: { bg: colors.accentSoft, text: "#9a5d00" },
+    ALTA: { bg: colors.accentSoft, text: colors.accentText },
     CRITICA: { bg: colors.dangerSoft, text: colors.danger },
   };
   const color = estilos[prioridad];
@@ -216,6 +233,8 @@ export function PriorityBadge({ prioridad }: { prioridad: PrioridadCalculada | n
 }
 
 export function LoadingView({ label = "Cargando..." }: { label?: string }) {
+  const { colors, styles } = useStyles();
+
   return (
     <View style={styles.stateBox}>
       <ActivityIndicator color={colors.brand} />
@@ -235,6 +254,8 @@ export function EmptyView({
   icon?: keyof typeof Ionicons.glyphMap;
   action?: ReactNode;
 }) {
+  const { colors, styles } = useStyles();
+
   return (
     <View style={styles.stateBox}>
       <View style={styles.stateIcon}>
@@ -248,6 +269,8 @@ export function EmptyView({
 }
 
 export function ErrorView({ message, onRetry }: { message: string; onRetry?: () => void }) {
+  const { colors, styles } = useStyles();
+
   return (
     <View style={[styles.stateBox, styles.errorBox]}>
       <View style={[styles.stateIcon, { backgroundColor: colors.dangerSoft }]}>
@@ -261,6 +284,8 @@ export function ErrorView({ message, onRetry }: { message: string; onRetry?: () 
 }
 
 export function SectionHeader({ title, action }: { title: string; action?: ReactNode }) {
+  const { styles } = useStyles();
+
   return (
     <View style={styles.sectionHeader}>
       <Text style={styles.sectionTitle}>{title}</Text>
@@ -276,6 +301,7 @@ export function ReportCard({
   reporte: ReporteResumen;
   onPress: () => void;
 }) {
+  const { colors, styles } = useStyles();
   const [imageError, setImageError] = useState(false);
 
   return (
@@ -326,6 +352,7 @@ export function ReportCard({
 }
 
 export function CategoryIcon({ categoria }: { categoria: TipoIncidencia | null }) {
+  const { colors } = useStyles();
   const iconos: Record<TipoIncidencia, keyof typeof Ionicons.glyphMap> = {
     HUECO_VIA: "car-outline",
     FUGA_AGUA: "water-outline",
@@ -341,7 +368,8 @@ export function CategoryIcon({ categoria }: { categoria: TipoIncidencia | null }
   );
 }
 
-export const styles = StyleSheet.create({
+function crearEstilos(colors: ThemeColors) {
+  return StyleSheet.create({
   screen: {
     flex: 1,
     backgroundColor: colors.bg,
@@ -393,7 +421,7 @@ export const styles = StyleSheet.create({
     backgroundColor: colors.accent,
   },
   buttonSecondary: {
-    backgroundColor: colors.white,
+    backgroundColor: colors.surface,
     borderWidth: 1,
     borderColor: colors.border,
   },
@@ -431,7 +459,7 @@ export const styles = StyleSheet.create({
     borderRadius: radius.md,
     borderWidth: 1,
     borderColor: colors.border,
-    backgroundColor: colors.white,
+    backgroundColor: colors.surface,
     paddingHorizontal: 13,
     flexDirection: "row",
     alignItems: "center",
@@ -490,8 +518,8 @@ export const styles = StyleSheet.create({
     borderColor: colors.border,
   },
   errorBox: {
-    backgroundColor: "#fffaf5",
-    borderColor: "#fdba74",
+    backgroundColor: colors.dangerSurface,
+    borderColor: colors.dangerBorder,
   },
   stateIcon: {
     width: 50,
@@ -594,4 +622,5 @@ export const styles = StyleSheet.create({
     fontFamily: fonts.medium,
     fontSize: 9,
   },
-});
+  });
+}
