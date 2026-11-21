@@ -14,11 +14,11 @@ import {
   Pressable,
   ScrollView,
   StyleSheet,
-  Text,
   View,
 } from "react-native";
 
 import { apiFetch, subirImagen } from "../api";
+import { Text } from "../components/AppText";
 import { AppButton, StatusBadge, TextField } from "../components/ui";
 import { fonts, radius, shadows, spacing } from "../theme";
 import { useTheme, useThemedStyles, type ThemeColors } from "../theme-context";

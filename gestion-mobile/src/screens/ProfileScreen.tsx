@@ -1,14 +1,23 @@
 import { Ionicons } from "@expo/vector-icons";
-import { ScrollView, StyleSheet, Switch, Text, View } from "react-native";
+import { Pressable, ScrollView, StyleSheet, Switch, View } from "react-native";
 
 import { useAuth } from "../auth";
+import { Text } from "../components/AppText";
 import { AppButton, Brand, Screen } from "../components/ui";
 import { fonts, radius, spacing } from "../theme";
 import { useTheme, useThemedStyles, type ThemeColors } from "../theme-context";
 
 export function ProfileScreen() {
   const { usuario, cerrarSesion } = useAuth();
-  const { colores: colors, esOscuro, alternarTema } = useTheme();
+  const {
+    colores: colors,
+    esOscuro,
+    alternarTema,
+    escalaTexto,
+    aumentarTexto,
+    disminuirTexto,
+    restablecerTexto,
+  } = useTheme();
   const styles = useThemedStyles(crearEstilos);
 
   if (!usuario) return null;
@@ -84,6 +93,54 @@ export function ProfileScreen() {
               thumbColor={colors.white}
               ios_backgroundColor={colors.border}
             />
+          </View>
+
+          <View style={styles.settingDivider} />
+
+          <View style={styles.fontSettingRow}>
+            <View style={styles.fontPreview}>
+              <Text style={styles.fontPreviewText}>Aa</Text>
+            </View>
+            <View style={styles.settingCopy}>
+              <Text style={styles.settingTitle}>Tamaño de letra</Text>
+              <Text style={styles.settingText}>
+                {Math.round(escalaTexto * 100)}% · Ajusta el texto de la app.
+              </Text>
+            </View>
+            <View style={styles.fontActions}>
+              <Pressable
+                accessibilityRole="button"
+                accessibilityLabel="Disminuir tamaño de letra"
+                disabled={escalaTexto <= 0.85}
+                onPress={disminuirTexto}
+                style={[
+                  styles.fontButton,
+                  escalaTexto <= 0.85 && styles.fontButtonDisabled,
+                ]}
+              >
+                <Text style={styles.fontButtonText}>A−</Text>
+              </Pressable>
+              <Pressable
+                accessibilityRole="button"
+                accessibilityLabel="Restablecer tamaño de letra"
+                onPress={restablecerTexto}
+                style={styles.fontReset}
+              >
+                <Ionicons name="refresh-outline" size={16} color={colors.muted} />
+              </Pressable>
+              <Pressable
+                accessibilityRole="button"
+                accessibilityLabel="Aumentar tamaño de letra"
+                disabled={escalaTexto >= 1.3}
+                onPress={aumentarTexto}
+                style={[
+                  styles.fontButton,
+                  escalaTexto >= 1.3 && styles.fontButtonDisabled,
+                ]}
+              >
+                <Text style={styles.fontButtonText}>A+</Text>
+              </Pressable>
+            </View>
           </View>
         </View>
 
@@ -218,6 +275,59 @@ function crearEstilos(colors: ThemeColors) {
     fontSize: 10,
     lineHeight: 15,
     marginTop: 2,
+  },
+  settingDivider: {
+    height: 1,
+    marginVertical: spacing.md,
+    backgroundColor: colors.border,
+  },
+  fontSettingRow: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: spacing.md,
+  },
+  fontPreview: {
+    width: 38,
+    height: 38,
+    borderRadius: radius.sm,
+    alignItems: "center",
+    justifyContent: "center",
+    backgroundColor: colors.mintSoft,
+  },
+  fontPreviewText: {
+    color: colors.brand,
+    fontFamily: fonts.extraBold,
+    fontSize: 15,
+  },
+  fontActions: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 4,
+  },
+  fontButton: {
+    width: 32,
+    height: 32,
+    alignItems: "center",
+    justifyContent: "center",
+    borderRadius: radius.sm,
+    borderWidth: 1,
+    borderColor: colors.border,
+    backgroundColor: colors.surface,
+  },
+  fontButtonDisabled: {
+    opacity: 0.35,
+  },
+  fontButtonText: {
+    color: colors.brand,
+    fontFamily: fonts.extraBold,
+    fontSize: 13,
+  },
+  fontReset: {
+    minWidth: 38,
+    height: 32,
+    alignItems: "center",
+    justifyContent: "center",
+    borderRadius: radius.sm,
   },
   infoRow: {
     flexDirection: "row",

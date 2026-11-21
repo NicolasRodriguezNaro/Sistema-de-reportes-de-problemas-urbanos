@@ -8,12 +8,12 @@ import {
   RefreshControl,
   ScrollView,
   StyleSheet,
-  Text,
   View,
 } from "react-native";
 
 import { apiFetch } from "../api";
 import { useAuth } from "../auth";
+import { Text } from "../components/AppText";
 import { EmptyView, ReportCard, Screen } from "../components/ui";
 import { fonts, radius, shadows, spacing } from "../theme";
 import { useTheme, useThemedStyles, type ThemeColors } from "../theme-context";

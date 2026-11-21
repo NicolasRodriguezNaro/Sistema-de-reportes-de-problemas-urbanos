@@ -6,7 +6,6 @@ import {
   Image,
   Pressable,
   StyleSheet,
-  Text,
   TextInput,
   View,
   type KeyboardTypeOptions,
@@ -15,6 +14,7 @@ import {
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
+import { Text } from "./AppText";
 import { fonts, radius, shadows, spacing } from "../theme";
 import { useTheme, useThemedStyles, type ThemeColors } from "../theme-context";
 import type {
@@ -26,9 +26,9 @@ import type {
 import { ETIQUETAS_CATEGORIA, ETIQUETAS_ESTADO, ETIQUETAS_PRIORIDAD } from "../types";
 
 function useStyles() {
-  const { colores: colors } = useTheme();
+  const { colores: colors, escalaTexto } = useTheme();
   const styles = useThemedStyles(crearEstilos);
-  return { colors, styles };
+  return { colors, styles, escalaTexto };
 }
 
 export function Screen({ children, style }: { children: ReactNode; style?: StyleProp<ViewStyle> }) {
@@ -151,7 +151,7 @@ export function TextField({
   error?: string;
   autoCapitalize?: "none" | "sentences" | "words" | "characters";
 }) {
-  const { colors, styles } = useStyles();
+  const { colors, styles, escalaTexto } = useStyles();
   const [visible, setVisible] = useState(false);
   const [enfocado, setEnfocado] = useState(false);
 
@@ -170,7 +170,11 @@ export function TextField({
           autoCapitalize={autoCapitalize}
           onFocus={() => setEnfocado(true)}
           onBlur={() => setEnfocado(false)}
-          style={[styles.textInput, multiline && styles.textArea]}
+          style={[
+            styles.textInput,
+            multiline && styles.textArea,
+            { fontSize: 14 * escalaTexto },
+          ]}
         />
         {secure && (
           <Pressable

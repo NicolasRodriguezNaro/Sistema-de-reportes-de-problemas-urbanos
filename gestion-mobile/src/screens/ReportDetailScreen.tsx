@@ -6,12 +6,12 @@ import {
   Pressable,
   ScrollView,
   StyleSheet,
-  Text,
   View,
 } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 import { apiFetch } from "../api";
+import { Text } from "../components/AppText";
 import {
   ErrorView,
   LoadingView,

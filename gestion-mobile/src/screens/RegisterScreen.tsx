@@ -7,13 +7,13 @@ import {
   Pressable,
   ScrollView,
   StyleSheet,
-  Text,
   View,
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
 import { ApiError } from "../api";
 import { useAuth } from "../auth";
+import { Text } from "../components/AppText";
 import { AppButton, Brand, TextField } from "../components/ui";
 import { fonts, radius, spacing } from "../theme";
 import { useTheme, useThemedStyles, type ThemeColors } from "../theme-context";

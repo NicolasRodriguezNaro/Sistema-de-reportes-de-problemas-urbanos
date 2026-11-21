@@ -7,11 +7,11 @@ import {
   Pressable,
   RefreshControl,
   StyleSheet,
-  Text,
   View,
 } from "react-native";
 
 import { apiFetch } from "../api";
+import { Text } from "../components/AppText";
 import { EmptyView, ReportCard, Screen } from "../components/ui";
 import { fonts, spacing } from "../theme";
 import { useTheme, useThemedStyles, type ThemeColors } from "../theme-context";
