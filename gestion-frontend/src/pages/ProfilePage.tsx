@@ -1,12 +1,14 @@
-import { Building2, LogOut, Mail, ShieldCheck, UserRound } from "lucide-react";
+import { Building2, LogOut, Mail, Moon, ShieldCheck, Sun, UserRound } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 
 import { useAuth } from "../auth/AuthContext";
 import { PageHeader } from "../components/PageHeader";
+import { useTheme } from "../theme/ThemeContext";
 import { ETIQUETAS_ROL, iniciales } from "../utils/format";
 
 export function ProfilePage() {
   const { usuario, cerrarSesion } = useAuth();
+  const { esOscuro, alternarTema } = useTheme();
   const navigate = useNavigate();
 
   if (!usuario) return null;
@@ -64,6 +66,32 @@ export function ProfilePage() {
             </div>
           </div>
         </article>
+      </section>
+
+      <section className="panel profile-theme-panel">
+        <div className="theme-setting-row">
+          <div className="theme-setting-icon">
+            {esOscuro ? <Moon size={20} /> : <Sun size={20} />}
+          </div>
+          <div className="theme-setting-copy">
+            <span className="eyebrow">Apariencia</span>
+            <h2>Tema de la interfaz</h2>
+            <p>Cambia entre la apariencia clara y oscura del panel.</p>
+          </div>
+          <div className="theme-setting-action">
+            <span>{esOscuro ? "Oscuro" : "Claro"}</span>
+            <button
+              type="button"
+              role="switch"
+              aria-checked={esOscuro}
+              aria-label="Cambiar tema de la interfaz"
+              className={`theme-switch ${esOscuro ? "is-active" : ""}`}
+              onClick={alternarTema}
+            >
+              <span className="theme-switch-thumb" />
+            </button>
+          </div>
+        </div>
       </section>
     </div>
   );

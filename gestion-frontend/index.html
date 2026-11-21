@@ -10,6 +10,17 @@
       content="Panel de operaciones para la gestión de incidencias urbanas de Reporte Urbano."
     />
     <title>Reporte Urbano | Panel de operaciones</title>
+    <script>
+      (() => {
+        try {
+          if (localStorage.getItem("reporte-urbano-tema") === "dark") {
+            document.documentElement.dataset.theme = "dark";
+          }
+        } catch {
+          // La aplicación usará el tema claro si localStorage no está disponible.
+        }
+      })();
+    </script>
   </head>
   <body>
     <div id="root"></div>

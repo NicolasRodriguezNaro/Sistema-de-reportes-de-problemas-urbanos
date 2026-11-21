@@ -12,6 +12,7 @@ import { ReportDetailPage } from "./pages/ReportDetailPage";
 import { ReportsPage } from "./pages/ReportsPage";
 import { EquipoPage } from "./pages/EquipoPage";
 import { UsuariosPage } from "./pages/UsuariosPage";
+import { ThemeProvider } from "./theme/ThemeContext";
 
 function RequireAuth({ children }: { children: React.ReactNode }) {
   const { usuario, cargando } = useAuth();
@@ -55,8 +56,9 @@ function RequireEmpresa({ children }: { children: React.ReactNode }) {
 
 export default function App() {
   return (
-    <AuthProvider>
-      <Routes>
+    <ThemeProvider>
+      <AuthProvider>
+        <Routes>
         <Route path="/login" element={<LoginPage />} />
         <Route path="/sin-acceso" element={<AccessDeniedPage />} />
         <Route
@@ -100,7 +102,8 @@ export default function App() {
           <Route path="/perfil" element={<ProfilePage />} />
         </Route>
         <Route path="*" element={<NotFoundPage />} />
-      </Routes>
-    </AuthProvider>
+        </Routes>
+      </AuthProvider>
+    </ThemeProvider>
   );
 }
