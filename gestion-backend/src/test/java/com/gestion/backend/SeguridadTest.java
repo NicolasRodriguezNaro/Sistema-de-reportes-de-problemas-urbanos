@@ -32,7 +32,8 @@ import com.jayway.jsonpath.JsonPath;
 
 @SpringBootTest(properties = {
 		"gestion.semantica.ruta-tdb=target/jena-test-web",
-		"gestion.almacenamiento.ruta-local=target/uploads-test-web" })
+		"gestion.almacenamiento.ruta-local=target/uploads-test-web",
+		"gestion.seguridad.captcha.activo=false" })
 @AutoConfigureMockMvc
 @Transactional
 class SeguridadTest {

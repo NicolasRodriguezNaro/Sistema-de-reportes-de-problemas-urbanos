@@ -801,6 +801,36 @@ strong {
   background: var(--brand-soft);
 }
 
+.captcha-control {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.captcha-image,
+.captcha-placeholder {
+  width: 190px;
+  height: 58px;
+  flex: 0 0 auto;
+  border: 1px solid var(--border);
+  border-radius: 9px;
+  background: var(--surface-muted);
+  object-fit: contain;
+}
+
+.captcha-placeholder {
+  display: grid;
+  place-items: center;
+  color: var(--soft);
+  font-size: 10px;
+}
+
+.captcha-refresh {
+  min-height: 38px;
+  padding: 0 11px;
+  font-size: 10px;
+}
+
 .form-stack .button {
   min-height: 47px;
   margin-top: 4px;

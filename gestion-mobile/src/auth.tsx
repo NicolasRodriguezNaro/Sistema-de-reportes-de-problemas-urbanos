@@ -18,7 +18,12 @@ const USER_KEY = "reporte-urbano-usuario";
 interface AuthContextValue {
   usuario: UsuarioResumen | null;
   cargando: boolean;
-  iniciarSesion: (email: string, password: string) => Promise<UsuarioResumen>;
+  iniciarSesion: (
+    email: string,
+    password: string,
+    captchaId: string,
+    captchaRespuesta: string
+  ) => Promise<UsuarioResumen>;
   registrar: (nombre: string, email: string, password: string) => Promise<UsuarioResumen>;
   cerrarSesion: () => Promise<void>;
 }
@@ -79,15 +84,18 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     };
   }, []);
 
-  const iniciarSesion = useCallback(async (email: string, password: string) => {
-    const respuesta = await apiFetch<TokenResponse>("/api/auth/login", {
-      method: "POST",
-      body: JSON.stringify({ email, password }),
-    });
-    await guardarSesion(respuesta);
-    setUsuario(respuesta.usuario);
-    return respuesta.usuario;
-  }, []);
+  const iniciarSesion = useCallback(
+    async (email: string, password: string, captchaId: string, captchaRespuesta: string) => {
+      const respuesta = await apiFetch<TokenResponse>("/api/auth/login", {
+        method: "POST",
+        body: JSON.stringify({ email, password, captchaId, captchaRespuesta }),
+      });
+      await guardarSesion(respuesta);
+      setUsuario(respuesta.usuario);
+      return respuesta.usuario;
+    },
+    []
+  );
 
   const registrar = useCallback(async (nombre: string, email: string, password: string) => {
     const respuesta = await apiFetch<TokenResponse>("/api/auth/registro", {

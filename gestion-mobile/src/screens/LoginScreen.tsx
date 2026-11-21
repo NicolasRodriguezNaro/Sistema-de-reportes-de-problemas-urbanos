@@ -1,8 +1,10 @@
 import { Ionicons } from "@expo/vector-icons";
 import { LinearGradient } from "expo-linear-gradient";
 import { useRouter } from "expo-router";
-import { useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import {
+  ActivityIndicator,
+  Image,
   KeyboardAvoidingView,
   Platform,
   Pressable,
@@ -13,26 +15,77 @@ import {
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
-import { ApiError } from "../api";
+import { apiFetch, ApiError } from "../api";
 import { useAuth } from "../auth";
 import { AppButton, Brand, TextField } from "../components/ui";
 import { colors, fonts, radius, spacing } from "../theme";
+import type { CaptchaResponse } from "../types";
+
+async function solicitarCaptcha() {
+  return apiFetch<CaptchaResponse>("/api/auth/captcha");
+}
 
 export function LoginScreen() {
   const router = useRouter();
   const { iniciarSesion } = useAuth();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [captcha, setCaptcha] = useState<CaptchaResponse | null>(null);
+  const [captchaTexto, setCaptchaTexto] = useState("");
+  const [captchaCargando, setCaptchaCargando] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [enviando, setEnviando] = useState(false);
 
+  const cargarCaptcha = useCallback(async () => {
+    setCaptchaCargando(true);
+    setCaptchaTexto("");
+    try {
+      const data = await solicitarCaptcha();
+      setCaptcha(data);
+    } catch (err) {
+      setCaptcha(null);
+      setError(err instanceof ApiError ? err.message : "No se pudo cargar el captcha.");
+    } finally {
+      setCaptchaCargando(false);
+    }
+  }, []);
+
+  useEffect(() => {
+    let activo = true;
+    solicitarCaptcha()
+      .then((data) => {
+        if (!activo) return;
+        setCaptcha(data);
+        setCaptchaTexto("");
+      })
+      .catch((err) => {
+        if (!activo) return;
+        setCaptcha(null);
+        setError(err instanceof ApiError ? err.message : "No se pudo cargar el captcha.");
+      })
+      .finally(() => {
+        if (activo) setCaptchaCargando(false);
+      });
+
+    return () => {
+      activo = false;
+    };
+  }, []);
+
   const enviar = async () => {
     setError(null);
+
+    if (!captcha || !captchaTexto.trim()) {
+      setError("Completa el código de verificación.");
+      return;
+    }
+
     setEnviando(true);
     try {
-      await iniciarSesion(email.trim(), password);
+      await iniciarSesion(email.trim(), password, captcha.id, captchaTexto.trim());
     } catch (err) {
       setError(err instanceof ApiError ? err.message : "No se pudo iniciar sesión.");
+      await cargarCaptcha();
     } finally {
       setEnviando(false);
     }
@@ -95,6 +148,36 @@ export function LoginScreen() {
                 onChangeText={setPassword}
                 placeholder="Tu contraseña"
                 secure
+              />
+              <View style={styles.captchaBox}>
+                {captcha ? (
+                  <Image source={{ uri: captcha.imagen }} style={styles.captchaImage} />
+                ) : (
+                  <View style={[styles.captchaImage, styles.captchaPlaceholder]}>
+                    {captchaCargando ? (
+                      <ActivityIndicator color={colors.brand} />
+                    ) : (
+                      <Text style={styles.captchaPlaceholderText}>Sin captcha</Text>
+                    )}
+                  </View>
+                )}
+                <Pressable
+                  accessibilityRole="button"
+                  accessibilityLabel="Actualizar captcha"
+                  onPress={() => void cargarCaptcha()}
+                  disabled={captchaCargando || enviando}
+                  style={styles.captchaRefresh}
+                >
+                  <Ionicons name="refresh-outline" size={16} color={colors.brand} />
+                  <Text style={styles.captchaRefreshText}>Actualizar</Text>
+                </Pressable>
+              </View>
+              <TextField
+                label="Código de verificación"
+                value={captchaTexto}
+                onChangeText={setCaptchaTexto}
+                placeholder="Escribe el código de la imagen"
+                autoCapitalize="characters"
               />
             </View>
 
@@ -244,6 +327,43 @@ const styles = StyleSheet.create({
   fields: {
     gap: spacing.md,
     marginBottom: spacing.lg,
+  },
+  captchaBox: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: spacing.sm,
+  },
+  captchaImage: {
+    width: 190,
+    height: 68,
+    borderRadius: radius.md,
+    backgroundColor: colors.surfaceMuted,
+  },
+  captchaPlaceholder: {
+    alignItems: "center",
+    justifyContent: "center",
+  },
+  captchaPlaceholderText: {
+    color: colors.soft,
+    fontFamily: fonts.medium,
+    fontSize: 10,
+  },
+  captchaRefresh: {
+    flex: 1,
+    minHeight: 44,
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "center",
+    gap: 5,
+    borderRadius: radius.md,
+    borderWidth: 1,
+    borderColor: colors.border,
+    backgroundColor: colors.surface,
+  },
+  captchaRefreshText: {
+    color: colors.brand,
+    fontFamily: fonts.bold,
+    fontSize: 10,
   },
   errorBox: {
     flexDirection: "row",

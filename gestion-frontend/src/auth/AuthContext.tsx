@@ -17,7 +17,12 @@ const USER_KEY = "reporte-urbano.usuario";
 interface AuthContextValue {
   usuario: UsuarioResumen | null;
   cargando: boolean;
-  iniciarSesion: (email: string, password: string) => Promise<UsuarioResumen>;
+  iniciarSesion: (
+    email: string,
+    password: string,
+    captchaId: string,
+    captchaRespuesta: string
+  ) => Promise<UsuarioResumen>;
   cerrarSesion: () => void;
   esAdministrador: boolean;
   esEmpresa: boolean;
@@ -73,20 +78,23 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     };
   }, [token]);
 
-  const iniciarSesion = useCallback(async (email: string, password: string) => {
-    const respuesta = await apiFetch<TokenResponse>("/api/auth/login", {
-      method: "POST",
-      body: JSON.stringify({ email, password }),
-    });
+  const iniciarSesion = useCallback(
+    async (email: string, password: string, captchaId: string, captchaRespuesta: string) => {
+      const respuesta = await apiFetch<TokenResponse>("/api/auth/login", {
+        method: "POST",
+        body: JSON.stringify({ email, password, captchaId, captchaRespuesta }),
+      });
 
-    setApiToken(respuesta.token);
-    localStorage.setItem(TOKEN_KEY, respuesta.token);
-    localStorage.setItem(USER_KEY, JSON.stringify(respuesta.usuario));
-    setToken(respuesta.token);
-    setUsuario(respuesta.usuario);
-    setCargando(false);
-    return respuesta.usuario;
-  }, []);
+      setApiToken(respuesta.token);
+      localStorage.setItem(TOKEN_KEY, respuesta.token);
+      localStorage.setItem(USER_KEY, JSON.stringify(respuesta.usuario));
+      setToken(respuesta.token);
+      setUsuario(respuesta.usuario);
+      setCargando(false);
+      return respuesta.usuario;
+    },
+    []
+  );
 
   const cerrarSesion = useCallback(() => {
     setApiToken(null);

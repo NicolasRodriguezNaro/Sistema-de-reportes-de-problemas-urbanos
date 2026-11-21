@@ -1,9 +1,10 @@
-import { Eye, EyeOff, LockKeyhole, MapPinned, ShieldCheck, Sparkles } from "lucide-react";
-import { useEffect, useState, type FormEvent } from "react";
+import { Eye, EyeOff, LockKeyhole, MapPinned, RefreshCw, ShieldCheck, Sparkles } from "lucide-react";
+import { useCallback, useEffect, useState, type FormEvent } from "react";
 import { Navigate, useNavigate } from "react-router-dom";
 
-import { ApiError } from "../api/client";
+import { apiFetch, ApiError } from "../api/client";
 import { useAuth } from "../auth/AuthContext";
+import type { CaptchaResponse } from "../types/api";
 
 export function LoginPage() {
   const { usuario, esPersonal, iniciarSesion } = useAuth();
@@ -11,14 +12,35 @@ export function LoginPage() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [mostrarPassword, setMostrarPassword] = useState(false);
+  const [captcha, setCaptcha] = useState<CaptchaResponse | null>(null);
+  const [captchaTexto, setCaptchaTexto] = useState("");
+  const [captchaCargando, setCaptchaCargando] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [enviando, setEnviando] = useState(false);
+
+  const cargarCaptcha = useCallback(async () => {
+    setCaptchaCargando(true);
+    setCaptchaTexto("");
+    try {
+      const data = await apiFetch<CaptchaResponse>("/api/auth/captcha", { cache: "no-store" });
+      setCaptcha(data);
+    } catch {
+      setCaptcha(null);
+      setError("No se pudo cargar el captcha. Intenta actualizarlo.");
+    } finally {
+      setCaptchaCargando(false);
+    }
+  }, []);
 
   useEffect(() => {
     if (usuario && esPersonal) {
       navigate("/dashboard", { replace: true });
     }
   }, [esPersonal, navigate, usuario]);
+
+  useEffect(() => {
+    void cargarCaptcha();
+  }, [cargarCaptcha]);
 
   if (usuario && esPersonal) {
     return <Navigate to="/dashboard" replace />;
@@ -27,9 +49,15 @@ export function LoginPage() {
   const enviar = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     setError(null);
+
+    if (!captcha || !captchaTexto.trim()) {
+      setError("Completa el código de verificación.");
+      return;
+    }
+
     setEnviando(true);
     try {
-      const perfil = await iniciarSesion(email, password);
+      const perfil = await iniciarSesion(email, password, captcha.id, captchaTexto.trim());
       navigate(perfil.rol === "CIUDADANO" ? "/sin-acceso" : "/dashboard", { replace: true });
     } catch (err) {
       if (err instanceof ApiError) {
@@ -37,6 +65,7 @@ export function LoginPage() {
       } else {
         setError("No se pudo iniciar sesión. Intenta de nuevo.");
       }
+      await cargarCaptcha();
     } finally {
       setEnviando(false);
     }
@@ -126,6 +155,38 @@ export function LoginPage() {
                   {mostrarPassword ? <EyeOff size={18} /> : <Eye size={18} />}
                 </button>
               </div>
+            </label>
+
+            <label className="field">
+              <span>Verificación</span>
+              <div className="captcha-control">
+                {captcha ? (
+                  <img className="captcha-image" src={captcha.imagen} alt="Código captcha" />
+                ) : (
+                  <div className="captcha-placeholder">
+                    {captchaCargando ? "Cargando..." : "Captcha no disponible"}
+                  </div>
+                )}
+                <button
+                  type="button"
+                  className="button button-secondary captcha-refresh"
+                  onClick={() => void cargarCaptcha()}
+                  disabled={captchaCargando || enviando}
+                >
+                  <RefreshCw size={14} />
+                  Actualizar
+                </button>
+              </div>
+              <input
+                type="text"
+                name="captchaRespuesta"
+                autoComplete="off"
+                autoCapitalize="characters"
+                placeholder="Escribe el código de la imagen"
+                value={captchaTexto}
+                onChange={(event) => setCaptchaTexto(event.target.value)}
+                required
+              />
             </label>
 
             {error && <div className="form-error">{error}</div>}

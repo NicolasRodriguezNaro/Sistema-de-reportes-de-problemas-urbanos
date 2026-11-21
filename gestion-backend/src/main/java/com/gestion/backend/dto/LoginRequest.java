@@ -10,5 +10,9 @@ public record LoginRequest(
 		String email,
 
 		@NotBlank(message = "La contrasena es obligatoria")
-		String password) {
+		String password,
+
+		String captchaId,
+
+		String captchaRespuesta) {
 }

@@ -66,6 +66,14 @@ public class ManejadorGlobalErrores {
 		return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(cuerpo);
 	}
 
+	@ExceptionHandler(CaptchaInvalidoException.class)
+	public ResponseEntity<Map<String, Object>> manejarCaptchaInvalido(CaptchaInvalidoException excepcion) {
+		Map<String, Object> cuerpo = Map.of(
+				"error", "Captcha invalido",
+				"mensaje", excepcion.getMessage());
+		return ResponseEntity.badRequest().body(cuerpo);
+	}
+
 	@ExceptionHandler(AccessDeniedException.class)
 	public ResponseEntity<Map<String, Object>> manejarAccesoDenegado(AccessDeniedException excepcion) {
 		String mensaje = excepcion.getMessage() != null

@@ -40,6 +40,12 @@ export interface TokenResponse {
   usuario: UsuarioResumen;
 }
 
+export interface CaptchaResponse {
+  id: string;
+  imagen: string;
+  expiraEnSegundos: number;
+}
+
 export interface ArchivoResponse {
   clave: string;
   url: string;

@@ -8,6 +8,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.gestion.backend.dto.CaptchaResponse;
 import com.gestion.backend.dto.LoginRequest;
 import com.gestion.backend.dto.RegistroRequest;
 import com.gestion.backend.dto.TokenResponse;
@@ -29,6 +30,11 @@ public class AuthController {
 	@PostMapping("/registro")
 	public ResponseEntity<TokenResponse> registrar(@Valid @RequestBody RegistroRequest solicitud) {
 		return ResponseEntity.status(HttpStatus.CREATED).body(servicioAutenticacion.registrar(solicitud));
+	}
+
+	@GetMapping("/captcha")
+	public CaptchaResponse captcha() {
+		return servicioAutenticacion.generarCaptcha();
 	}
 
 	@PostMapping("/login")

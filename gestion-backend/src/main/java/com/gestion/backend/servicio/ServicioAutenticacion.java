@@ -6,6 +6,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.gestion.backend.dto.CaptchaResponse;
 import com.gestion.backend.dto.LoginRequest;
 import com.gestion.backend.dto.RegistroRequest;
 import com.gestion.backend.dto.TokenResponse;
@@ -24,13 +25,20 @@ public class ServicioAutenticacion {
 	private final PasswordEncoder passwordEncoder;
 	private final ServicioTokens servicioTokens;
 	private final ServicioUsuarioActual servicioUsuarioActual;
+	private final CaptchaService captchaService;
 
 	public ServicioAutenticacion(UsuarioRepository usuarioRepository, PasswordEncoder passwordEncoder,
-			ServicioTokens servicioTokens, ServicioUsuarioActual servicioUsuarioActual) {
+			ServicioTokens servicioTokens, ServicioUsuarioActual servicioUsuarioActual,
+			CaptchaService captchaService) {
 		this.usuarioRepository = usuarioRepository;
 		this.passwordEncoder = passwordEncoder;
 		this.servicioTokens = servicioTokens;
 		this.servicioUsuarioActual = servicioUsuarioActual;
+		this.captchaService = captchaService;
+	}
+
+	public CaptchaResponse generarCaptcha() {
+		return captchaService.generar();
 	}
 
 	@Transactional
@@ -53,6 +61,8 @@ public class ServicioAutenticacion {
 
 	@Transactional(readOnly = true)
 	public TokenResponse login(LoginRequest solicitud) {
+		captchaService.validar(solicitud.captchaId(), solicitud.captchaRespuesta());
+
 		Usuario usuario = usuarioRepository.findByEmailIgnoreCase(solicitud.email().trim())
 				.orElseThrow(CredencialesInvalidasException::new);
 
