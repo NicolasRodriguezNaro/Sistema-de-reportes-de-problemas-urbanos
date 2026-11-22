@@ -13,10 +13,12 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.gestion.backend.dto.PaginaResponse;
+import com.gestion.backend.dto.RecuperacionCodigoResponse;
 import com.gestion.backend.dto.UsuarioActualizacionRequest;
 import com.gestion.backend.dto.UsuarioCreacionRequest;
 import com.gestion.backend.dto.UsuarioGestionResponse;
 import com.gestion.backend.modelo.RolUsuario;
+import com.gestion.backend.servicio.RecuperacionPasswordService;
 import com.gestion.backend.servicio.UsuarioService;
 
 import jakarta.validation.Valid;
@@ -27,9 +29,12 @@ import jakarta.validation.Valid;
 public class UsuarioController {
 
 	private final UsuarioService usuarioService;
+	private final RecuperacionPasswordService recuperacionPasswordService;
 
-	public UsuarioController(UsuarioService usuarioService) {
+	public UsuarioController(UsuarioService usuarioService,
+			RecuperacionPasswordService recuperacionPasswordService) {
 		this.usuarioService = usuarioService;
+		this.recuperacionPasswordService = recuperacionPasswordService;
 	}
 
 	@GetMapping
@@ -57,5 +62,10 @@ public class UsuarioController {
 	public UsuarioGestionResponse actualizar(@PathVariable Long id,
 			@Valid @RequestBody UsuarioActualizacionRequest solicitud) {
 		return usuarioService.actualizar(id, solicitud);
+	}
+
+	@PostMapping("/{id}/recuperacion")
+	public RecuperacionCodigoResponse generarCodigoRecuperacion(@PathVariable Long id) {
+		return recuperacionPasswordService.generarCodigoManual(id);
 	}
 }

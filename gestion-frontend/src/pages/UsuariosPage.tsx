@@ -1,4 +1,4 @@
-import { Pencil, Plus, Search, ShieldCheck, X } from "lucide-react";
+import { Check, Copy, KeyRound, Pencil, Plus, Search, ShieldCheck, X } from "lucide-react";
 import { useCallback, useEffect, useState } from "react";
 
 import { apiFetch, construirQuery } from "../api/client";
@@ -9,6 +9,7 @@ import { useLanguage } from "../i18n/LanguageContext";
 import type {
   EntidadResumen,
   PaginaResponse,
+  RecuperacionCodigoResponse,
   RolUsuario,
   UsuarioActualizacionRequest,
   UsuarioCreacionRequest,
@@ -39,6 +40,12 @@ interface FormularioUsuario {
   rol: RolUsuario;
   entidadId: string;
   activo: boolean;
+}
+
+interface CodigoRecuperacion {
+  usuarioNombre: string;
+  codigo: string;
+  expiraEnSegundos: number;
 }
 
 const FORMULARIO_INICIAL: FormularioUsuario = {
@@ -73,6 +80,10 @@ export function UsuariosPage() {
   const [guardando, setGuardando] = useState(false);
   const [formError, setFormError] = useState<string | null>(null);
   const [mensaje, setMensaje] = useState<string | null>(null);
+  const [codigoRecuperacion, setCodigoRecuperacion] = useState<CodigoRecuperacion | null>(null);
+  const [generandoCodigoId, setGenerandoCodigoId] = useState<number | null>(null);
+  const [codigoError, setCodigoError] = useState<string | null>(null);
+  const [codigoCopiado, setCodigoCopiado] = useState(false);
 
   useEffect(() => {
     apiFetch<EntidadResumen[]>("/api/entidades")
@@ -227,6 +238,38 @@ export function UsuariosPage() {
     }
   };
 
+  const generarCodigoRecuperacion = async (usuario: UsuarioGestion) => {
+    setGenerandoCodigoId(usuario.id);
+    setCodigoError(null);
+    setCodigoCopiado(false);
+    try {
+      const respuesta = await apiFetch<RecuperacionCodigoResponse>(
+        `/api/usuarios/${usuario.id}/recuperacion`,
+        { method: "POST" }
+      );
+      setCodigoRecuperacion({
+        usuarioNombre: usuario.nombre,
+        codigo: respuesta.codigo,
+        expiraEnSegundos: respuesta.expiraEnSegundos,
+      });
+    } catch {
+      setCodigoError("No se pudo generar el código de recuperación.");
+    } finally {
+      setGenerandoCodigoId(null);
+    }
+  };
+
+  const copiarCodigo = async () => {
+    if (!codigoRecuperacion) return;
+    try {
+      await navigator.clipboard.writeText(codigoRecuperacion.codigo);
+      setCodigoCopiado(true);
+      window.setTimeout(() => setCodigoCopiado(false), 2000);
+    } catch {
+      setCodigoCopiado(false);
+    }
+  };
+
   const hayFiltros = Object.values(filtrosActivos).some(Boolean);
 
   return (
@@ -249,6 +292,8 @@ export function UsuariosPage() {
           <span>{t(mensaje)}</span>
         </div>
       )}
+
+      {codigoError && <div className="form-error">{t(codigoError)}</div>}
 
       {formularioAbierto && (
         <section className="filters-panel user-form-panel">
@@ -545,13 +590,25 @@ export function UsuariosPage() {
                       </td>
                       <td className="report-date">{formatearFecha(usuario.fechaRegistro, locale)}</td>
                       <td>
-                        <button
-                          className="table-action table-action-button"
-                          onClick={() => abrirEditar(usuario)}
-                        >
-                          <Pencil size={13} />
-                          {t("Editar")}
-                        </button>
+                        <div className="table-actions">
+                          <button
+                            className="table-action table-action-button"
+                            onClick={() => abrirEditar(usuario)}
+                          >
+                            <Pencil size={13} />
+                            {t("Editar")}
+                          </button>
+                          <button
+                            className="table-action table-action-button"
+                            onClick={() => void generarCodigoRecuperacion(usuario)}
+                            disabled={generandoCodigoId === usuario.id || !usuario.activo}
+                          >
+                            <KeyRound size={13} />
+                            {generandoCodigoId === usuario.id
+                              ? t("Generando...")
+                              : t("Recuperar")}
+                          </button>
+                        </div>
                       </td>
                     </tr>
                   ))}
@@ -568,6 +625,52 @@ export function UsuariosPage() {
           </>
         )}
       </section>
+
+      {codigoRecuperacion && (
+        <div
+          className="modal-backdrop"
+          role="presentation"
+          onMouseDown={(event) => {
+            if (event.target === event.currentTarget) setCodigoRecuperacion(null);
+          }}
+        >
+          <div className="modal-card" role="dialog" aria-modal="true">
+            <button
+              className="modal-close"
+              type="button"
+              aria-label={t("Cerrar")}
+              onClick={() => setCodigoRecuperacion(null)}
+            >
+              <X size={18} />
+            </button>
+            <div className="modal-icon">
+              <KeyRound size={22} />
+            </div>
+            <h2>{t("Código generado")}</h2>
+            <p>
+              {t("Entrega este código al usuario por un canal seguro. No se envía por correo.")}
+            </p>
+            <div className="modal-detail">
+              <span className="recovery-code-label">{codigoRecuperacion.usuarioNombre}</span>
+              <strong className="recovery-code-value">{codigoRecuperacion.codigo}</strong>
+            </div>
+            <p className="recovery-code-expiry">
+              {t("Vence en {minutos} minutos.", {
+                minutos: Math.round(codigoRecuperacion.expiraEnSegundos / 60),
+              })}
+            </p>
+            <div className="modal-actions">
+              <button className="button button-secondary" type="button" onClick={() => void copiarCodigo()}>
+                {codigoCopiado ? <Check size={15} /> : <Copy size={15} />}
+                {codigoCopiado ? t("Copiado") : t("Copiar código")}
+              </button>
+              <button className="button button-primary" type="button" onClick={() => setCodigoRecuperacion(null)}>
+                {t("Cerrar")}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

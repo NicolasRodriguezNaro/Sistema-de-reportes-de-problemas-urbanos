@@ -203,6 +203,14 @@ export function LoginScreen() {
 
             <Pressable
               accessibilityRole="button"
+              onPress={() => router.push("/recuperar")}
+              style={styles.forgotLink}
+            >
+              <Text style={styles.forgotText}>{t("¿Olvidaste tu contraseña?")}</Text>
+            </Pressable>
+
+            <Pressable
+              accessibilityRole="button"
               onPress={() => router.push("/register")}
               style={styles.registerLink}
             >
@@ -392,9 +400,18 @@ function crearEstilos(colors: ThemeColors) {
     fontSize: 11,
     lineHeight: 16,
   },
-  registerLink: {
+  forgotLink: {
     alignItems: "center",
     paddingTop: spacing.lg,
+  },
+  forgotText: {
+    color: colors.brand,
+    fontFamily: fonts.bold,
+    fontSize: 11,
+  },
+  registerLink: {
+    alignItems: "center",
+    paddingTop: spacing.md,
   },
   registerText: {
     color: colors.muted,

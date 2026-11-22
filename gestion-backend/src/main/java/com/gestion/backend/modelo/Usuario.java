@@ -37,6 +37,9 @@ public class Usuario {
 	@Column(nullable = false, length = 255)
 	private String passwordHash;
 
+	@Column(name = "password_version", nullable = false)
+	private int passwordVersion = 0;
+
 	@Enumerated(EnumType.STRING)
 	@Column(nullable = false, length = 50)
 	private RolUsuario rol;

@@ -31,6 +31,13 @@ public class ServicioUsuarioActual {
 		if (!Boolean.TRUE.equals(usuario.getActivo())) {
 			throw new AccessDeniedException("El usuario esta inactivo");
 		}
+
+		Object versionToken = jwt.getToken().getClaim("version");
+		int version = versionToken instanceof Number numero ? numero.intValue() : 0;
+		if (version != usuario.getPasswordVersion()) {
+			throw new AccessDeniedException("La sesión ya no es válida. Inicia sesión nuevamente.");
+		}
+
 		return usuario;
 	}
 }

@@ -46,6 +46,15 @@ export interface CaptchaResponse {
   expiraEnSegundos: number;
 }
 
+export interface MensajeResponse {
+  mensaje: string;
+}
+
+export interface RecuperacionCodigoResponse {
+  codigo: string;
+  expiraEnSegundos: number;
+}
+
 export interface ArchivoResponse {
   clave: string;
   url: string;

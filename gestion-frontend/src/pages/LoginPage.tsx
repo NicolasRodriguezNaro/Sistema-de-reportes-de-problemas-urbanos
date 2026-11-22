@@ -1,6 +1,6 @@
 import { Eye, EyeOff, LockKeyhole, MapPinned, RefreshCw, ShieldCheck, Sparkles } from "lucide-react";
 import { useCallback, useEffect, useState, type FormEvent } from "react";
-import { Navigate, useNavigate } from "react-router-dom";
+import { Link, Navigate, useNavigate } from "react-router-dom";
 
 import { apiFetch, ApiError } from "../api/client";
 import { useAuth } from "../auth/AuthContext";
@@ -202,6 +202,9 @@ export function LoginPage() {
           <div className="login-form-footer">
             <span>{t("Acceso para funcionarios, empresas y administradores.")}</span>
             <span>{t("Ciudadanos: usa la app móvil.")}</span>
+            <Link className="login-recovery-link" to="/recuperar">
+              {t("¿Olvidaste tu contraseña?")}
+            </Link>
           </div>
 
           <div className="login-language">

@@ -37,7 +37,8 @@ public class ServicioTokens {
 				.subject(String.valueOf(usuario.getId()))
 				.claim("email", usuario.getEmail())
 				.claim("nombre", usuario.getNombre())
-				.claim("rol", usuario.getRol().name());
+				.claim("rol", usuario.getRol().name())
+				.claim("version", usuario.getPasswordVersion());
 
 		if (usuario.getEntidad() != null) {
 			claims.claim("entidadId", usuario.getEntidad().getId());

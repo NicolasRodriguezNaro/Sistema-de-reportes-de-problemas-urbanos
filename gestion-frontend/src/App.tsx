@@ -8,6 +8,7 @@ import { EntitiesPage } from "./pages/EntitiesPage";
 import { LoginPage } from "./pages/LoginPage";
 import { MapPage } from "./pages/MapPage";
 import { ProfilePage } from "./pages/ProfilePage";
+import { RecoveryPage } from "./pages/RecoveryPage";
 import { ReportDetailPage } from "./pages/ReportDetailPage";
 import { ReportsPage } from "./pages/ReportsPage";
 import { EquipoPage } from "./pages/EquipoPage";
@@ -63,6 +64,7 @@ export default function App() {
         <AuthProvider>
           <Routes>
             <Route path="/login" element={<LoginPage />} />
+            <Route path="/recuperar" element={<RecoveryPage />} />
             <Route path="/sin-acceso" element={<AccessDeniedPage />} />
             <Route
               element={
