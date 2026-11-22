@@ -15,6 +15,7 @@ import { Link } from "react-router-dom";
 
 import { apiFetch, construirQuery } from "../api/client";
 import { useAuth } from "../auth/AuthContext";
+import { useLanguage } from "../i18n/LanguageContext";
 import { MapPanel } from "../components/MapPanel";
 import { MetricCard } from "../components/MetricCard";
 import { PageHeader } from "../components/PageHeader";
@@ -32,6 +33,7 @@ import type {
 } from "../types/api";
 import {
   ETIQUETAS_CATEGORIA,
+  ETIQUETAS_ENTIDAD,
   ETIQUETAS_ESTADO,
   formatearNumero,
 } from "../utils/format";
@@ -45,6 +47,7 @@ const COLORES_ESTADO: Record<EstadoReporte, string> = {
 };
 
 function DonutEstado({ resumen }: { resumen: DashboardResumen }) {
+  const { t, locale } = useLanguage();
   const total = resumen.total;
   let acumulado = 0;
   const segmentos = Object.entries(resumen.porEstado).map(([estado, valor]) => {
@@ -59,16 +62,16 @@ function DonutEstado({ resumen }: { resumen: DashboardResumen }) {
     <div className="donut-layout">
       <div className="donut" style={{ background: fondo }}>
         <div className="donut-hole">
-          <strong>{formatearNumero(total)}</strong>
-          <span>reportes</span>
+          <strong>{formatearNumero(total, locale)}</strong>
+          <span>{t("reportes")}</span>
         </div>
       </div>
       <div className="donut-legend">
         {Object.entries(resumen.porEstado).map(([estado, valor]) => (
           <div className="legend-row" key={estado}>
             <span className="legend-dot" style={{ background: COLORES_ESTADO[estado as EstadoReporte] }} />
-            <span>{ETIQUETAS_ESTADO[estado as EstadoReporte]}</span>
-            <strong>{formatearNumero(valor)}</strong>
+            <span>{t(ETIQUETAS_ESTADO[estado as EstadoReporte])}</span>
+            <strong>{formatearNumero(valor, locale)}</strong>
           </div>
         ))}
       </div>
@@ -85,6 +88,7 @@ function BarList({
   labels: Record<string, string>;
   color: string;
 }) {
+  const { t, locale } = useLanguage();
   const entradas = Object.entries(data).sort((a, b) => b[1] - a[1]);
   const maximo = Math.max(...entradas.map(([, valor]) => valor), 1);
 
@@ -93,8 +97,8 @@ function BarList({
       {entradas.map(([clave, valor]) => (
         <div className="bar-row" key={clave}>
           <div className="bar-row-label">
-            <span>{labels[clave] ?? clave}</span>
-            <strong>{formatearNumero(valor)}</strong>
+            <span>{t(labels[clave] ?? clave)}</span>
+            <strong>{formatearNumero(valor, locale)}</strong>
           </div>
           <div className="bar-track">
             <div
@@ -110,6 +114,7 @@ function BarList({
 
 export function DashboardPage() {
   const { esAdministrador } = useAuth();
+  const { t, locale } = useLanguage();
   const [resumen, setResumen] = useState<DashboardResumen | null>(null);
   const [reportes, setReportes] = useState<ReporteResumen[]>([]);
   const [entidades, setEntidades] = useState<EntidadResumen[]>([]);
@@ -152,13 +157,13 @@ export function DashboardPage() {
   );
 
   if (cargando) {
-    return <LoadingState label="Cargando el panorama operativo..." />;
+    return <LoadingState label={t("Cargando el panorama operativo...")} />;
   }
 
   if (error || !resumen) {
     return (
       <ErrorState
-        mensaje={error ?? "No se recibió información del dashboard."}
+        mensaje={t(error ?? "No se recibió información del dashboard.")}
         onRetry={() => setVersion((valor) => valor + 1)}
       />
     );
@@ -167,24 +172,24 @@ export function DashboardPage() {
   return (
     <div className="page-stack">
       <PageHeader
-        eyebrow="Panorama operativo"
-        titulo="Así está la ciudad hoy"
-        descripcion="Una lectura rápida de los reportes ciudadanos y su avance."
+        eyebrow={t("Panorama operativo")}
+        titulo={t("Así está la ciudad hoy")}
+        descripcion={t("Una lectura rápida de los reportes ciudadanos y su avance.")}
         actions={
           <>
             <div className="date-filter">
               <label>
-                <span>Desde</span>
+                <span>{t("Desde")}</span>
                 <input type="date" value={desde} onChange={(event) => setDesde(event.target.value)} />
               </label>
               <label>
-                <span>Hasta</span>
+                <span>{t("Hasta")}</span>
                 <input type="date" value={hasta} onChange={(event) => setHasta(event.target.value)} />
               </label>
             </div>
             <button className="button button-secondary" onClick={() => setVersion((valor) => valor + 1)}>
               <RefreshCw size={16} />
-              Actualizar
+              {t("Actualizar")}
             </button>
           </>
         }
@@ -193,53 +198,53 @@ export function DashboardPage() {
       <section className="metric-grid">
         <MetricCard
           label="Total de reportes"
-          value={formatearNumero(resumen.total)}
+          value={formatearNumero(resumen.total, locale)}
           hint="En el periodo consultado"
           icon={<FileText size={18} />}
           tone="info"
         />
         <MetricCard
           label="Pendientes"
-          value={formatearNumero(resumen.porEstado.PENDIENTE)}
+          value={formatearNumero(resumen.porEstado.PENDIENTE, locale)}
           hint="Esperando revisión"
           icon={<Clock3 size={18} />}
           tone="warning"
         />
         <MetricCard
           label="Sin clasificar"
-          value={formatearNumero(resumen.pendientesClasificacion)}
+          value={formatearNumero(resumen.pendientesClasificacion, locale)}
           hint="La IA no pudo asignar categoría"
           icon={<Inbox size={18} />}
         />
         <MetricCard
           label="Rechazados"
-          value={formatearNumero(resumen.rechazados)}
+          value={formatearNumero(resumen.rechazados, locale)}
           hint="Fuera de la operación activa"
           icon={<Ban size={18} />}
           tone="danger"
         />
         <MetricCard
           label="En revisión"
-          value={formatearNumero(resumen.porEstado.EN_REVISION)}
+          value={formatearNumero(resumen.porEstado.EN_REVISION, locale)}
           hint="En gestión operativa"
           icon={<RefreshCw size={18} />}
         />
         <MetricCard
           label="Críticos"
-          value={formatearNumero(resumen.criticos)}
+          value={formatearNumero(resumen.criticos, locale)}
           hint="Requieren atención prioritaria"
           icon={<AlertTriangle size={18} />}
           tone="danger"
         />
         <MetricCard
           label="Sin asignar"
-          value={formatearNumero(resumen.sinAsignar)}
+          value={formatearNumero(resumen.sinAsignar, locale)}
           hint="Pendientes de entidad"
           icon={<UserRoundX size={18} />}
         />
         <MetricCard
           label="Resueltos"
-          value={formatearNumero(resumen.porEstado.RESUELTO)}
+          value={formatearNumero(resumen.porEstado.RESUELTO, locale)}
           hint="Cerrados en el periodo"
           icon={<CheckCircle2 size={18} />}
           tone="success"
@@ -250,10 +255,10 @@ export function DashboardPage() {
         <article className="panel panel-span-2">
           <div className="panel-header">
             <div>
-              <span className="eyebrow">Distribución</span>
-              <h2>Reportes por estado</h2>
+              <span className="eyebrow">{t("Distribución")}</span>
+              <h2>{t("Reportes por estado")}</h2>
             </div>
-            <span className="panel-meta">Vista general</span>
+            <span className="panel-meta">{t("Vista general")}</span>
           </div>
           <DonutEstado resumen={resumen} />
         </article>
@@ -261,11 +266,11 @@ export function DashboardPage() {
         <article className="panel">
           <div className="panel-header">
             <div>
-              <span className="eyebrow">Territorio</span>
-              <h2>Reportes recientes</h2>
+              <span className="eyebrow">{t("Territorio")}</span>
+              <h2>{t("Reportes recientes")}</h2>
             </div>
             <Link className="text-link" to="/mapa">
-              Abrir mapa <ArrowUpRight size={15} />
+              {t("Abrir mapa")} <ArrowUpRight size={15} />
             </Link>
           </div>
           {geoReportes && geoReportes.features.length > 0 ? (
@@ -273,7 +278,7 @@ export function DashboardPage() {
           ) : (
             <div className="map-empty">
               <MapIcon size={24} />
-              <span>No hay puntos para el periodo seleccionado.</span>
+              <span>{t("No hay puntos para el periodo seleccionado.")}</span>
             </div>
           )}
         </article>
@@ -281,8 +286,8 @@ export function DashboardPage() {
         <article className="panel panel-span-2">
           <div className="panel-header">
             <div>
-              <span className="eyebrow">Análisis</span>
-              <h2>Reportes por categoría</h2>
+              <span className="eyebrow">{t("Análisis")}</span>
+              <h2>{t("Reportes por categoría")}</h2>
             </div>
           </div>
           <BarList
@@ -295,8 +300,8 @@ export function DashboardPage() {
         <article className="panel">
           <div className="panel-header">
             <div>
-              <span className="eyebrow">Urgencia</span>
-              <h2>Prioridad calculada</h2>
+              <span className="eyebrow">{t("Urgencia")}</span>
+              <h2>{t("Prioridad calculada")}</h2>
             </div>
           </div>
           <BarList
@@ -309,8 +314,8 @@ export function DashboardPage() {
         <article className="panel panel-span-2">
           <div className="panel-header">
             <div>
-              <span className="eyebrow">Concentración</span>
-              <h2>Barrios con más reportes</h2>
+              <span className="eyebrow">{t("Concentración")}</span>
+              <h2>{t("Barrios con más reportes")}</h2>
             </div>
           </div>
           {resumen.porBarrio.length > 0 ? (
@@ -320,25 +325,25 @@ export function DashboardPage() {
                   <span className="barrio-rank">{String(indice + 1).padStart(2, "0")}</span>
                   <div>
                     <strong>{barrio.nombre}</strong>
-                    <span>Barrio {barrio.barrioId}</span>
+                    <span>{t("Barrio")} {barrio.barrioId}</span>
                   </div>
-                  <span className="barrio-total">{formatearNumero(barrio.total)}</span>
+                  <span className="barrio-total">{formatearNumero(barrio.total, locale)}</span>
                 </div>
               ))}
             </div>
           ) : (
-            <div className="empty-inline">Aún no hay reportes con barrio asignado.</div>
+            <div className="empty-inline">{t("Aún no hay reportes con barrio asignado.")}</div>
           )}
         </article>
 
         <article className="panel">
           <div className="panel-header">
             <div>
-              <span className="eyebrow">{esAdministrador ? "Cobertura" : "Alcance"}</span>
-              <h2>{esAdministrador ? "Entidades" : "Mi entidad"}</h2>
+              <span className="eyebrow">{t(esAdministrador ? "Cobertura" : "Alcance")}</span>
+              <h2>{t(esAdministrador ? "Entidades" : "Mi entidad")}</h2>
             </div>
             {esAdministrador && entidades.length > 0 && (
-              <span className="panel-meta">{entidades.length} activas</span>
+              <span className="panel-meta">{entidades.length} {t("activas")}</span>
             )}
           </div>
           <div className="entity-mini-list">
@@ -347,7 +352,7 @@ export function DashboardPage() {
                 <div className="entity-mini-icon">{entidad.id}</div>
                 <div>
                   <strong>{entidad.nombre}</strong>
-                  <span>{entidad.tipo.replaceAll("_", " ").toLowerCase()}</span>
+                  <span>{t(ETIQUETAS_ENTIDAD[entidad.tipo])}</span>
                 </div>
               </div>
             ))}
@@ -358,17 +363,17 @@ export function DashboardPage() {
       <section className="panel">
         <div className="panel-header">
           <div>
-            <span className="eyebrow">Actividad</span>
-            <h2>Reportes recientes</h2>
+            <span className="eyebrow">{t("Actividad")}</span>
+            <h2>{t("Reportes recientes")}</h2>
           </div>
           <Link className="text-link" to="/reportes">
-            Ver todos <ArrowUpRight size={15} />
+            {t("Ver todos")} <ArrowUpRight size={15} />
           </Link>
         </div>
         {reportes.length > 0 ? (
           <ReportTable reportes={reportes} entidadNombres={entidadNombres} />
         ) : (
-          <div className="empty-inline">No hay reportes en el periodo seleccionado.</div>
+          <div className="empty-inline">{t("No hay reportes en el periodo seleccionado.")}</div>
         )}
       </section>
     </div>

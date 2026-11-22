@@ -7,6 +7,7 @@ import { PageHeader } from "../components/PageHeader";
 import { Pagination } from "../components/Pagination";
 import { ReportTable } from "../components/ReportTable";
 import { EmptyState, ErrorState, LoadingState } from "../components/States";
+import { useLanguage } from "../i18n/LanguageContext";
 import type { EntidadResumen, PaginaResponse, ReporteResumen } from "../types/api";
 import { ETIQUETAS_CATEGORIA, ETIQUETAS_ESTADO } from "../utils/format";
 
@@ -32,6 +33,7 @@ const FILTROS_INICIALES: Filtros = {
 
 export function ReportsPage() {
   const { esAdministrador } = useAuth();
+  const { t } = useLanguage();
   const [filtros, setFiltros] = useState<Filtros>(FILTROS_INICIALES);
   const [filtrosActivos, setFiltrosActivos] = useState<Filtros>(FILTROS_INICIALES);
   const [pagina, setPagina] = useState(0);
@@ -105,13 +107,13 @@ export function ReportsPage() {
   return (
     <div className="page-stack">
       <PageHeader
-        eyebrow="Bandeja de trabajo"
-        titulo="Reportes ciudadanos"
-        descripcion="Encuentra, filtra y da seguimiento a las incidencias reportadas."
+        eyebrow={t("Bandeja de trabajo")}
+        titulo={t("Reportes ciudadanos")}
+        descripcion={t("Encuentra, filtra y da seguimiento a las incidencias reportadas.")}
         actions={
           <button className="button button-secondary" onClick={limpiar} disabled={!hayFiltros}>
             <RotateCcw size={16} />
-            Limpiar filtros
+            {t("Limpiar filtros")}
           </button>
         }
       />
@@ -120,18 +122,18 @@ export function ReportsPage() {
         <div className="filters-heading">
           <div>
             <SlidersHorizontal size={18} />
-            <strong>Filtros</strong>
+            <strong>{t("Filtros")}</strong>
           </div>
-          <span>{hayFiltros ? "Filtros activos" : "Sin filtros aplicados"}</span>
+          <span>{t(hayFiltros ? "Filtros activos" : "Sin filtros aplicados")}</span>
         </div>
 
         <div className="filters-grid">
           <label className="field field-search">
-            <span>Buscar</span>
+            <span>{t("Buscar")}</span>
             <div className="input-with-icon">
               <Search size={16} />
               <input
-                placeholder="Buscar reporte"
+                placeholder={t("Buscar reporte")}
                 value={filtros.texto}
                 onChange={(event) => cambiar("texto", event.target.value)}
                 onKeyDown={(event) => {
@@ -142,41 +144,41 @@ export function ReportsPage() {
           </label>
 
           <label className="field">
-            <span>Estado</span>
+            <span>{t("Estado")}</span>
             <select value={filtros.estado} onChange={(event) => cambiar("estado", event.target.value)}>
-              <option value="">Todos</option>
+              <option value="">{t("Todos")}</option>
               {Object.entries(ETIQUETAS_ESTADO).map(([valor, label]) => (
-                <option key={valor} value={valor}>{label}</option>
+                <option key={valor} value={valor}>{t(label)}</option>
               ))}
             </select>
           </label>
 
           <label className="field">
-            <span>Categoría</span>
+            <span>{t("Categoría")}</span>
             <select value={filtros.categoria} onChange={(event) => cambiar("categoria", event.target.value)}>
-              <option value="">Todas</option>
+              <option value="">{t("Todas")}</option>
               {Object.entries(ETIQUETAS_CATEGORIA).map(([valor, label]) => (
-                <option key={valor} value={valor}>{label}</option>
+                <option key={valor} value={valor}>{t(label)}</option>
               ))}
             </select>
           </label>
 
           <label className="field">
-            <span>Prioridad</span>
+            <span>{t("Prioridad")}</span>
             <select value={filtros.prioridad} onChange={(event) => cambiar("prioridad", event.target.value)}>
-              <option value="">Todas</option>
-              <option value="BAJA">Baja</option>
-              <option value="MEDIA">Media</option>
-              <option value="ALTA">Alta</option>
-              <option value="CRITICA">Crítica</option>
+              <option value="">{t("Todas")}</option>
+              <option value="BAJA">{t("Baja")}</option>
+              <option value="MEDIA">{t("Media")}</option>
+              <option value="ALTA">{t("Alta")}</option>
+              <option value="CRITICA">{t("Crítica")}</option>
             </select>
           </label>
 
           {esAdministrador && (
             <label className="field">
-              <span>Entidad</span>
+              <span>{t("Entidad")}</span>
               <select value={filtros.entidadId} onChange={(event) => cambiar("entidadId", event.target.value)}>
-                <option value="">Todas</option>
+                <option value="">{t("Todas")}</option>
                 {entidades.map((entidad) => (
                   <option key={entidad.id} value={entidad.id}>{entidad.nombre}</option>
                 ))}
@@ -185,18 +187,18 @@ export function ReportsPage() {
           )}
 
           <label className="field">
-            <span>Desde</span>
+            <span>{t("Desde")}</span>
             <input type="date" value={filtros.desde} onChange={(event) => cambiar("desde", event.target.value)} />
           </label>
 
           <label className="field">
-            <span>Hasta</span>
+            <span>{t("Hasta")}</span>
             <input type="date" value={filtros.hasta} onChange={(event) => cambiar("hasta", event.target.value)} />
           </label>
 
           <button className="button button-primary filter-submit" onClick={aplicar}>
             <Filter size={16} />
-            Aplicar filtros
+            {t("Aplicar filtros")}
           </button>
         </div>
       </section>
@@ -204,11 +206,15 @@ export function ReportsPage() {
       <section className="panel reports-panel">
         <div className="panel-header">
           <div>
-            <span className="eyebrow">Resultados</span>
-            <h2>{total > 0 ? `${total} reportes encontrados` : "Sin resultados"}</h2>
+            <span className="eyebrow">{t("Resultados")}</span>
+            <h2>
+              {total > 0
+                ? t("{n} reportes encontrados", { n: total })
+                : t("Sin resultados")}
+            </h2>
           </div>
           <label className="page-size">
-            <span>Filas</span>
+            <span>{t("Filas")}</span>
             <select
               value={tamano}
               onChange={(event) => {
@@ -225,21 +231,21 @@ export function ReportsPage() {
         </div>
 
         {cargando ? (
-          <LoadingState label="Consultando reportes..." />
+          <LoadingState label={t("Consultando reportes...")} />
         ) : error ? (
-          <ErrorState mensaje={error} onRetry={() => void cargar()} />
+          <ErrorState mensaje={t(error)} onRetry={() => void cargar()} />
         ) : reportes.length === 0 ? (
           <EmptyState
-            titulo={hayFiltros ? "No encontramos coincidencias" : "Aún no hay reportes"}
-            descripcion={
+            titulo={t(hayFiltros ? "No encontramos coincidencias" : "Aún no hay reportes")}
+            descripcion={t(
               hayFiltros
                 ? "Prueba con otros filtros o limpia la búsqueda."
                 : "Cuando los ciudadanos empiecen a reportar incidencias, aparecerán aquí."
-            }
+            )}
             accion={
               hayFiltros ? (
                 <button className="button button-secondary" onClick={limpiar}>
-                  Limpiar filtros
+                  {t("Limpiar filtros")}
                 </button>
               ) : undefined
             }

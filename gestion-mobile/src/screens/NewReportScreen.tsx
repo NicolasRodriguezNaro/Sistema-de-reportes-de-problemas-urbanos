@@ -20,6 +20,7 @@ import {
 import { apiFetch, subirImagen } from "../api";
 import { Text } from "../components/AppText";
 import { AppButton, StatusBadge, TextField } from "../components/ui";
+import { useLanguage } from "../i18n";
 import { fonts, radius, shadows, spacing } from "../theme";
 import { useTheme, useThemedStyles, type ThemeColors } from "../theme-context";
 import type { ReporteDetalle } from "../types";
@@ -35,6 +36,7 @@ export function NewReportScreen() {
   const router = useRouter();
   const { colores: colors } = useTheme();
   const styles = useThemedStyles(crearEstilos);
+  const { t } = useLanguage();
   const [paso, setPaso] = useState<Paso>(1);
   const [foto, setFoto] = useState<ImagePicker.ImagePickerAsset | null>(null);
   const [ubicacion, setUbicacion] = useState<Ubicacion | null>(null);
@@ -87,11 +89,11 @@ export function NewReportScreen() {
 
       if (!permiso.granted) {
         Alert.alert(
-          "Permiso necesario",
-          "Activa el acceso a la cámara o a tus fotos para adjuntar la evidencia.",
+          t("Permiso necesario"),
+          t("Activa el acceso a la cámara o a tus fotos para adjuntar la evidencia."),
           [
-            { text: "Cancelar", style: "cancel" },
-            { text: "Abrir ajustes", onPress: () => void Linking.openSettings() },
+            { text: t("Cancelar"), style: "cancel" },
+            { text: t("Abrir ajustes"), onPress: () => void Linking.openSettings() },
           ]
         );
         return;
@@ -125,11 +127,11 @@ export function NewReportScreen() {
       const permiso = await Location.requestForegroundPermissionsAsync();
       if (!permiso.granted) {
         Alert.alert(
-          "Permiso necesario",
-          "Necesitamos tu ubicación para registrar el punto de la incidencia.",
+          t("Permiso necesario"),
+          t("Necesitamos tu ubicación para registrar el punto de la incidencia."),
           [
-            { text: "Cancelar", style: "cancel" },
-            { text: "Abrir ajustes", onPress: () => void Linking.openSettings() },
+            { text: t("Cancelar"), style: "cancel" },
+            { text: t("Abrir ajustes"), onPress: () => void Linking.openSettings() },
           ]
         );
         return;
@@ -418,6 +420,7 @@ function SuccessView({
 }) {
   const { colores: colors } = useTheme();
   const styles = useThemedStyles(crearEstilos);
+  const { t } = useLanguage();
 
   return (
     <SafeAreaView style={styles.successSafe} edges={["top", "left", "right", "bottom"]}>
@@ -444,7 +447,9 @@ function SuccessView({
             <Text style={styles.successLabel}>Entidad asignada</Text>
             <Text style={styles.successValue}>
               {reporte.entidadNombre ??
-                (reporte.entidadAsignadaId ? `Entidad ${reporte.entidadAsignadaId}` : "Por asignar")}
+                (reporte.entidadAsignadaId
+                  ? `${t("Entidad")} ${reporte.entidadAsignadaId}`
+                  : t("Por asignar"))}
             </Text>
           </View>
         </View>

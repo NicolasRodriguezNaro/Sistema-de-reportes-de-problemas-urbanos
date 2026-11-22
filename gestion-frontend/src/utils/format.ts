@@ -60,22 +60,32 @@ export const ETIQUETAS_ENTIDAD: Record<TipoEntidad, string> = {
   EMPRESA_ASEO: "Empresa de Aseo",
 };
 
-export function formatearFecha(iso: string | null | undefined): string {
-  if (!iso) return "Sin fecha";
+export function formatearFecha(
+  iso: string | null | undefined,
+  locale = "es-CO"
+): string {
+  if (!iso) return locale === "en-US" ? "No date" : "Sin fecha";
   const fecha = new Date(iso);
-  if (Number.isNaN(fecha.getTime())) return "Sin fecha";
-  return new Intl.DateTimeFormat("es-CO", {
+  if (Number.isNaN(fecha.getTime())) {
+    return locale === "en-US" ? "No date" : "Sin fecha";
+  }
+  return new Intl.DateTimeFormat(locale, {
     day: "2-digit",
     month: "short",
     year: "numeric",
   }).format(fecha);
 }
 
-export function formatearFechaHora(iso: string | null | undefined): string {
-  if (!iso) return "Sin fecha";
+export function formatearFechaHora(
+  iso: string | null | undefined,
+  locale = "es-CO"
+): string {
+  if (!iso) return locale === "en-US" ? "No date" : "Sin fecha";
   const fecha = new Date(iso);
-  if (Number.isNaN(fecha.getTime())) return "Sin fecha";
-  return new Intl.DateTimeFormat("es-CO", {
+  if (Number.isNaN(fecha.getTime())) {
+    return locale === "en-US" ? "No date" : "Sin fecha";
+  }
+  return new Intl.DateTimeFormat(locale, {
     day: "2-digit",
     month: "short",
     year: "numeric",
@@ -84,8 +94,8 @@ export function formatearFechaHora(iso: string | null | undefined): string {
   }).format(fecha);
 }
 
-export function formatearNumero(valor: number | null | undefined): string {
-  return new Intl.NumberFormat("es-CO").format(valor ?? 0);
+export function formatearNumero(valor: number | null | undefined, locale = "es-CO"): string {
+  return new Intl.NumberFormat(locale).format(valor ?? 0);
 }
 
 export function iniciales(nombre: string): string {

@@ -21,6 +21,7 @@ import { ConfirmDialog } from "../components/ConfirmDialog";
 import { MapPanel, ReportMap } from "../components/MapPanel";
 import { PageHeader } from "../components/PageHeader";
 import { ErrorState, LoadingState } from "../components/States";
+import { useLanguage } from "../i18n/LanguageContext";
 import type {
   AsignacionReporte,
   EntidadResumen,
@@ -42,21 +43,23 @@ import {
 import { estadoSugerido, estadosPermitidos } from "../utils/estados";
 
 function ImagenReporte({ src, alt }: { src: string | null; alt: string }) {
+  const { t } = useLanguage();
   const [error, setError] = useState(false);
   if (!src || error) {
     return (
       <div className="detail-image detail-image-empty">
         <ImageOff size={32} />
-        <span>Imagen no disponible</span>
+        <span>{t("Imagen no disponible")}</span>
       </div>
     );
   }
-  return <img className="detail-image" src={src} alt={alt} onError={() => setError(true)} />;
+  return <img className="detail-image" src={src} alt={t(alt)} onError={() => setError(true)} />;
 }
 
 export function ReportDetailPage() {
   const { id } = useParams<{ id: string }>();
   const { usuario, esAdministrador } = useAuth();
+  const { t, locale } = useLanguage();
   const [reporte, setReporte] = useState<ReporteResponse | null>(null);
   const [entidades, setEntidades] = useState<EntidadResumen[]>([]);
   const [geoReporte, setGeoReporte] = useState<FeatureCollection<ReporteGeoProperties> | null>(null);
@@ -252,19 +255,19 @@ export function ReportDetailPage() {
     }
   };
 
-  if (cargando) return <LoadingState label="Cargando reporte..." />;
+  if (cargando) return <LoadingState label={t("Cargando reporte...")} />;
   if (error || !reporte) {
     return (
       <ErrorState
-        mensaje={error ?? "Reporte no encontrado."}
+        mensaje={t(error ?? "Reporte no encontrado.")}
         onRetry={() => setVersion((valor) => valor + 1)}
       />
     );
   }
 
   const categoria = reporte.categoriaIa
-    ? ETIQUETAS_CATEGORIA[reporte.categoriaIa as TipoIncidencia]
-    : "Sin clasificar";
+    ? t(ETIQUETAS_CATEGORIA[reporte.categoriaIa as TipoIncidencia])
+    : t("Sin clasificar");
   const estadosSiguientes = estadosPermitidos(
     reporte.estado,
     esAdministrador,
@@ -279,13 +282,13 @@ export function ReportDetailPage() {
     <div className="page-stack">
       <Link className="back-link" to="/reportes">
         <ArrowLeft size={16} />
-        Volver a reportes
+        {t("Volver a reportes")}
       </Link>
 
       <PageHeader
-        eyebrow={`Reporte #${reporte.id}`}
+        eyebrow={t("Reporte #{id}", { id: reporte.id })}
         titulo={categoria}
-        descripcion="Detalle de la incidencia reportada por la ciudadanía."
+        descripcion={t("Detalle de la incidencia reportada por la ciudadanía.")}
         actions={
           <div className="detail-header-badges">
             <StatusBadge estado={reporte.estado} />
@@ -296,7 +299,7 @@ export function ReportDetailPage() {
 
       {(mensaje || errorAccion) && (
         <div className={`form-feedback ${errorAccion ? "form-feedback-error" : "form-feedback-success"}`}>
-          {errorAccion ?? mensaje}
+          {t(errorAccion ?? mensaje ?? "")}
         </div>
       )}
 
@@ -305,14 +308,14 @@ export function ReportDetailPage() {
           <Ban size={22} />
           <div>
             <strong>
-              Reporte rechazado
+              {t("Reporte rechazado")}
               {reporte.motivoRechazo
-                ? `: ${ETIQUETAS_MOTIVO_RECHAZO[reporte.motivoRechazo]}`
+                ? `: ${t(ETIQUETAS_MOTIVO_RECHAZO[reporte.motivoRechazo])}`
                 : ""}
             </strong>
             <p>
               {reporte.detalleRechazo ||
-                "No se registró una explicación adicional para este rechazo."}
+                t("No se registró una explicación adicional para este rechazo.")}
             </p>
           </div>
         </div>
@@ -323,10 +326,10 @@ export function ReportDetailPage() {
           <article className="panel">
             <div className="panel-header">
               <div>
-                <span className="eyebrow">Registro visual</span>
-                <h2>Evidencia del reporte</h2>
+                <span className="eyebrow">{t("Registro visual")}</span>
+                <h2>{t("Evidencia del reporte")}</h2>
               </div>
-              <span className="panel-meta">{formatearFechaHora(reporte.fechaCreacion)}</span>
+              <span className="panel-meta">{formatearFechaHora(reporte.fechaCreacion, locale)}</span>
             </div>
             <ImagenReporte
               src={reporte.urlImagenHd || reporte.urlImagenThumb}
@@ -337,8 +340,8 @@ export function ReportDetailPage() {
           <article className="panel">
             <div className="panel-header">
               <div>
-                <span className="eyebrow">Ubicación</span>
-                <h2>Punto reportado</h2>
+                <span className="eyebrow">{t("Ubicación")}</span>
+                <h2>{t("Punto reportado")}</h2>
               </div>
               <span className="coordinate-pill">
                 <MapPin size={14} />
@@ -351,12 +354,12 @@ export function ReportDetailPage() {
           <article className="panel">
             <div className="panel-header">
               <div>
-                <span className="eyebrow">Descripción</span>
-                <h2>Lo que reportó el ciudadano</h2>
+                <span className="eyebrow">{t("Descripción")}</span>
+                <h2>{t("Lo que reportó el ciudadano")}</h2>
               </div>
             </div>
             <p className="detail-description">
-              {reporte.descripcion || "El reporte no incluye una descripción adicional."}
+              {reporte.descripcion || t("El reporte no incluye una descripción adicional.")}
             </p>
           </article>
         </div>
@@ -365,51 +368,51 @@ export function ReportDetailPage() {
           <article className="panel">
             <div className="panel-header">
               <div>
-                <span className="eyebrow">Ficha</span>
-                <h2>Información del reporte</h2>
+                <span className="eyebrow">{t("Ficha")}</span>
+                <h2>{t("Información del reporte")}</h2>
               </div>
             </div>
             <div className="metadata-list">
               <div>
-                <span><Tag size={15} /> Categoría</span>
+                <span><Tag size={15} /> {t("Categoría")}</span>
                 <strong>{categoria}</strong>
               </div>
               <div>
-                <span><AlertTriangleIcon /> Severidad</span>
-                <strong>{reporte.severidadIa ? ETIQUETAS_SEVERIDAD[reporte.severidadIa] : "Sin calcular"}</strong>
+                <span><AlertTriangleIcon /> {t("Severidad")}</span>
+                <strong>{reporte.severidadIa ? t(ETIQUETAS_SEVERIDAD[reporte.severidadIa]) : t("Sin calcular")}</strong>
               </div>
               <div>
-                <span><CheckCircle2 size={15} /> Confianza IA</span>
-                <strong>{reporte.confianzaIa ? `${Math.round(reporte.confianzaIa * 100)}%` : "No disponible"}</strong>
+                <span><CheckCircle2 size={15} /> {t("Confianza IA")}</span>
+                <strong>{reporte.confianzaIa ? `${Math.round(reporte.confianzaIa * 100)}%` : t("No disponible")}</strong>
               </div>
               <div>
-                <span><MapPin size={15} /> Barrio</span>
+                <span><MapPin size={15} /> {t("Barrio")}</span>
                 <strong>
                   {reporte.barrioNombre ??
-                    (reporte.barrioId ? `Barrio ${reporte.barrioId}` : "Sin asignar")}
+                    (reporte.barrioId ? `${t("Barrio")} ${reporte.barrioId}` : t("Sin asignar"))}
                 </strong>
               </div>
               <div>
-                <span><Building2 size={15} /> Entidad</span>
+                <span><Building2 size={15} /> {t("Entidad")}</span>
                 <strong>
                   {reporte.entidadNombre ??
                     (reporte.entidadAsignadaId
                       ? entidadNombres.get(reporte.entidadAsignadaId) ??
-                        `Entidad ${reporte.entidadAsignadaId}`
-                      : "Sin asignar")}
+                        `${t("Entidad")} ${reporte.entidadAsignadaId}`
+                      : t("Sin asignar"))}
                 </strong>
               </div>
               <div>
-                <span><UserRound size={15} /> Reportado por</span>
-                <strong>Usuario #{reporte.usuarioId}</strong>
+                <span><UserRound size={15} /> {t("Reportado por")}</span>
+                <strong>{t("Usuario #{id}", { id: reporte.usuarioId })}</strong>
               </div>
               <div>
-                <span><CalendarDays size={15} /> Actualizado</span>
-                <strong>{formatearFechaHora(reporte.fechaActualizacion)}</strong>
+                <span><CalendarDays size={15} /> {t("Actualizado")}</span>
+                <strong>{formatearFechaHora(reporte.fechaActualizacion, locale)}</strong>
               </div>
               {reporte.reportePadreId && (
                 <div>
-                  <span><ChevronRight size={15} /> Reporte padre</span>
+                  <span><ChevronRight size={15} /> {t("Reporte padre")}</span>
                   <strong>#{reporte.reportePadreId}</strong>
                 </div>
               )}
@@ -419,8 +422,8 @@ export function ReportDetailPage() {
           <article className="panel action-panel">
             <div className="panel-header">
               <div>
-                <span className="eyebrow">Gestión</span>
-                <h2>Acciones disponibles</h2>
+                <span className="eyebrow">{t("Gestión")}</span>
+                <h2>{t("Acciones disponibles")}</h2>
               </div>
             </div>
 
@@ -428,18 +431,20 @@ export function ReportDetailPage() {
               puedeReabrir ? (
                 <div className="action-block">
                   <p className="read-only-note">
-                    {reporte.estado === "RECHAZADO"
-                      ? "Este reporte está rechazado. Para corregir la decisión, reábrelo y explica el motivo."
-                      : "Este reporte está resuelto. Como administrador puedes reabrirlo explicando el motivo."}
-                    {" "}Volverá al estado En revisión.
+                    {t(
+                      reporte.estado === "RECHAZADO"
+                        ? "Este reporte está rechazado. Para corregir la decisión, reábrelo y explica el motivo."
+                        : "Este reporte está resuelto. Como administrador puedes reabrirlo explicando el motivo."
+                    )}
+                    {" "}{t("Volverá al estado En revisión.")}
                   </p>
                   <label className="field">
-                    <span>Motivo de reapertura</span>
+                    <span>{t("Motivo de reapertura")}</span>
                     <textarea
                       value={motivoReapertura}
                       maxLength={1000}
                       rows={3}
-                      placeholder="Explica por qué se reabre este reporte."
+                      placeholder={t("Explica por qué se reabre este reporte.")}
                       onChange={(event) => setMotivoReapertura(event.target.value)}
                     />
                   </label>
@@ -448,13 +453,13 @@ export function ReportDetailPage() {
                     onClick={solicitarReapertura}
                     disabled={guardando || !motivoReapertura.trim()}
                   >
-                    {guardando ? "Reabriendo..." : "Reabrir reporte"}
+                    {guardando ? t("Reabriendo...") : t("Reabrir reporte")}
                   </button>
                 </div>
               ) : estadosSiguientes.length > 0 ? (
                 <div className="action-block">
                   <label className="field">
-                    <span>Cambiar estado</span>
+                    <span>{t("Cambiar estado")}</span>
                     <select
                       value={nuevoEstado}
                       onChange={(event) => {
@@ -467,35 +472,36 @@ export function ReportDetailPage() {
                       }}
                     >
                       {estadosSiguientes.map((estado) => (
-                        <option key={estado} value={estado}>{ETIQUETAS_ESTADO[estado]}</option>
+                        <option key={estado} value={estado}>{t(ETIQUETAS_ESTADO[estado])}</option>
                       ))}
                     </select>
                   </label>
                   {nuevoEstado === "RECHAZADO" && (
                     <>
                       <label className="field">
-                        <span>Motivo de rechazo</span>
+                        <span>{t("Motivo de rechazo")}</span>
                         <select
                           value={motivoRechazo}
                           onChange={(event) =>
                             setMotivoRechazo(event.target.value as MotivoRechazo | "")
                           }
                         >
-                          <option value="">Selecciona un motivo</option>
+                          <option value="">{t("Selecciona un motivo")}</option>
                           {Object.entries(ETIQUETAS_MOTIVO_RECHAZO).map(([valor, label]) => (
-                            <option key={valor} value={valor}>{label}</option>
+                            <option key={valor} value={valor}>{t(label)}</option>
                           ))}
                         </select>
                       </label>
                       <label className="field">
                         <span>
-                          Detalle {motivoRechazo === "OTRO" ? "(obligatorio)" : "(opcional)"}
+                          {t("Detalle")}{" "}
+                          {motivoRechazo === "OTRO" ? t("(obligatorio)") : t("(opcional)")}
                         </span>
                         <textarea
                           value={detalleRechazo}
                           maxLength={1000}
                           rows={3}
-                          placeholder="Explica brevemente la decisión para el ciudadano."
+                          placeholder={t("Explica brevemente la decisión para el ciudadano.")}
                           onChange={(event) => setDetalleRechazo(event.target.value)}
                         />
                       </label>
@@ -506,39 +512,39 @@ export function ReportDetailPage() {
                     onClick={cambiarEstado}
                     disabled={guardando || nuevoEstado === reporte.estado || rechazoIncompleto}
                   >
-                    {guardando ? "Guardando..." : "Guardar estado"}
+                    {guardando ? t("Guardando...") : t("Guardar estado")}
                   </button>
                 </div>
               ) : (
                 <p className="read-only-note">
-                  Este reporte está resuelto. Solo un administrador puede reabrirlo.
+                  {t("Este reporte está resuelto. Solo un administrador puede reabrirlo.")}
                 </p>
               )
             ) : (
-              <p className="read-only-note">Tu rol puede consultar este reporte, pero no cambiar su estado.</p>
+              <p className="read-only-note">{t("Tu rol puede consultar este reporte, pero no cambiar su estado.")}</p>
             )}
 
             {puedeAsignar && puedeCambiarEntidad && (
               <div className="action-block action-block-separated">
                 <label className="field">
-                  <span>Entidad responsable</span>
+                  <span>{t("Entidad responsable")}</span>
                   <select
                     value={entidadSeleccionada}
                     onChange={(event) => setEntidadSeleccionada(event.target.value)}
                   >
-                    <option value="">Selecciona una entidad</option>
+                    <option value="">{t("Selecciona una entidad")}</option>
                     {entidades.map((entidad) => (
                       <option key={entidad.id} value={entidad.id}>{entidad.nombre}</option>
                     ))}
                   </select>
                 </label>
                 <label className="field">
-                  <span>Motivo del cambio (opcional)</span>
+                  <span>{t("Motivo del cambio (opcional)")}</span>
                   <textarea
                     value={motivoAsignacion}
                     maxLength={500}
                     rows={2}
-                    placeholder="Explica por qué se cambia la entidad responsable."
+                    placeholder={t("Explica por qué se cambia la entidad responsable.")}
                     onChange={(event) => setMotivoAsignacion(event.target.value)}
                   />
                 </label>
@@ -547,7 +553,7 @@ export function ReportDetailPage() {
                   onClick={asignarEntidad}
                   disabled={guardando || !entidadSeleccionada || Number(entidadSeleccionada) === reporte.entidadAsignadaId}
                 >
-                  Asignar entidad
+                  {t("Asignar entidad")}
                 </button>
               </div>
             )}
@@ -555,8 +561,9 @@ export function ReportDetailPage() {
             {puedeAsignar && !puedeCambiarEntidad && (
               <div className="action-block action-block-separated">
                 <p className="read-only-note">
-                  La entidad responsable no se puede cambiar mientras el reporte esté{" "}
-                  {ETIQUETAS_ESTADO[reporte.estado].toLowerCase()}. Reábrelo primero para volver a asignarlo.
+                  {t("La entidad responsable no se puede cambiar mientras el reporte esté {estado}. Reábrelo primero para volver a asignarlo.", {
+                    estado: t(ETIQUETAS_ESTADO[reporte.estado]).toLowerCase(),
+                  })}
                 </p>
               </div>
             )}
@@ -565,8 +572,8 @@ export function ReportDetailPage() {
           <article className="panel">
             <div className="panel-header">
               <div>
-                <span className="eyebrow">Trazabilidad</span>
-                <h2>Historial de estados</h2>
+                <span className="eyebrow">{t("Trazabilidad")}</span>
+                <h2>{t("Historial de estados")}</h2>
               </div>
               <History size={18} />
             </div>
@@ -579,21 +586,21 @@ export function ReportDetailPage() {
                       <div className="history-heading">
                         <strong>
                           {evento.estadoAnterior
-                            ? `${ETIQUETAS_ESTADO[evento.estadoAnterior]} → ${ETIQUETAS_ESTADO[evento.estadoNuevo]}`
-                            : ETIQUETAS_ESTADO[evento.estadoNuevo]}
+                            ? `${t(ETIQUETAS_ESTADO[evento.estadoAnterior])} → ${t(ETIQUETAS_ESTADO[evento.estadoNuevo])}`
+                            : t(ETIQUETAS_ESTADO[evento.estadoNuevo])}
                         </strong>
-                        <span>{formatearFechaHora(evento.fecha)}</span>
+                        <span>{formatearFechaHora(evento.fecha, locale)}</span>
                       </div>
-                      <span className="history-actor">por {evento.usuarioNombre}</span>
+                      <span className="history-actor">{t("por {nombre}", { nombre: evento.usuarioNombre })}</span>
                       {evento.motivo && (
                         <span className="history-reason">
-                          {ETIQUETAS_MOTIVO_RECHAZO[evento.motivo]}
+                          {t(ETIQUETAS_MOTIVO_RECHAZO[evento.motivo])}
                           {evento.detalle ? ` · ${evento.detalle}` : ""}
                         </span>
                       )}
                       {evento.motivoReapertura && (
                         <span className="history-reopen">
-                          Motivo de reapertura: {evento.motivoReapertura}
+                          {t("Motivo de reapertura: {motivo}", { motivo: evento.motivoReapertura })}
                         </span>
                       )}
                     </div>
@@ -602,7 +609,7 @@ export function ReportDetailPage() {
               </ol>
             ) : (
               <p className="read-only-note">
-                Este reporte no tiene movimientos de estado registrados.
+                {t("Este reporte no tiene movimientos de estado registrados.")}
               </p>
             )}
           </article>
@@ -611,8 +618,8 @@ export function ReportDetailPage() {
             <article className="panel">
               <div className="panel-header">
                 <div>
-                  <span className="eyebrow">Trazabilidad</span>
-                  <h2>Historial de asignaciones</h2>
+                  <span className="eyebrow">{t("Trazabilidad")}</span>
+                  <h2>{t("Historial de asignaciones")}</h2>
                 </div>
                 <Building2 size={18} />
               </div>
@@ -628,22 +635,24 @@ export function ReportDetailPage() {
                     <div className="history-content">
                       <div className="history-heading">
                         <strong>
-                          {asignacion.origen === "JENA"
+                          {t(asignacion.origen === "JENA"
                             ? "Asignación automática"
-                            : "Reasignación manual"}
+                            : "Reasignación manual")}
                         </strong>
-                        <span>{formatearFechaHora(asignacion.fecha)}</span>
+                        <span>{formatearFechaHora(asignacion.fecha, locale)}</span>
                       </div>
                       <span className="history-actor">
-                        por {asignacion.usuarioNombre ?? "Sistema (Jena)"}
+                        {t("por {nombre}", {
+                          nombre: asignacion.usuarioNombre ?? t("Sistema (Jena)"),
+                        })}
                       </span>
                       <span className="history-assignment">
-                        {asignacion.entidadAnteriorNombre ?? "Sin entidad"} →{" "}
+                        {asignacion.entidadAnteriorNombre ?? t("Sin entidad")} →{" "}
                         {asignacion.entidadNuevaNombre}
                       </span>
                       {asignacion.motivo && (
                         <span className="history-assignment-motive">
-                          Motivo: {asignacion.motivo}
+                          {t("Motivo: {motivo}", { motivo: asignacion.motivo })}
                         </span>
                       )}
                     </div>
@@ -652,7 +661,7 @@ export function ReportDetailPage() {
               </ol>
             ) : (
               <p className="read-only-note">
-                Este reporte no tiene cambios de entidad registrados.
+                {t("Este reporte no tiene cambios de entidad registrados.")}
               </p>
             )}
             </article>
@@ -662,8 +671,8 @@ export function ReportDetailPage() {
             <article className="panel">
               <div className="panel-header">
                 <div>
-                  <span className="eyebrow">Contexto</span>
-                  <h2>Vista territorial</h2>
+                  <span className="eyebrow">{t("Contexto")}</span>
+                  <h2>{t("Vista territorial")}</h2>
                 </div>
               </div>
               <MapPanel reportes={geoReporte} altura="190px" zoomControl={false} />
@@ -674,19 +683,19 @@ export function ReportDetailPage() {
 
       <ConfirmDialog
         abierto={confirmarReapertura}
-        titulo={`Reabrir reporte #${reporte.id}`}
-        descripcion={
+        titulo={t("Reabrir reporte #{id}", { id: reporte.id })}
+        descripcion={t(
           reporte.estado === "RECHAZADO"
             ? "El reporte volverá a En revisión. El rechazo anterior se conservará en el historial."
             : "El reporte volverá a En revisión. El cierre anterior se conservará en el historial."
-        }
+        )}
         detalle={
           <>
-            <span>Motivo de reapertura: </span>
+            <span>{t("Motivo de reapertura:")} </span>
             <strong>{motivoReapertura}</strong>
           </>
         }
-        confirmarLabel="Reabrir reporte"
+        confirmarLabel={t("Reabrir reporte")}
         cargando={guardando}
         onConfirmar={reabrirReporte}
         onCancelar={() => setConfirmarReapertura(false)}

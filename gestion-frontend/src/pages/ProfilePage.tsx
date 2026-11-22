@@ -1,13 +1,16 @@
-import { Building2, LogOut, Mail, Moon, RotateCcw, ShieldCheck, Sun, Type, UserRound } from "lucide-react";
+import { Building2, Languages, LogOut, Mail, Moon, RotateCcw, ShieldCheck, Sun, Type, UserRound } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 
 import { useAuth } from "../auth/AuthContext";
+import { LanguageSwitcher } from "../components/LanguageSwitcher";
 import { PageHeader } from "../components/PageHeader";
+import { useLanguage } from "../i18n/LanguageContext";
 import { useTheme } from "../theme/ThemeContext";
 import { ETIQUETAS_ROL, iniciales } from "../utils/format";
 
 export function ProfilePage() {
   const { usuario, cerrarSesion } = useAuth();
+  const { t } = useLanguage();
   const {
     esOscuro,
     alternarTema,
@@ -28,47 +31,49 @@ export function ProfilePage() {
   return (
     <div className="page-stack">
       <PageHeader
-        eyebrow="Cuenta"
-        titulo="Perfil de usuario"
-        descripcion="Información de la sesión y del alcance asignado."
+        eyebrow={t("Cuenta")}
+        titulo={t("Perfil de usuario")}
+        descripcion={t("Información de la sesión y del alcance asignado.")}
       />
 
       <section className="profile-grid">
         <article className="panel profile-card">
           <div className="avatar avatar-large">{iniciales(usuario.nombre)}</div>
           <h2>{usuario.nombre}</h2>
-          <span className="profile-role">{ETIQUETAS_ROL[usuario.rol]}</span>
+          <span className="profile-role">{t(ETIQUETAS_ROL[usuario.rol])}</span>
           <button className="button button-secondary" onClick={salir}>
             <LogOut size={16} />
-            Cerrar sesión
+            {t("Cerrar sesión")}
           </button>
         </article>
 
         <article className="panel">
           <div className="panel-header">
             <div>
-              <span className="eyebrow">Datos de acceso</span>
-              <h2>Información de la cuenta</h2>
+              <span className="eyebrow">{t("Datos de acceso")}</span>
+              <h2>{t("Información de la cuenta")}</h2>
             </div>
           </div>
           <div className="metadata-list">
             <div>
-              <span><UserRound size={15} /> Nombre</span>
+              <span><UserRound size={15} /> {t("Nombre")}</span>
               <strong>{usuario.nombre}</strong>
             </div>
             <div>
-              <span><Mail size={15} /> Correo</span>
+              <span><Mail size={15} /> {t("Correo")}</span>
               <strong>{usuario.email}</strong>
             </div>
             <div>
-              <span><ShieldCheck size={15} /> Rol</span>
-              <strong>{ETIQUETAS_ROL[usuario.rol]}</strong>
+              <span><ShieldCheck size={15} /> {t("Rol")}</span>
+              <strong>{t(ETIQUETAS_ROL[usuario.rol])}</strong>
             </div>
             <div>
-              <span><Building2 size={15} /> Entidad</span>
+              <span><Building2 size={15} /> {t("Entidad")}</span>
               <strong>
                 {usuario.entidadNombre ??
-                  (usuario.entidadId ? `Entidad ${usuario.entidadId}` : "No asignada")}
+                  (usuario.entidadId
+                    ? `${t("Entidad")} ${usuario.entidadId}`
+                    : t("No asignada"))}
               </strong>
             </div>
           </div>
@@ -78,20 +83,34 @@ export function ProfilePage() {
       <section className="panel profile-theme-panel">
         <div className="theme-setting-row">
           <div className="theme-setting-icon">
+            <Languages size={20} />
+          </div>
+          <div className="theme-setting-copy">
+            <span className="eyebrow">{t("Idioma")}</span>
+            <h2>{t("Idioma de la interfaz")}</h2>
+            <p>{t("Elige el idioma de la aplicación.")}</p>
+          </div>
+          <LanguageSwitcher />
+        </div>
+
+        <div className="theme-setting-divider" />
+
+        <div className="theme-setting-row">
+          <div className="theme-setting-icon">
             {esOscuro ? <Moon size={20} /> : <Sun size={20} />}
           </div>
           <div className="theme-setting-copy">
-            <span className="eyebrow">Apariencia</span>
-            <h2>Tema de la interfaz</h2>
-            <p>Cambia entre la apariencia clara y oscura del panel.</p>
+            <span className="eyebrow">{t("Apariencia")}</span>
+            <h2>{t("Tema de la interfaz")}</h2>
+            <p>{t("Cambia entre la apariencia clara y oscura del panel.")}</p>
           </div>
           <div className="theme-setting-action">
-            <span>{esOscuro ? "Oscuro" : "Claro"}</span>
+            <span>{t(esOscuro ? "Oscuro" : "Claro")}</span>
             <button
               type="button"
               role="switch"
               aria-checked={esOscuro}
-              aria-label="Cambiar tema de la interfaz"
+              aria-label={t("Cambiar tema de la interfaz")}
               className={`theme-switch ${esOscuro ? "is-active" : ""}`}
               onClick={alternarTema}
             >
@@ -107,10 +126,10 @@ export function ProfilePage() {
             <Type size={20} />
           </div>
           <div className="theme-setting-copy">
-            <span className="eyebrow">Lectura</span>
-            <h2>Tamaño de letra</h2>
+            <span className="eyebrow">{t("Lectura")}</span>
+            <h2>{t("Tamaño de letra")}</h2>
             <p>
-              {Math.round(escalaTexto * 100)}% · Ajusta el texto de todo el panel.
+              {Math.round(escalaTexto * 100)}% · {t("Ajusta el texto de todo el panel.")}
             </p>
           </div>
           <div className="theme-setting-action">
@@ -120,7 +139,7 @@ export function ProfilePage() {
                 className="font-size-button"
                 onClick={disminuirTexto}
                 disabled={escalaTexto <= 0.85}
-                aria-label="Disminuir tamaño de letra"
+                aria-label={t("Disminuir tamaño de letra")}
               >
                 A−
               </button>
@@ -128,7 +147,7 @@ export function ProfilePage() {
                 type="button"
                 className="font-size-reset"
                 onClick={restablecerTexto}
-                aria-label="Restablecer tamaño de letra"
+                aria-label={t("Restablecer tamaño de letra")}
               >
                 <RotateCcw size={14} />
               </button>
@@ -137,7 +156,7 @@ export function ProfilePage() {
                 className="font-size-button"
                 onClick={aumentarTexto}
                 disabled={escalaTexto >= 1.3}
-                aria-label="Aumentar tamaño de letra"
+                aria-label={t("Aumentar tamaño de letra")}
               >
                 A+
               </button>

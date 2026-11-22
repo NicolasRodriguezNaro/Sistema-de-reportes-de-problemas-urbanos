@@ -1,5 +1,7 @@
 import { ChevronLeft, ChevronRight } from "lucide-react";
 
+import { useLanguage } from "../i18n/LanguageContext";
+
 export function Pagination({
   pagina,
   totalPaginas,
@@ -13,10 +15,12 @@ export function Pagination({
   onChange: (pagina: number) => void;
   etiqueta?: string;
 }) {
+  const { t } = useLanguage();
+
   if (totalPaginas <= 1) {
     return (
       <div className="pagination">
-        <span className="pagination-info">{total} {etiqueta}</span>
+        <span className="pagination-info">{total} {t(etiqueta)}</span>
       </div>
     );
   }
@@ -24,14 +28,14 @@ export function Pagination({
   return (
     <div className="pagination">
       <span className="pagination-info">
-        {total} {etiqueta} · página {pagina + 1} de {totalPaginas}
+        {total} {t(etiqueta)} · {t("Página {pagina} de {total}", { pagina: pagina + 1, total: totalPaginas })}
       </span>
       <div className="pagination-actions">
         <button
           className="icon-button"
           onClick={() => onChange(pagina - 1)}
           disabled={pagina <= 0}
-          aria-label="Página anterior"
+          aria-label={t("Página anterior")}
         >
           <ChevronLeft size={17} />
         </button>
@@ -39,7 +43,7 @@ export function Pagination({
           className="icon-button"
           onClick={() => onChange(pagina + 1)}
           disabled={pagina >= totalPaginas - 1}
-          aria-label="Página siguiente"
+          aria-label={t("Página siguiente")}
         >
           <ChevronRight size={17} />
         </button>

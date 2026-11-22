@@ -15,6 +15,7 @@ import {
 import { SafeAreaView } from "react-native-safe-area-context";
 
 import { Text } from "./AppText";
+import { useLanguage } from "../i18n";
 import { fonts, radius, shadows, spacing } from "../theme";
 import { useTheme, useThemedStyles, type ThemeColors } from "../theme-context";
 import type {
@@ -152,6 +153,7 @@ export function TextField({
   autoCapitalize?: "none" | "sentences" | "words" | "characters";
 }) {
   const { colors, styles, escalaTexto } = useStyles();
+  const { t } = useLanguage();
   const [visible, setVisible] = useState(false);
   const [enfocado, setEnfocado] = useState(false);
 
@@ -162,7 +164,7 @@ export function TextField({
         <TextInput
           value={value}
           onChangeText={onChangeText}
-          placeholder={placeholder}
+          placeholder={placeholder ? t(placeholder) : undefined}
           placeholderTextColor={colors.soft}
           secureTextEntry={secure && !visible}
           keyboardType={keyboardType}
@@ -306,6 +308,7 @@ export function ReportCard({
   onPress: () => void;
 }) {
   const { colors, styles } = useStyles();
+  const { t, locale } = useLanguage();
   const [imageError, setImageError] = useState(false);
 
   return (
@@ -340,11 +343,11 @@ export function ReportCard({
             <Ionicons name="location-outline" size={14} color={colors.soft} />
             <Text style={styles.reportMetaText}>
               {reporte.barrioNombre ??
-                (reporte.barrioId ? `Barrio ${reporte.barrioId}` : "Sin barrio")}
+                (reporte.barrioId ? `${t("Barrio")} ${reporte.barrioId}` : t("Sin barrio"))}
             </Text>
           </View>
           <Text style={styles.reportDate}>
-            {new Date(reporte.fechaCreacion).toLocaleDateString("es-CO", {
+            {new Date(reporte.fechaCreacion).toLocaleDateString(locale, {
               day: "2-digit",
               month: "short",
             })}

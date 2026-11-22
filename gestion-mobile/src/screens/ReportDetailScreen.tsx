@@ -12,6 +12,7 @@ import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 import { apiFetch } from "../api";
 import { Text } from "../components/AppText";
+import { useLanguage } from "../i18n";
 import {
   ErrorView,
   LoadingView,
@@ -42,6 +43,7 @@ export function ReportDetailScreen({ id }: { id: number }) {
   const insets = useSafeAreaInsets();
   const { colores: colors } = useTheme();
   const styles = useThemedStyles(crearEstilos);
+  const { t, locale } = useLanguage();
   const [reporte, setReporte] = useState<ReporteDetalle | null>(null);
   const [historial, setHistorial] = useState<HistorialReporte[]>([]);
   const [cargando, setCargando] = useState(true);
@@ -160,7 +162,7 @@ export function ReportDetailScreen({ id }: { id: number }) {
         <View style={styles.content}>
           <View style={styles.titleRow}>
             <View style={styles.titleCopy}>
-              <Text style={styles.kicker}>REPORTE #{reporte.id}</Text>
+              <Text style={styles.kicker}>{t("REPORTE #{id}", { id: reporte.id })}</Text>
               <Text style={styles.title}>
                 {reporte.categoriaIa ? ETIQUETAS_CATEGORIA[reporte.categoriaIa] : "Incidencia urbana"}
               </Text>
@@ -175,7 +177,7 @@ export function ReportDetailScreen({ id }: { id: number }) {
             <Ionicons name="calendar-outline" size={14} color={colors.soft} />
             <Text style={styles.dateText}>
               Reportado el{" "}
-              {new Date(reporte.fechaCreacion).toLocaleDateString("es-CO", {
+              {new Date(reporte.fechaCreacion).toLocaleDateString(locale, {
                 day: "2-digit",
                 month: "long",
                 year: "numeric",
@@ -216,7 +218,7 @@ export function ReportDetailScreen({ id }: { id: number }) {
               <View>
                 <Text style={styles.locationTitle}>
                   {reporte.barrioNombre ??
-                    (reporte.barrioId ? `Barrio ${reporte.barrioId}` : "Punto del reporte")}
+                    (reporte.barrioId ? `${t("Barrio")} ${reporte.barrioId}` : t("Punto del reporte"))}
                 </Text>
                 <Text style={styles.locationCoords}>
                   {reporte.latitud.toFixed(5)}, {reporte.longitud.toFixed(5)}
@@ -241,11 +243,11 @@ export function ReportDetailScreen({ id }: { id: number }) {
                   <View style={styles.historyCopy}>
                     <Text style={styles.historyTitle}>
                       {evento.estadoAnterior
-                        ? `${ETIQUETAS_ESTADO[evento.estadoAnterior]} → ${ETIQUETAS_ESTADO[evento.estadoNuevo]}`
-                        : ETIQUETAS_ESTADO[evento.estadoNuevo]}
+                        ? `${t(ETIQUETAS_ESTADO[evento.estadoAnterior])} → ${t(ETIQUETAS_ESTADO[evento.estadoNuevo])}`
+                        : t(ETIQUETAS_ESTADO[evento.estadoNuevo])}
                     </Text>
                     <Text style={styles.historyMeta}>
-                      {new Date(evento.fecha).toLocaleDateString("es-CO", {
+                      {new Date(evento.fecha).toLocaleDateString(locale, {
                         day: "2-digit",
                         month: "short",
                         year: "numeric",
@@ -254,13 +256,13 @@ export function ReportDetailScreen({ id }: { id: number }) {
                     </Text>
                     {evento.motivo && (
                       <Text style={styles.historyReason}>
-                        {ETIQUETAS_MOTIVO_RECHAZO[evento.motivo]}
+                        {t(ETIQUETAS_MOTIVO_RECHAZO[evento.motivo])}
                         {evento.detalle ? ` · ${evento.detalle}` : ""}
                       </Text>
                     )}
                     {evento.motivoReapertura && (
                       <Text style={styles.historyReopen}>
-                        Motivo de reapertura: {evento.motivoReapertura}
+                        {t("Motivo de reapertura: {motivo}", { motivo: evento.motivoReapertura })}
                       </Text>
                     )}
                   </View>
@@ -284,10 +286,12 @@ export function ReportDetailScreen({ id }: { id: number }) {
               label="Entidad responsable"
               value={
                 reporte.entidadNombre ??
-                (reporte.entidadAsignadaId ? `Entidad ${reporte.entidadAsignadaId}` : "Por asignar")
+                (reporte.entidadAsignadaId
+                  ? `${t("Entidad")} ${reporte.entidadAsignadaId}`
+                  : t("Por asignar"))
               }
             />
-            <MetaRow label="Reporte padre" value={reporte.reportePadreId ? `#${reporte.reportePadreId}` : "Ninguno"} />
+            <MetaRow label="Reporte padre" value={reporte.reportePadreId ? `#${reporte.reportePadreId}` : t("Ninguno")} />
           </View>
 
           <View style={styles.notice}>

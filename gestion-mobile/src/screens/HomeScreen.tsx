@@ -15,6 +15,7 @@ import { apiFetch } from "../api";
 import { useAuth } from "../auth";
 import { Text } from "../components/AppText";
 import { EmptyView, ReportCard, Screen } from "../components/ui";
+import { useLanguage } from "../i18n";
 import { fonts, radius, shadows, spacing } from "../theme";
 import { useTheme, useThemedStyles, type ThemeColors } from "../theme-context";
 import type { PaginaResponse, ReporteResumen } from "../types";
@@ -24,6 +25,7 @@ export function HomeScreen() {
   const router = useRouter();
   const { colores: colors } = useTheme();
   const styles = useThemedStyles(crearEstilos);
+  const { t } = useLanguage();
   const [reportes, setReportes] = useState<ReporteResumen[]>([]);
   const [cargando, setCargando] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -68,7 +70,9 @@ export function HomeScreen() {
         <View style={styles.topbar}>
           <View>
             <Text style={styles.kicker}>REPORTE URBANO</Text>
-            <Text style={styles.greeting}>Hola, {nombre}</Text>
+            <Text style={styles.greeting}>
+              {t("Hola, {nombre}", { nombre })}
+            </Text>
             <View style={styles.locationLine}>
               <Ionicons name="location-outline" size={13} color={colors.brand} />
               <Text style={styles.locationText}>Florencia, Caquetá</Text>

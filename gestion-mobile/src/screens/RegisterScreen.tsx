@@ -14,7 +14,9 @@ import { SafeAreaView } from "react-native-safe-area-context";
 import { ApiError } from "../api";
 import { useAuth } from "../auth";
 import { Text } from "../components/AppText";
+import { LanguageSwitcher } from "../components/LanguageSwitcher";
 import { AppButton, Brand, TextField } from "../components/ui";
+import { useLanguage } from "../i18n";
 import { fonts, radius, spacing } from "../theme";
 import { useTheme, useThemedStyles, type ThemeColors } from "../theme-context";
 
@@ -23,6 +25,7 @@ export function RegisterScreen() {
   const { registrar } = useAuth();
   const { colores: colors } = useTheme();
   const styles = useThemedStyles(crearEstilos);
+  const { t } = useLanguage();
   const [nombre, setNombre] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -122,9 +125,13 @@ export function RegisterScreen() {
               style={styles.loginLink}
             >
               <Text style={styles.loginText}>
-                ¿Ya tienes cuenta? <Text style={styles.loginStrong}>Inicia sesión</Text>
+                {t("¿Ya tienes cuenta?")} <Text style={styles.loginStrong}>Inicia sesión</Text>
               </Text>
             </Pressable>
+          </View>
+
+          <View style={styles.languageRow}>
+            <LanguageSwitcher />
           </View>
         </ScrollView>
       </KeyboardAvoidingView>
@@ -228,6 +235,10 @@ function crearEstilos(colors: ThemeColors) {
   loginStrong: {
     color: colors.brand,
     fontFamily: fonts.bold,
+  },
+  languageRow: {
+    alignItems: "flex-end",
+    marginTop: spacing.md,
   },
   });
 }

@@ -3,12 +3,22 @@ import { Pressable, ScrollView, StyleSheet, Switch, View } from "react-native";
 
 import { useAuth } from "../auth";
 import { Text } from "../components/AppText";
+import { LanguageSwitcher } from "../components/LanguageSwitcher";
 import { AppButton, Brand, Screen } from "../components/ui";
+import { useLanguage } from "../i18n";
 import { fonts, radius, spacing } from "../theme";
 import { useTheme, useThemedStyles, type ThemeColors } from "../theme-context";
 
+const ETIQUETAS_ROL = {
+  CIUDADANO: "Ciudadano",
+  FUNCIONARIO: "Funcionario",
+  ADMINISTRADOR: "Administrador",
+  EMPRESA: "Empresa",
+} as const;
+
 export function ProfileScreen() {
   const { usuario, cerrarSesion } = useAuth();
+  const { t } = useLanguage();
   const {
     colores: colors,
     esOscuro,
@@ -28,6 +38,7 @@ export function ProfileScreen() {
     .map((parte: string) => parte.charAt(0))
     .join("")
     .toUpperCase();
+  const rol = ETIQUETAS_ROL[usuario.rol];
 
   return (
     <Screen>
@@ -44,13 +55,13 @@ export function ProfileScreen() {
             <Text style={styles.avatarText}>{iniciales}</Text>
           </View>
           <Text style={styles.name}>{usuario.nombre}</Text>
-          <Text style={styles.role}>Ciudadano</Text>
+          <Text style={styles.role}>{rol}</Text>
         </View>
 
         <View style={styles.card}>
           <InfoRow icon="mail-outline" label="Correo electrónico" value={usuario.email} />
           <InfoRow icon="person-outline" label="Nombre" value={usuario.nombre} />
-          <InfoRow icon="shield-checkmark-outline" label="Rol" value="Ciudadano" />
+          <InfoRow icon="shield-checkmark-outline" label="Rol" value={rol} />
           {usuario.entidadNombre && (
             <InfoRow icon="business-outline" label="Entidad" value={usuario.entidadNombre} />
           )}
@@ -71,6 +82,19 @@ export function ProfileScreen() {
         </View>
 
         <View style={styles.card}>
+          <View style={styles.settingRow}>
+            <View style={styles.settingIcon}>
+              <Ionicons name="language-outline" size={19} color={colors.brand} />
+            </View>
+            <View style={styles.settingCopy}>
+              <Text style={styles.settingTitle}>Idioma</Text>
+              <Text style={styles.settingText}>Elige el idioma de la aplicación.</Text>
+            </View>
+            <LanguageSwitcher />
+          </View>
+
+          <View style={styles.settingDivider} />
+
           <View style={styles.settingRow}>
             <View style={styles.settingIcon}>
               <Ionicons
@@ -104,7 +128,7 @@ export function ProfileScreen() {
             <View style={styles.settingCopy}>
               <Text style={styles.settingTitle}>Tamaño de letra</Text>
               <Text style={styles.settingText}>
-                {Math.round(escalaTexto * 100)}% · Ajusta el texto de la app.
+                {Math.round(escalaTexto * 100)}% · {t("Ajusta el texto de la app.")}
               </Text>
             </View>
             <View style={styles.fontActions}>

@@ -2,6 +2,8 @@ import { AlertTriangle, X } from "lucide-react";
 import { useEffect, useId, useRef } from "react";
 import type { ReactNode } from "react";
 
+import { useLanguage } from "../i18n/LanguageContext";
+
 interface ConfirmDialogProps {
   abierto: boolean;
   titulo: string;
@@ -25,6 +27,7 @@ export function ConfirmDialog({
   onConfirmar,
   onCancelar,
 }: ConfirmDialogProps) {
+  const { t } = useLanguage();
   const tituloId = useId();
   const descripcionId = useId();
   const confirmarRef = useRef<HTMLButtonElement>(null);
@@ -67,7 +70,7 @@ export function ConfirmDialog({
         <button
           className="modal-close"
           type="button"
-          aria-label="Cerrar"
+          aria-label={t("Cerrar")}
           onClick={onCancelar}
           disabled={cargando}
         >
@@ -76,8 +79,8 @@ export function ConfirmDialog({
         <div className="modal-icon">
           <AlertTriangle size={22} />
         </div>
-        <h2 id={tituloId}>{titulo}</h2>
-        <p id={descripcionId}>{descripcion}</p>
+        <h2 id={tituloId}>{t(titulo)}</h2>
+        <p id={descripcionId}>{t(descripcion)}</p>
         {detalle && <div className="modal-detail">{detalle}</div>}
         <div className="modal-actions">
           <button
@@ -86,7 +89,7 @@ export function ConfirmDialog({
             onClick={onCancelar}
             disabled={cargando}
           >
-            {cancelarLabel}
+            {t(cancelarLabel)}
           </button>
           <button
             ref={confirmarRef}
@@ -95,7 +98,7 @@ export function ConfirmDialog({
             onClick={onConfirmar}
             disabled={cargando}
           >
-            {cargando ? "Procesando..." : confirmarLabel}
+            {cargando ? t("Procesando...") : t(confirmarLabel)}
           </button>
         </div>
       </div>

@@ -12,6 +12,7 @@ import { ActivityIndicator, StyleSheet, View } from "react-native";
 import { SafeAreaProvider } from "react-native-safe-area-context";
 
 import { AuthProvider } from "../auth";
+import { LanguageProvider } from "../i18n";
 import { ThemeProvider, useTheme } from "../theme-context";
 import { colors } from "../theme";
 
@@ -34,9 +35,11 @@ export default function RootLayout() {
 
   return (
     <SafeAreaProvider>
-      <ThemeProvider>
-        <ContenidoApp />
-      </ThemeProvider>
+      <LanguageProvider>
+        <ThemeProvider>
+          <ContenidoApp />
+        </ThemeProvider>
+      </LanguageProvider>
     </SafeAreaProvider>
   );
 }

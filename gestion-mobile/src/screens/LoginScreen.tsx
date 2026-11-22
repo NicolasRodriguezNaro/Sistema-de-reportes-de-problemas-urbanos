@@ -17,7 +17,9 @@ import { SafeAreaView } from "react-native-safe-area-context";
 import { apiFetch, ApiError } from "../api";
 import { useAuth } from "../auth";
 import { Text } from "../components/AppText";
+import { LanguageSwitcher } from "../components/LanguageSwitcher";
 import { AppButton, Brand, TextField } from "../components/ui";
+import { useLanguage } from "../i18n";
 import { fonts, radius, spacing } from "../theme";
 import { useTheme, useThemedStyles, type ThemeColors } from "../theme-context";
 import type { CaptchaResponse } from "../types";
@@ -31,6 +33,7 @@ export function LoginScreen() {
   const { iniciarSesion } = useAuth();
   const { colores: colors } = useTheme();
   const styles = useThemedStyles(crearEstilos);
+  const { t } = useLanguage();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [captcha, setCaptcha] = useState<CaptchaResponse | null>(null);
@@ -204,9 +207,13 @@ export function LoginScreen() {
               style={styles.registerLink}
             >
               <Text style={styles.registerText}>
-                ¿No tienes cuenta? <Text style={styles.registerStrong}>Regístrate</Text>
+                {t("¿No tienes cuenta?")} <Text style={styles.registerStrong}>Regístrate</Text>
               </Text>
             </Pressable>
+          </View>
+
+          <View style={styles.languageRow}>
+            <LanguageSwitcher />
           </View>
 
           <Text style={styles.footer}>
@@ -397,6 +404,11 @@ function crearEstilos(colors: ThemeColors) {
   registerStrong: {
     color: colors.brand,
     fontFamily: fonts.bold,
+  },
+  languageRow: {
+    alignItems: "flex-end",
+    paddingHorizontal: spacing.xl,
+    marginTop: spacing.md,
   },
   footer: {
     textAlign: "center",

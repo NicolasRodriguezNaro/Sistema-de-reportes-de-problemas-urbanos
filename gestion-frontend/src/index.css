@@ -1022,6 +1022,12 @@ strong {
   line-height: 1.5;
 }
 
+.login-language {
+  display: flex;
+  justify-content: flex-end;
+  margin-top: 16px;
+}
+
 .full-screen-loading {
   min-height: 100vh;
   display: flex;
@@ -2260,6 +2266,37 @@ strong {
 
 .theme-switch.is-active .theme-switch-thumb {
   transform: translateX(20px);
+}
+
+.language-switcher {
+  display: inline-flex;
+  align-items: center;
+  gap: 3px;
+  padding: 3px;
+  border: 1px solid var(--border);
+  border-radius: 9px;
+  background: var(--surface-muted);
+}
+
+.language-switcher button {
+  min-height: 28px;
+  padding: 0 9px;
+  border: 0;
+  border-radius: 6px;
+  color: var(--muted);
+  background: transparent;
+  font-size: 10px;
+  font-weight: 700;
+}
+
+.language-switcher button:hover {
+  color: var(--brand);
+}
+
+.language-switcher button.is-active {
+  color: var(--brand);
+  background: var(--surface);
+  box-shadow: var(--shadow-sm);
 }
 
 /* ---------- States ---------- */

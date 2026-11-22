@@ -4,10 +4,13 @@ import { Navigate, useNavigate } from "react-router-dom";
 
 import { apiFetch, ApiError } from "../api/client";
 import { useAuth } from "../auth/AuthContext";
+import { LanguageSwitcher } from "../components/LanguageSwitcher";
+import { useLanguage } from "../i18n/LanguageContext";
 import type { CaptchaResponse } from "../types/api";
 
 export function LoginPage() {
   const { usuario, esPersonal, iniciarSesion } = useAuth();
+  const { t } = useLanguage();
   const navigate = useNavigate();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -81,31 +84,30 @@ export function LoginPage() {
             </div>
             <div>
               <strong>Reporte Urbano</strong>
-              <span>Gestión de incidencias</span>
+              <span>{t("Gestión de incidencias")}</span>
             </div>
           </div>
 
           <div className="login-copy">
             <span className="eyebrow eyebrow-light">SIU Municipal</span>
-            <h1>La ciudad se gestiona mejor cuando la información llega a tiempo.</h1>
+            <h1>{t("La ciudad se gestiona mejor cuando la información llega a tiempo.")}</h1>
             <p>
-              Un espacio operativo para revisar reportes ciudadanos, priorizar
-              incidencias y coordinar a las entidades responsables.
+              {t("Un espacio operativo para revisar reportes ciudadanos, priorizar incidencias y coordinar a las entidades responsables.")}
             </p>
           </div>
 
           <div className="login-features">
             <div>
               <MapPinned size={20} />
-              <span>Territorio y reportes en un solo mapa</span>
+              <span>{t("Territorio y reportes en un solo mapa")}</span>
             </div>
             <div>
               <Sparkles size={20} />
-              <span>Clasificación y prioridad asistidas por IA</span>
+              <span>{t("Clasificación y prioridad asistidas por IA")}</span>
             </div>
             <div>
               <ShieldCheck size={20} />
-              <span>Acceso por rol y entidad responsable</span>
+              <span>{t("Acceso por rol y entidad responsable")}</span>
             </div>
           </div>
         </div>
@@ -115,19 +117,19 @@ export function LoginPage() {
       <section className="login-form-panel">
         <div className="login-form-card">
           <div className="login-form-heading">
-            <span className="eyebrow">Acceso institucional</span>
-            <h2>Bienvenido de nuevo</h2>
-            <p>Ingresa con tus credenciales para continuar.</p>
+            <span className="eyebrow">{t("Acceso institucional")}</span>
+            <h2>{t("Bienvenido de nuevo")}</h2>
+            <p>{t("Ingresa con tus credenciales para continuar.")}</p>
           </div>
 
           <form onSubmit={enviar} className="form-stack">
             <label className="field">
-              <span>Correo electrónico</span>
+              <span>{t("Correo electrónico")}</span>
               <input
                 type="email"
                 name="email"
                 autoComplete="email"
-                placeholder="nombre@municipio.gov.co"
+                placeholder={t("nombre@municipio.gov.co")}
                 value={email}
                 onChange={(event) => setEmail(event.target.value)}
                 required
@@ -135,13 +137,13 @@ export function LoginPage() {
             </label>
 
             <label className="field">
-              <span>Contraseña</span>
+              <span>{t("Contraseña")}</span>
               <div className="password-field">
                 <input
                   type={mostrarPassword ? "text" : "password"}
                   name="password"
                   autoComplete="current-password"
-                  placeholder="Tu contraseña"
+                  placeholder={t("Tu contraseña")}
                   value={password}
                   onChange={(event) => setPassword(event.target.value)}
                   required
@@ -150,7 +152,7 @@ export function LoginPage() {
                   type="button"
                   className="password-toggle"
                   onClick={() => setMostrarPassword((valor) => !valor)}
-                  aria-label={mostrarPassword ? "Ocultar contraseña" : "Mostrar contraseña"}
+                  aria-label={t(mostrarPassword ? "Ocultar contraseña" : "Mostrar contraseña")}
                 >
                   {mostrarPassword ? <EyeOff size={18} /> : <Eye size={18} />}
                 </button>
@@ -158,13 +160,13 @@ export function LoginPage() {
             </label>
 
             <label className="field">
-              <span>Verificación</span>
+              <span>{t("Verificación")}</span>
               <div className="captcha-control">
                 {captcha ? (
-                  <img className="captcha-image" src={captcha.imagen} alt="Código captcha" />
+                  <img className="captcha-image" src={captcha.imagen} alt={t("Código captcha")} />
                 ) : (
                   <div className="captcha-placeholder">
-                    {captchaCargando ? "Cargando..." : "Captcha no disponible"}
+                    {captchaCargando ? t("Cargando...") : t("Captcha no disponible")}
                   </div>
                 )}
                 <button
@@ -174,7 +176,7 @@ export function LoginPage() {
                   disabled={captchaCargando || enviando}
                 >
                   <RefreshCw size={14} />
-                  Actualizar
+                  {t("Actualizar")}
                 </button>
               </div>
               <input
@@ -182,24 +184,28 @@ export function LoginPage() {
                 name="captchaRespuesta"
                 autoComplete="off"
                 autoCapitalize="characters"
-                placeholder="Escribe el código de la imagen"
+                placeholder={t("Escribe el código de la imagen")}
                 value={captchaTexto}
                 onChange={(event) => setCaptchaTexto(event.target.value)}
                 required
               />
             </label>
 
-            {error && <div className="form-error">{error}</div>}
+            {error && <div className="form-error">{t(error)}</div>}
 
             <button className="button button-primary button-block" type="submit" disabled={enviando}>
-              {enviando ? "Ingresando..." : "Iniciar sesión"}
+              {enviando ? t("Ingresando...") : t("Iniciar sesión")}
               {!enviando && <LockKeyhole size={17} />}
             </button>
           </form>
 
           <div className="login-form-footer">
-            <span>Acceso para funcionarios, empresas y administradores.</span>
-            <span>Ciudadanos: usa la app móvil.</span>
+            <span>{t("Acceso para funcionarios, empresas y administradores.")}</span>
+            <span>{t("Ciudadanos: usa la app móvil.")}</span>
+          </div>
+
+          <div className="login-language">
+            <LanguageSwitcher />
           </div>
         </div>
       </section>

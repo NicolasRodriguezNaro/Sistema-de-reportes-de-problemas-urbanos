@@ -2,6 +2,7 @@ import { useEffect } from "react";
 import { circleMarker, latLngBounds } from "leaflet";
 import { CircleMarker, GeoJSON, MapContainer, Popup, TileLayer, useMap } from "react-leaflet";
 
+import { useLanguage } from "../i18n/LanguageContext";
 import type {
   BarrioGeoProperties,
   FeatureCollection,
@@ -57,16 +58,17 @@ function AjustarMapa({
 }
 
 function PopupReporte({ properties }: { properties: ReporteGeoProperties }) {
+  const { t, locale } = useLanguage();
   return (
     <Popup>
       <div className="map-popup">
         {properties.thumbUrl && (
-          <img src={properties.thumbUrl} alt={`Reporte ${properties.id}`} />
+          <img src={properties.thumbUrl} alt={t("Reporte #{id}", { id: properties.id })} />
         )}
         <strong>#{properties.id}</strong>
-        <span>{properties.categoria ? ETIQUETAS_CATEGORIA[properties.categoria] : "Sin categoría"}</span>
-        <span>{properties.barrioNombre ?? "Sin barrio"}</span>
-        <small>{ETIQUETAS_ESTADO[properties.estado]} · {formatearFecha(properties.fechaCreacion)}</small>
+        <span>{properties.categoria ? t(ETIQUETAS_CATEGORIA[properties.categoria]) : t("Sin categoría")}</span>
+        <span>{properties.barrioNombre ?? t("Sin barrio")}</span>
+        <small>{t(ETIQUETAS_ESTADO[properties.estado])} · {formatearFecha(properties.fechaCreacion, locale)}</small>
       </div>
     </Popup>
   );
@@ -171,6 +173,7 @@ export function ReportMap({
   longitud: number;
   altura?: string;
 }) {
+  const { t } = useLanguage();
   return (
     <div className="map-shell" style={{ height: altura }}>
       <MapContainer
@@ -189,7 +192,7 @@ export function ReportMap({
           radius={9}
           pathOptions={{ color: "#ffffff", weight: 3, fillColor: "#0f4c5c", fillOpacity: 1 }}
         >
-          <Popup>Ubicación del reporte</Popup>
+          <Popup>{t("Ubicación del reporte")}</Popup>
         </CircleMarker>
       </MapContainer>
     </div>

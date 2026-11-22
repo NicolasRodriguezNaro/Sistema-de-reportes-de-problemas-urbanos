@@ -6,6 +6,7 @@ import { useAuth } from "../auth/AuthContext";
 import { PageHeader } from "../components/PageHeader";
 import { Pagination } from "../components/Pagination";
 import { EmptyState, ErrorState, LoadingState } from "../components/States";
+import { useLanguage } from "../i18n/LanguageContext";
 import type {
   FuncionarioActualizacionRequest,
   FuncionarioCreacionRequest,
@@ -40,6 +41,7 @@ const FORMULARIO_INICIAL: FormularioFuncionario = {
 
 export function EquipoPage() {
   const { usuario } = useAuth();
+  const { t, locale } = useLanguage();
   const [funcionarios, setFuncionarios] = useState<UsuarioGestion[]>([]);
   const [filtros, setFiltros] = useState<Filtros>(FILTROS_INICIALES);
   const [filtrosActivos, setFiltrosActivos] = useState<Filtros>(FILTROS_INICIALES);
@@ -190,13 +192,15 @@ export function EquipoPage() {
   return (
     <div className="page-stack">
       <PageHeader
-        eyebrow="Empresa"
-        titulo="Mi equipo"
-        descripcion={`Administra los funcionarios de ${usuario.entidadNombre ?? "tu entidad responsable"}.`}
+        eyebrow={t("Empresa")}
+        titulo={t("Mi equipo")}
+        descripcion={t("Administra los funcionarios de {entidad}.", {
+          entidad: usuario.entidadNombre ?? t("tu entidad responsable"),
+        })}
         actions={
           <button className="button button-primary" onClick={abrirCrear}>
             <Plus size={16} />
-            Nuevo funcionario
+            {t("Nuevo funcionario")}
           </button>
         }
       />
@@ -204,7 +208,7 @@ export function EquipoPage() {
       {mensaje && (
         <div className="success-note">
           <ShieldCheck size={17} />
-          <span>{mensaje}</span>
+          <span>{t(mensaje)}</span>
         </div>
       )}
 
@@ -213,12 +217,12 @@ export function EquipoPage() {
           <div className="filters-heading">
             <div>
               <ShieldCheck size={18} />
-              <strong>{editandoId ? "Editar funcionario" : "Nuevo funcionario"}</strong>
+              <strong>{t(editandoId ? "Editar funcionario" : "Nuevo funcionario")}</strong>
             </div>
             <button
               className="icon-button"
               onClick={cerrarFormulario}
-              aria-label="Cerrar formulario"
+              aria-label={t("Cerrar formulario")}
               type="button"
             >
               <X size={17} />
@@ -228,23 +232,23 @@ export function EquipoPage() {
           <form onSubmit={guardar}>
             <div className="filters-grid user-form-grid">
               <label className="field">
-                <span>Nombre</span>
+                <span>{t("Nombre")}</span>
                 <input
                   value={formulario.nombre}
                   onChange={(event) => cambiarCampo("nombre", event.target.value)}
-                  placeholder="Nombre completo"
+                  placeholder={t("Nombre completo")}
                   maxLength={150}
                   required
                 />
               </label>
 
               <label className="field">
-                <span>Email</span>
+                <span>{t("Email")}</span>
                 <input
                   type="email"
                   value={formulario.email}
                   onChange={(event) => cambiarCampo("email", event.target.value)}
-                  placeholder="funcionario@entidad.gov.co"
+                  placeholder={t("funcionario@entidad.gov.co")}
                   maxLength={150}
                   disabled={Boolean(editandoId)}
                   required={!editandoId}
@@ -253,12 +257,12 @@ export function EquipoPage() {
 
               {!editandoId && (
                 <label className="field">
-                  <span>Contraseña inicial</span>
+                  <span>{t("Contraseña inicial")}</span>
                   <input
                     type="password"
                     value={formulario.password}
                     onChange={(event) => cambiarCampo("password", event.target.value)}
-                    placeholder="Mínimo 8 caracteres"
+                    placeholder={t("Mínimo 8 caracteres")}
                     minLength={8}
                     maxLength={72}
                     required
@@ -268,20 +272,20 @@ export function EquipoPage() {
 
               {editandoId && (
                 <label className="field checkbox-field">
-                  <span>Estado</span>
+                  <span>{t("Estado")}</span>
                   <span className="checkbox-label">
                     <input
                       type="checkbox"
                       checked={formulario.activo}
                       onChange={(event) => cambiarCampo("activo", event.target.checked)}
                     />
-                    Funcionario activo
+                    {t("Funcionario activo")}
                   </span>
                 </label>
               )}
             </div>
 
-            {formError && <p className="form-error">{formError}</p>}
+            {formError && <p className="form-error">{t(formError)}</p>}
 
             <div className="form-actions">
               <button
@@ -290,14 +294,12 @@ export function EquipoPage() {
                 onClick={cerrarFormulario}
                 disabled={guardando}
               >
-                Cancelar
+                {t("Cancelar")}
               </button>
               <button className="button button-primary" type="submit" disabled={guardando}>
                 {guardando
-                  ? "Guardando..."
-                  : editandoId
-                    ? "Guardar cambios"
-                    : "Crear funcionario"}
+                  ? t("Guardando...")
+                  : t(editandoId ? "Guardar cambios" : "Crear funcionario")}
               </button>
             </div>
           </form>
@@ -308,20 +310,20 @@ export function EquipoPage() {
         <div className="filters-heading">
           <div>
             <Search size={18} />
-            <strong>Buscar funcionarios</strong>
+            <strong>{t("Buscar funcionarios")}</strong>
           </div>
-          <span>{hayFiltros ? "Filtros activos" : "Sin filtros aplicados"}</span>
+          <span>{t(hayFiltros ? "Filtros activos" : "Sin filtros aplicados")}</span>
         </div>
 
         <div className="filters-grid">
           <label className="field field-search">
-            <span>Nombre o email</span>
+            <span>{t("Nombre o email")}</span>
             <div className="input-with-icon">
               <Search size={16} />
               <input
                 value={filtros.texto}
                 onChange={(event) => cambiarFiltro("texto", event.target.value)}
-                placeholder="Buscar funcionario"
+                placeholder={t("Buscar funcionario")}
                 onKeyDown={(event) => {
                   if (event.key === "Enter") aplicarFiltros();
                 }}
@@ -330,25 +332,25 @@ export function EquipoPage() {
           </label>
 
           <label className="field">
-            <span>Estado</span>
+            <span>{t("Estado")}</span>
             <select
               value={filtros.activo}
               onChange={(event) => cambiarFiltro("activo", event.target.value)}
             >
-              <option value="">Todos</option>
-              <option value="true">Activos</option>
-              <option value="false">Inactivos</option>
+              <option value="">{t("Todos")}</option>
+              <option value="true">{t("Activos")}</option>
+              <option value="false">{t("Inactivos")}</option>
             </select>
           </label>
 
           <button className="button button-primary filter-submit" onClick={aplicarFiltros}>
             <Search size={16} />
-            Aplicar filtros
+            {t("Aplicar filtros")}
           </button>
 
           {hayFiltros && (
             <button className="button button-secondary filter-submit" onClick={limpiarFiltros}>
-              Limpiar
+              {t("Limpiar")}
             </button>
           )}
         </div>
@@ -357,11 +359,15 @@ export function EquipoPage() {
       <section className="panel reports-panel">
         <div className="panel-header">
           <div>
-            <span className="eyebrow">Equipo de la entidad</span>
-            <h2>{total > 0 ? `${total} funcionarios` : "Sin funcionarios"}</h2>
+            <span className="eyebrow">{t("Equipo de la entidad")}</span>
+            <h2>
+              {total > 0
+                ? t("{n} funcionarios", { n: total })
+                : t("Sin funcionarios")}
+            </h2>
           </div>
           <label className="page-size">
-            <span>Filas</span>
+            <span>{t("Filas")}</span>
             <select
               value={tamano}
               onChange={(event) => {
@@ -378,26 +384,26 @@ export function EquipoPage() {
         </div>
 
         {cargando ? (
-          <LoadingState label="Consultando funcionarios..." />
+          <LoadingState label={t("Consultando funcionarios...")} />
         ) : error ? (
-          <ErrorState mensaje={error} onRetry={() => void cargar()} />
+          <ErrorState mensaje={t(error)} onRetry={() => void cargar()} />
         ) : funcionarios.length === 0 ? (
           <EmptyState
-            titulo={hayFiltros ? "No encontramos funcionarios" : "Aún no hay funcionarios"}
-            descripcion={
+            titulo={t(hayFiltros ? "No encontramos funcionarios" : "Aún no hay funcionarios")}
+            descripcion={t(
               hayFiltros
                 ? "Prueba con otros filtros o limpia la búsqueda."
                 : "Crea la primera cuenta para un funcionario de tu entidad."
-            }
+            )}
             accion={
               hayFiltros ? (
                 <button className="button button-secondary" onClick={limpiarFiltros}>
-                  Limpiar filtros
+                  {t("Limpiar filtros")}
                 </button>
               ) : (
                 <button className="button button-primary" onClick={abrirCrear}>
                   <Plus size={16} />
-                  Crear funcionario
+                  {t("Crear funcionario")}
                 </button>
               )
             }
@@ -408,10 +414,10 @@ export function EquipoPage() {
               <table className="reports-table">
                 <thead>
                   <tr>
-                    <th>Funcionario</th>
-                    <th>Estado</th>
-                    <th>Registro</th>
-                    <th aria-label="Acciones" />
+                    <th>{t("Funcionario")}</th>
+                    <th>{t("Estado")}</th>
+                    <th>{t("Registro")}</th>
+                    <th aria-label={t("Acciones")} />
                   </tr>
                 </thead>
                 <tbody>
@@ -433,17 +439,17 @@ export function EquipoPage() {
                           }`}
                         >
                           <span className="user-status-dot" />
-                          {funcionario.activo ? "Activo" : "Inactivo"}
+                          {t(funcionario.activo ? "Activo" : "Inactivo")}
                         </span>
                       </td>
-                      <td className="report-date">{formatearFecha(funcionario.fechaRegistro)}</td>
+                      <td className="report-date">{formatearFecha(funcionario.fechaRegistro, locale)}</td>
                       <td>
                         <button
                           className="table-action table-action-button"
                           onClick={() => abrirEditar(funcionario)}
                         >
                           <Pencil size={13} />
-                          Editar
+                          {t("Editar")}
                         </button>
                       </td>
                     </tr>
@@ -455,7 +461,7 @@ export function EquipoPage() {
               pagina={pagina}
               totalPaginas={totalPaginas}
               total={total}
-              etiqueta="funcionarios"
+              etiqueta={t("funcionarios")}
               onChange={setPagina}
             />
           </>

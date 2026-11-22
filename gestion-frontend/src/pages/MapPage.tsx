@@ -5,6 +5,7 @@ import { apiFetch, construirQuery } from "../api/client";
 import { MapPanel } from "../components/MapPanel";
 import { PageHeader } from "../components/PageHeader";
 import { ErrorState, LoadingState } from "../components/States";
+import { useLanguage } from "../i18n/LanguageContext";
 import type {
   BarrioGeoProperties,
   FeatureCollection,
@@ -14,6 +15,7 @@ import type {
 import { ETIQUETAS_CATEGORIA, ETIQUETAS_ESTADO } from "../utils/format";
 
 export function MapPage() {
+  const { t } = useLanguage();
   const [reportes, setReportes] = useState<FeatureCollection<ReporteGeoProperties> | null>(null);
   const [barrios, setBarrios] = useState<FeatureCollection<BarrioGeoProperties> | null>(null);
   const [sitios, setSitios] = useState<FeatureCollection<SitioGeoProperties> | null>(null);
@@ -50,21 +52,21 @@ export function MapPage() {
     void cargar();
   }, [cargar, version]);
 
-  if (cargando && !reportes) return <LoadingState label="Preparando el mapa territorial..." />;
+  if (cargando && !reportes) return <LoadingState label={t("Preparando el mapa territorial...")} />;
   if (error) {
-    return <ErrorState mensaje={error} onRetry={() => setVersion((valor) => valor + 1)} />;
+    return <ErrorState mensaje={t(error)} onRetry={() => setVersion((valor) => valor + 1)} />;
   }
 
   return (
     <div className="page-stack">
       <PageHeader
-        eyebrow="Lectura territorial"
-        titulo="Mapa de incidencias"
-        descripcion="Explora los reportes y su relación con barrios y sitios de interés."
+        eyebrow={t("Lectura territorial")}
+        titulo={t("Mapa de incidencias")}
+        descripcion={t("Explora los reportes y su relación con barrios y sitios de interés.")}
         actions={
           <button className="button button-secondary" onClick={() => setVersion((valor) => valor + 1)}>
             <RefreshCw size={16} />
-            Actualizar
+            {t("Actualizar")}
           </button>
         }
       />
@@ -74,37 +76,37 @@ export function MapPage() {
           <div className="filters-heading">
             <div>
               <SlidersHorizontal size={18} />
-              <strong>Filtros</strong>
+              <strong>{t("Filtros")}</strong>
             </div>
           </div>
 
           <div className="filter-stack">
             <label className="field">
-              <span>Estado</span>
+              <span>{t("Estado")}</span>
               <select value={estado} onChange={(event) => setEstado(event.target.value)}>
-                <option value="">Todos</option>
+                <option value="">{t("Todos")}</option>
                 {Object.entries(ETIQUETAS_ESTADO).map(([valor, label]) => (
-                  <option key={valor} value={valor}>{label}</option>
+                  <option key={valor} value={valor}>{t(label)}</option>
                 ))}
               </select>
             </label>
             <label className="field">
-              <span>Categoría</span>
+              <span>{t("Categoría")}</span>
               <select value={categoria} onChange={(event) => setCategoria(event.target.value)}>
-                <option value="">Todas</option>
+                <option value="">{t("Todas")}</option>
                 {Object.entries(ETIQUETAS_CATEGORIA).map(([valor, label]) => (
-                  <option key={valor} value={valor}>{label}</option>
+                  <option key={valor} value={valor}>{t(label)}</option>
                 ))}
               </select>
             </label>
             <label className="field">
-              <span>Prioridad</span>
+              <span>{t("Prioridad")}</span>
               <select value={prioridad} onChange={(event) => setPrioridad(event.target.value)}>
-                <option value="">Todas</option>
-                <option value="BAJA">Baja</option>
-                <option value="MEDIA">Media</option>
-                <option value="ALTA">Alta</option>
-                <option value="CRITICA">Crítica</option>
+                <option value="">{t("Todas")}</option>
+                <option value="BAJA">{t("Baja")}</option>
+                <option value="MEDIA">{t("Media")}</option>
+                <option value="ALTA">{t("Alta")}</option>
+                <option value="CRITICA">{t("Crítica")}</option>
               </select>
             </label>
           </div>
@@ -112,32 +114,32 @@ export function MapPage() {
           <div className="layer-block">
             <div className="layer-title">
               <Layers3 size={16} />
-              <span>Capas</span>
+              <span>{t("Capas")}</span>
             </div>
             <label className="checkbox-row">
               <input type="checkbox" checked={mostrarBarrios} onChange={(event) => setMostrarBarrios(event.target.checked)} />
-              <span>Barrios</span>
+              <span>{t("Barrios")}</span>
             </label>
             <label className="checkbox-row">
               <input type="checkbox" checked={mostrarSitios} onChange={(event) => setMostrarSitios(event.target.checked)} />
-              <span>Sitios de interés</span>
+              <span>{t("Sitios de interés")}</span>
             </label>
           </div>
 
           <div className="map-legend">
             <div className="layer-title">
               <MapPinned size={16} />
-              <span>Prioridad</span>
+              <span>{t("Prioridad")}</span>
             </div>
-            <span><i style={{ background: "#c2410c" }} /> Crítica</span>
-            <span><i style={{ background: "#d97706" }} /> Alta</span>
-            <span><i style={{ background: "#2563eb" }} /> Media</span>
-            <span><i style={{ background: "#15803d" }} /> Baja</span>
+            <span><i style={{ background: "#c2410c" }} /> {t("Crítica")}</span>
+            <span><i style={{ background: "#d97706" }} /> {t("Alta")}</span>
+            <span><i style={{ background: "#2563eb" }} /> {t("Media")}</span>
+            <span><i style={{ background: "#15803d" }} /> {t("Baja")}</span>
           </div>
 
           <div className="map-count">
             <strong>{reportes?.features.length ?? 0}</strong>
-            <span>reportes visibles</span>
+            <span>{t("reportes visibles")}</span>
           </div>
         </aside>
 

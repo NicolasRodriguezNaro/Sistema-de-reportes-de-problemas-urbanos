@@ -13,6 +13,7 @@ import {
 import { apiFetch } from "../api";
 import { Text } from "../components/AppText";
 import { EmptyView, ReportCard, Screen } from "../components/ui";
+import { useLanguage } from "../i18n";
 import { fonts, spacing } from "../theme";
 import { useTheme, useThemedStyles, type ThemeColors } from "../theme-context";
 import type { PaginaResponse, ReporteResumen } from "../types";
@@ -23,6 +24,7 @@ export function MyReportsScreen() {
   const router = useRouter();
   const { colores: colors } = useTheme();
   const styles = useThemedStyles(crearEstilos);
+  const { t } = useLanguage();
   const [reportes, setReportes] = useState<ReporteResumen[]>([]);
   const [total, setTotal] = useState(0);
   const [pagina, setPagina] = useState(0);
@@ -81,8 +83,10 @@ export function MyReportsScreen() {
 
   const subtitulo =
     total > 0
-      ? `${total} ${total === 1 ? "reporte" : "reportes"} en tu cuenta`
-      : "Aquí verás el estado de las incidencias que reportes.";
+      ? total === 1
+        ? t("1 reporte en tu cuenta")
+        : t("{n} reportes en tu cuenta", { n: total })
+      : t("Aquí verás el estado de las incidencias que reportes.");
 
   return (
     <Screen>

@@ -15,6 +15,7 @@ import { useEffect, useState } from "react";
 import { NavLink, Outlet, useLocation, useNavigate } from "react-router-dom";
 
 import { useAuth } from "../auth/AuthContext";
+import { useLanguage } from "../i18n/LanguageContext";
 import { ETIQUETAS_ROL, iniciales } from "../utils/format";
 
 const TITULOS: Record<string, string> = {
@@ -29,6 +30,7 @@ const TITULOS: Record<string, string> = {
 
 export function AppLayout() {
   const { usuario, cerrarSesion, esAdministrador, esEmpresa } = useAuth();
+  const { t, locale } = useLanguage();
   const [menuAbierto, setMenuAbierto] = useState(false);
   const location = useLocation();
   const navigate = useNavigate();
@@ -41,8 +43,8 @@ export function AppLayout() {
 
   const titulo =
     location.pathname.startsWith("/reportes/") && location.pathname !== "/reportes"
-      ? "Detalle del reporte"
-      : TITULOS[location.pathname] ?? "Panel de operaciones";
+      ? t("Detalle del reporte")
+      : t(TITULOS[location.pathname] ?? "Panel de operaciones");
 
   const salir = () => {
     cerrarSesion();
@@ -54,12 +56,12 @@ export function AppLayout() {
       <button
         className="mobile-menu-button"
         onClick={() => setMenuAbierto((valor) => !valor)}
-        aria-label={menuAbierto ? "Cerrar menú" : "Abrir menú"}
+        aria-label={t(menuAbierto ? "Cerrar menú" : "Abrir menú")}
       >
         {menuAbierto ? <X size={22} /> : <Menu size={22} />}
       </button>
 
-      {menuAbierto && <button className="sidebar-backdrop" onClick={() => setMenuAbierto(false)} aria-label="Cerrar menú" />}
+      {menuAbierto && <button className="sidebar-backdrop" onClick={() => setMenuAbierto(false)} aria-label={t("Cerrar menú")} />}
 
       <aside className="sidebar">
         <div className="brand">
@@ -68,34 +70,34 @@ export function AppLayout() {
           </div>
           <div>
             <strong>Reporte Urbano</strong>
-            <span>Panel de operaciones</span>
+            <span>{t("Panel de operaciones")}</span>
           </div>
         </div>
 
-        <div className="sidebar-section-label">Operación</div>
+        <div className="sidebar-section-label">{t("Operación")}</div>
         <nav className="sidebar-nav">
           <NavLink to="/dashboard" className={({ isActive }) => `nav-item ${isActive ? "active" : ""}`}>
             <LayoutDashboard size={19} />
-            <span>Dashboard</span>
+            <span>{t("Dashboard")}</span>
           </NavLink>
           <NavLink to="/reportes" className={({ isActive }) => `nav-item ${isActive ? "active" : ""}`}>
             <FileText size={19} />
-            <span>Reportes</span>
+            <span>{t("Reportes")}</span>
           </NavLink>
           <NavLink to="/mapa" className={({ isActive }) => `nav-item ${isActive ? "active" : ""}`}>
             <Map size={19} />
-            <span>Mapa</span>
+            <span>{t("Mapa")}</span>
           </NavLink>
           {esAdministrador && (
             <>
               <NavLink to="/entidades" className={({ isActive }) => `nav-item ${isActive ? "active" : ""}`}>
                 <Building2 size={19} />
-                <span>Entidades</span>
+                <span>{t("Entidades")}</span>
                 <span className="nav-tag">Admin</span>
               </NavLink>
               <NavLink to="/usuarios" className={({ isActive }) => `nav-item ${isActive ? "active" : ""}`}>
                 <Users size={19} />
-                <span>Usuarios</span>
+                <span>{t("Usuarios")}</span>
                 <span className="nav-tag">Admin</span>
               </NavLink>
             </>
@@ -103,12 +105,12 @@ export function AppLayout() {
           {esEmpresa && (
             <NavLink to="/mi-equipo" className={({ isActive }) => `nav-item ${isActive ? "active" : ""}`}>
               <Users size={19} />
-              <span>Mi equipo</span>
+              <span>{t("Mi equipo")}</span>
             </NavLink>
           )}
           <NavLink to="/perfil" className={({ isActive }) => `nav-item ${isActive ? "active" : ""}`}>
             <UserRound size={19} />
-            <span>Perfil</span>
+            <span>{t("Perfil")}</span>
           </NavLink>
         </nav>
 
@@ -116,17 +118,17 @@ export function AppLayout() {
           <div className="sidebar-status">
             <span className="status-dot" />
             <div>
-              <strong>Sesión activa</strong>
-              <span>Panel autenticado</span>
+              <strong>{t("Sesión activa")}</strong>
+              <span>{t("Panel autenticado")}</span>
             </div>
           </div>
           <div className="user-card">
             <div className="avatar">{iniciales(usuario.nombre)}</div>
             <div className="user-card-info">
               <strong>{usuario.nombre}</strong>
-              <span>{ETIQUETAS_ROL[usuario.rol]}</span>
+              <span>{t(ETIQUETAS_ROL[usuario.rol])}</span>
             </div>
-            <button className="icon-button icon-button-ghost" onClick={salir} aria-label="Cerrar sesión">
+            <button className="icon-button icon-button-ghost" onClick={salir} aria-label={t("Cerrar sesión")}>
               <LogOut size={17} />
             </button>
           </div>
@@ -136,14 +138,14 @@ export function AppLayout() {
       <div className="main-shell">
         <header className="topbar">
           <div className="topbar-title">
-            <span className="topbar-eyebrow">SIU Municipal / Operación</span>
+            <span className="topbar-eyebrow">{t("SIU Municipal / Operación")}</span>
             <h2>{titulo}</h2>
           </div>
           <div className="topbar-actions">
             <div className="topbar-date">
               <CalendarDays size={16} />
               <span>
-                {new Intl.DateTimeFormat("es-CO", {
+                {new Intl.DateTimeFormat(locale, {
                   weekday: "long",
                   day: "numeric",
                   month: "long",
@@ -154,7 +156,7 @@ export function AppLayout() {
               <div className="avatar avatar-small">{iniciales(usuario.nombre)}</div>
               <div>
                 <strong>{usuario.nombre}</strong>
-                <span>{ETIQUETAS_ROL[usuario.rol]}</span>
+                <span>{t(ETIQUETAS_ROL[usuario.rol])}</span>
               </div>
             </div>
           </div>
